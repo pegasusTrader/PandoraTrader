@@ -100,6 +100,8 @@ typedef char		cwFtdcInvestorIDType[19];
 typedef char		cwFtdcOrderRefType[23];
 ///cwFtdcUserIDType是一个用户代码类型
 typedef char		cwFtdcUserIDType[16];
+///cwFtdcPasswordType是一个密码类型
+typedef char		cwFtdcPasswordType[41];
 ///cwFtdcCombOffsetFlagType是一个组合开平标志类型
 typedef char		cwFtdcCombOffsetFlagType[5];
 ///cwFtdcCombHedgeFlagType是一个组合投机套保标志类型
@@ -754,6 +756,13 @@ enum  cwOpenClose
 	, cwCloseToday
 };
 
+enum cwUserCanceleStatus : uint32_t
+{
+	cwUserCancel_NoCancel = 0
+	, cwUserCancel_ReqCancel
+	, cwUserCancel_Canceled
+};
+
 struct ActiveOrderKey
 {
 	std::string OrderSysID;
@@ -861,6 +870,9 @@ struct ORDERFIELD
 	cwFtdcIPAddressType					IPAddress;
 	///币种代码
 	cwFtdcCurrencyIDType				CurrencyID;
+
+	cwUserCanceleStatus					UserCancelStatus;
+	uint32_t							UserCancelTime;
 	// Add From PlatForm
 	int32_t								iRanked;
 
@@ -998,12 +1010,12 @@ typedef struct CWPOSITIONFIELD
 	void Reset();
 
 #ifdef CW_POSITION_UPDATE_BY_TRADE
-	void UpdatePosition(cwOrderPtr pOrigionOrder, cwOrderPtr pOrder);
-	void UpdatePosition(cwTradePtr pTrade, cwInstrumentDataPtr InsPtr);
+	void UpdatePosition(cwOrderPtr pOrigionOrder, cwOrderPtr pOrder, bool bNetPositionModel = false);
+	void UpdatePosition(cwTradePtr pTrade, cwInstrumentDataPtr InsPtr, bool bNetPositionModel = false);
 #endif // CW_POSITION_UPDATE_BY_TRADE
 #ifdef CW_POSITION_UPDATE_BY_ORDER
-	void UpdatePosition(cwOrderPtr pOrigionOrder, cwOrderPtr pOrder);
-	void UpdatePosition(cwTradePtr pTrade, cwInstrumentDataPtr InsPtr);
+	void UpdatePosition(cwOrderPtr pOrigionOrder, cwOrderPtr pOrder, bool bNetPositionModel = false);
+	void UpdatePosition(cwTradePtr pTrade, cwInstrumentDataPtr InsPtr, bool bNetPositionModel = false);
 #endif // CW_POSITION_UPDATE_BY_ORDER
 
 

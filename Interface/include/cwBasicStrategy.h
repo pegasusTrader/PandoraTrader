@@ -42,15 +42,13 @@ public:
 	///Trade SPI
 	//成交回报
 	virtual void OnRtnTrade(cwTradePtr pTrade) = 0;
+	//报单回报
+	virtual void OnRtnOrder(cwOrderPtr pOrder) = 0;
+	//撤单成功
+	virtual void OnOrderCanceled(cwOrderPtr pOrder) = 0;
 
-	//错误应答
-	virtual void OnRspError(cwFtdcRspInfoField *pRspInfo) = 0;
-	//报单录入请求响应
-	virtual void OnRspOrderInsert(cwOrderPtr pOrder, cwFtdcRspInfoField *pRspInfo) = 0;
-	//报单操作请求响应
-	virtual void OnRspOrderCancel(cwOrderPtr pOrder, cwFtdcRspInfoField *pRspInfo) = 0;
 
-	void InitialStrategy(const char * pConfigFilePath);
+	virtual void InitialStrategy(const char * pConfigFilePath);
 	std::string			m_strConfigFileFullPath;
 
 	///Action  Function
@@ -103,6 +101,7 @@ public:
 	bool	  GetTradeTimeSpace(const char * szInstrumentID, const char * updatetime,
 		cwProductTradeTime::cwTradeTimeSpace& iTradeIndex, int& iOpen, int& iClose);
 	
+	int		  GetInstrumentCancelCount(std::string InstrumentID);
 	///如果重载该函数，请确保最后基类的函数能够被调用到！
 	virtual void	   SetStrategyReady();
 	///系统自用接口信息，勿动

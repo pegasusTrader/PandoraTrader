@@ -84,6 +84,7 @@ public:
 		return m_TradeMap;
 	}
 	bool		IsWaitOrder(cwOrderPtr pOrder);
+	bool		IsIOCTypeOrder(cwOrderPtr pOrder);
 	bool		GetPosition(std::string InstrumentID, cwFtdcDirectionType direction,
 		int& TotalPositon, int& TodayPosition);
 	bool		GetPositionAndActiveOrders(std::string InstrumentID, cwFtdcDirectionType direction,

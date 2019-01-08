@@ -425,7 +425,6 @@ protected:
 #pragma region CTPDefine2CWDefine
 #endif // _MSC_VER
 	cwFtdcDirectionType			GetCtp2CwDirectionType(TThostFtdcDirectionType direction, bool bPosition = false);
-	TThostFtdcDirectionType		GetCw2CtpDirectionType(cwFtdcDirectionType direction);
 	cwFtdcHedgeFlagType			GetCtp2CwHedgeFlagType(TThostFtdcHedgeFlagType hedge);
 	cwFtdcOffsetFlagType		GetCtp2CwOffsetFlagType(TThostFtdcOffsetFlagType Offset);
 	cwFtdcOrderPriceType		GetCtp2CwOrderPriceType(TThostFtdcOrderPriceTypeType orderpricetype);
@@ -440,6 +439,8 @@ protected:
 	cwFtdcTradeTypeType			GetCtp2CwTradeTypetype(TThostFtdcTradeTypeType tradetype);
 	cwFtdcTradeSourceType		GetCtp2CwTradeSourceType(TThostFtdcTradeSourceType tradesourcetype);
 	cwFtdcInstrumentStatusType	GetCtp2CwInstrumentStatusType(TThostFtdcInstrumentStatusType intrumentstatustype);
+
+	TThostFtdcDirectionType		GetCw2CtpDirectionType(cwFtdcDirectionType direction);
 
 	cwOrderPtr					GetcwOrderPtr(CThostFtdcOrderField * pOrder);
 	cwOrderPtr					GetcwOrderPtr(CThostFtdcInputOrderField * pInputOrder);
