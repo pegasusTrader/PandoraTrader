@@ -15,13 +15,10 @@ public:
 	//Trade SPI
 	///成交回报
 	virtual void OnRtnTrade(cwTradePtr pTrade);
-
-	///错误应答
-	virtual void OnRspError(cwFtdcRspInfoField *pRspInfo);
-	///报单录入请求响应
-	virtual void OnRspOrderInsert(cwOrderPtr pOrder, cwFtdcRspInfoField *pRspInfo);
-	///报单操作请求响应
-	virtual void OnRspOrderCancel(cwOrderPtr pOrder, cwFtdcRspInfoField *pRspInfo);
+	//报单回报
+	virtual void OnRtnOrder(cwOrderPtr pOrder);
+	//撤单成功
+	virtual void OnOrderCanceled(cwOrderPtr pOrder);
 
 	std::string m_strCurrentUpdateTime;
 };

@@ -21,8 +21,12 @@ void cwStrategyDemo::PriceUpdate(cwMarketDataPtr pPriceData)
 
 	//定义map，用于保存持仓信息 
 	std::map<std::string, cwPositionPtr> CurrentPosMap;
-	//获取当前持仓信息
-	GetPositions(CurrentPosMap);
+
+	std::map<std::string, cwOrderPtr>::iterator WaitOrderIt;
+	//定义map，用于保存挂单信息 
+	std::map<std::string, cwOrderPtr> WaitOrderList;
+	//获取挂单信  当前持仓信息
+	GetPositionsAndActiveOrders(CurrentPosMap, WaitOrderList);
 
 	//找出当前合约的持仓
 	std::map<std::string, cwPositionPtr>::iterator PosIt;
@@ -33,12 +37,6 @@ void cwStrategyDemo::PriceUpdate(cwMarketDataPtr pPriceData)
 		if (iPos > 0)
 		{
 			//有多仓
-			std::map<std::string, cwOrderPtr>::iterator WaitOrderIt;
-			//定义map，用于保存挂单信息 
-			std::map<std::string, cwOrderPtr> WaitOrderList;
-			//获取挂单信息
-			GetActiveOrders(WaitOrderList);
-
 			bool bHasWaitOrder = false;
 			//检查所有挂单
 			for (WaitOrderIt = WaitOrderList.begin();
@@ -188,15 +186,11 @@ void cwStrategyDemo::OnRtnTrade(cwTradePtr pTrade)
 {
 }
 
-void cwStrategyDemo::OnRspError(cwFtdcRspInfoField * pRspInfo)
+void cwStrategyDemo::OnRtnOrder(cwOrderPtr pOrder)
 {
 }
 
-void cwStrategyDemo::OnRspOrderInsert(cwOrderPtr pOrder, cwFtdcRspInfoField * pRspInfo)
-{
-}
-
-void cwStrategyDemo::OnRspOrderCancel(cwOrderPtr pOrder, cwFtdcRspInfoField * pRspInfo)
+void cwStrategyDemo::OnOrderCanceled(cwOrderPtr pOrder)
 {
 }
 
