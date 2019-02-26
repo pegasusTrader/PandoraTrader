@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //*******************************************************************************
 //---
-//---	Engineer: Wu Chang Sheng
+//---	author: Wu Chang Sheng
 //---
 //---	CreateTime:	2014/12/12
 //---
@@ -12,7 +12,7 @@
 
 #pragma once
 
-#ifdef WIN32
+#ifdef _MSC_VER
 
 #include <Windows.h>
 
@@ -31,4 +31,4 @@ public:
 
 	CRITICAL_SECTION m_csCriticalSection;
 };
-#endif // WIN32
+#endif // _MSC_VER

@@ -92,6 +92,7 @@ ORIGIN->MEMBER = 0;\
 		RESET_INVALIDLEVEL(pData, Bid, 5);
 
 		RESET_INVALIDDATA(pData, LastPrice);
+		RESET_INVALIDDATA(pData, Turnover);
 		RESET_INVALIDDATA(pData, PreSettlementPrice);
 		RESET_INVALIDDATA(pData, PreClosePrice);
 		RESET_INVALIDDATA(pData, PreOpenInterest);
@@ -124,5 +125,7 @@ ORIGIN->MEMBER = 0;\
 	cwBasicStrategy*	m_pBasicStrategy;
 
 	std::map<std::string, cwMarketDataPtr>	m_LastestMarketDataMap;
+
+	static	int			m_iMdApiCount;
 };
 

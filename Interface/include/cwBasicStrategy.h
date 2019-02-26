@@ -1,6 +1,19 @@
+//////////////////////////////////////////////////////////////////////////////////
+//*******************************************************************************
+//---
+//---	author: Wu Chang Sheng
+//---
+//---	CreateTime:	2016/12/12
+//---
+//---	VerifyTime:	2016/12/12
+//---
+//*******************************************************************************
+//////////////////////////////////////////////////////////////////////////////////
+
 #pragma once
 #include <vector>
 #include <set>
+#include <map>
 #include "cwProductTradeTime.h"
 #include "cwTradeCommonDefine.h"
 #include "cwStrategyLog.h"
@@ -58,11 +71,11 @@ public:
 	cwAccountPtr GetAccount();
 	//获取挂单列表，传入map用于返回信息，本地报单编号为Key
 	bool GetActiveOrders(std::map<std::string, cwOrderPtr>& ActiveOrders);		///key OrderRef
-	//获取挂单列表，传入map用于返回信息，本地报单编号为Key
+	//获取挂单列表，传入合约，map用于返回信息，本地报单编号为Key
 	bool GetActiveOrders(std::string InstrumentID, std::map<std::string, cwOrderPtr>& ActiveOrders);		///key OrderRef
-	//获取挂单列表，传入map用于返回信息，本地报单编号为Key
+	//获取多头挂单数量，传入合约
 	int GetActiveOrdersLong(std::string InstrumentID);		///key OrderRef
-	//获取挂单列表，传入map用于返回信息，本地报单编号为Key
+	//获取空头挂单数量，传入合约
 	int GetActiveOrdersShort(std::string InstrumentID);		///key OrderRef
 	//获取所有报单列表，传入map用于返回信息，交易所报单编号为Key
 	bool GetAllOrders(std::map<std::string, cwOrderPtr>& Orders);				///Key OrderSysID
@@ -100,7 +113,10 @@ public:
 	//参数：合约名，行情时间（102835->10:28:35),交易阶段， 距该交易时段开盘多少秒，距收盘多少秒
 	bool	  GetTradeTimeSpace(const char * szInstrumentID, const char * updatetime,
 		cwProductTradeTime::cwTradeTimeSpace& iTradeIndex, int& iOpen, int& iClose);
-	
+	//获取前一个交易时段到当前交易时段开盘时间间隔
+	int		  GetPreTimeSpaceInterval(const char * szInstrumentID, cwProductTradeTime::cwTradeTimeSpace iTradeIndex);
+
+
 	int		  GetInstrumentCancelCount(std::string InstrumentID);
 	///如果重载该函数，请确保最后基类的函数能够被调用到！
 	virtual void	   SetStrategyReady();
@@ -109,7 +125,6 @@ public:
 	void			   SetTradeSpi(cwTradeAPIType apiType, void *pSpi);
 private:
 	///系统自用接口信息，勿动
-	friend class		cwFtdTradeSpi;
 	void *				m_pTradeSpi;
 	cwTradeAPIType		m_TradeApiType;
 

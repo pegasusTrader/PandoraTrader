@@ -1,3 +1,15 @@
+//////////////////////////////////////////////////////////////////////////////////
+//*******************************************************************************
+//---
+//---	author: Wu Chang Sheng
+//---
+//---	CreateTime:	2016/12/12
+//---
+//---	VerifyTime:	2016/12/12
+//---
+//*******************************************************************************
+//////////////////////////////////////////////////////////////////////////////////
+
 #pragma once
 #include "cwTradeCommonDefine.h"
 #include "cwMutex.h"
@@ -6,8 +18,8 @@
 
 #define CWRISK
 #define TRADELOG
-#define TRADELOG
 #define UPDATE_ORDERRANKED
+#define	NoCancelTooMuchPerTick
 
 #ifdef UPDATE_ORDERRANKED
 #define NO_TRADEINFO_LOG
@@ -112,6 +124,13 @@ public:
 	std::map<std::string, cwInstrumentDataPtr> m_InstrumentMap;
 
 	const cwTradeAPIType		m_cwTradeAPIType;
+
+	bool						m_bHasPositionChanged;
+
+	bool						m_bHasOrdersChanged;
+	bool						m_bHasActiveOrdersChanged;
+
+	bool						m_bHasTradesChanged;
 protected:
 	TradeServerStatus			m_CurrentStatus;
 
@@ -140,13 +159,8 @@ protected:
 
 	std::map<std::string, cwFtdcInstrumentStatusType>		m_ExchangeStatus;
 
-	bool						m_bHasPositionChanged;
 
-	bool						m_bHasOrdersChanged;
-	bool						m_bHasActiveOrdersChanged;
-
-	bool						m_bHasTradesChanged;
-
+	void						Reset();
 
 	//UPDATE_ORDERRANKED
 #ifdef  UPDATE_ORDERRANKED
@@ -164,5 +178,7 @@ protected:
 #endif // CWRISK
 
 	bool						m_bDisConnectExit;
+
+	static	int					m_iTradeApiCount;
 };
 

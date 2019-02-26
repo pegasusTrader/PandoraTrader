@@ -4,7 +4,32 @@
 #include <string>
 
 #include "cwBasicMdSpi.h"
-#include "ThostFtdcMdApi.h"
+
+#ifdef _WIN64
+//define something for Windows (64-bit)
+#include "CTPTradeApi64\ThostFtdcMdApi.h"
+#elif _WIN32
+//define something for Windows (32-bit)
+#include "CTPTradeApi32\ThostFtdcMdApi.h"
+#elif __APPLE__
+#include "TargetConditionals.h"
+#if TARGET_OS_IPHONE && TARGET_IPHONE_SIMULATOR
+// define something for simulator   
+#elif TARGET_OS_IPHONE
+// define something for iphone  
+#else
+#define TARGET_OS_OSX 1
+// define something for OSX
+#endif
+#elif __linux__ or _linux
+// linux
+#include "CTPTradeApiLinux/ThostFtdcMdApi.h"
+#elif __unix // all unices not caught above
+// Unix
+#elif __posix
+// POSIX
+#endif
+
 
 #ifdef WIN32
 #pragma comment(lib, "thostmduserapi.lib")
@@ -94,5 +119,8 @@ private:
 	int							m_iRequestId;
 
 	std::map<std::string, bool>	m_SubscribeInstrumentMap;
+
+	int m_iMdAPIIndex;
+
 }; 
 

@@ -1,8 +1,20 @@
+//////////////////////////////////////////////////////////////////////////////////
+//*******************************************************************************
+//---
+//---	author: Wu Chang Sheng
+//---
+//---	CreateTime:	2019/12/12
+//---
+//*******************************************************************************
+//////////////////////////////////////////////////////////////////////////////////
+
 #pragma once
 #include <stdint.h>
 #include <memory>
 #include <string>
 #include <deque>
+
+#include "cwInterfaceDefine.h"
 
 #define INTERFACENAME	"DUNYU"
 //#define INTERFACENAME	"Pegasus"
@@ -12,14 +24,36 @@
 
 #ifndef CW_SLEEP
 #define CW_SLEEP
-#ifdef WIN32
+#ifdef _WIN64
+//define something for Windows (64-bit)
 #ifndef _WINDOWS_
 #include <Windows.h>
 #endif
 #define cwSleep(milliseconds) Sleep(milliseconds)
+#elif _WIN32
+//define something for Windows (32-bit)
+#ifndef _WINDOWS_
+#include <Windows.h>
+#endif
+#define cwSleep(milliseconds) Sleep(milliseconds)
+#elif __APPLE__
+#include "TargetConditionals.h"
+#if TARGET_OS_IPHONE && TARGET_IPHONE_SIMULATOR
+// define something for simulator   
+#elif TARGET_OS_IPHONE
+// define something for iphone  
 #else
+#define TARGET_OS_OSX 1
+// define something for OSX
+#endif
+#elif __linux__ or _linux
+// linux
 #include "unistd.h"
 #define cwSleep(milliseconds) usleep(milliseconds * 1000)
+#elif __unix // all unices not caught above
+// Unix
+#elif __posix
+// POSIX
 #endif
 #endif
 
@@ -32,23 +66,7 @@
 #define		InstrumentIDLength	32
 #define		MARKET_PRICE_DEPTH	5
 
-enum cwMDAPIType :int
-{
-	cwMD_CTP = 0,
-	cwMD_FCC,
-	cwMD_QDP,
-	cwMD_CNT
-};
-const char * g_cwGetMdApiName(cwMDAPIType apitype);
 
-enum cwTradeAPIType :int
-{
-	cwTrade_CTP = 0,
-	cwTrade_QDP,
-	cwTrade_Rohon,
-	cwTrade_CNT
-};
-const char * g_cwGetTradeApiName(cwTradeAPIType apitype);
 
 
 ///--------------------Market Data---------------------------------------------
@@ -214,9 +232,9 @@ typedef char cwFtdcCurrencyType;
 /////////////////////////////////////////////////////////////////////////
 ///cwFtdcDirectionType是一个买卖方向类型
 /////////////////////////////////////////////////////////////////////////
-///买
+//买
 #define CW_FTDC_D_Buy '0'
-///卖
+//卖
 #define CW_FTDC_D_Sell '1'
 
 typedef char cwFtdcDirectionType;
@@ -224,13 +242,13 @@ typedef char cwFtdcDirectionType;
 /////////////////////////////////////////////////////////////////////////
 ///cwFtdcHedgeFlagType是一个投机套保标志类型
 /////////////////////////////////////////////////////////////////////////
-///投机
+//投机
 #define CW_FTDC_HF_Speculation '1'
-///套利
+//套利
 #define CW_FTDC_HF_Arbitrage '2'
-///套保
+//套保
 #define CW_FTDC_HF_Hedge '3'
-///做市商
+//做市商
 #define CW_FTDC_HF_MarketMaker '5'
 
 typedef char cwFtdcHedgeFlagType;
@@ -288,17 +306,17 @@ typedef char cwFtdcOrderPriceType;
 /////////////////////////////////////////////////////////////////////////
 ///cwFtdcTimeConditionType是一个有效期类型类型
 /////////////////////////////////////////////////////////////////////////
-///立即完成，否则撤销
+//立即完成，否则撤销
 #define CW_FTDC_TC_IOC '1'
-///本节有效
+//本节有效
 #define CW_FTDC_TC_GFS '2'
-///当日有效
+//当日有效
 #define CW_FTDC_TC_GFD '3'
-///指定日期前有效
+//指定日期前有效
 #define CW_FTDC_TC_GTD '4'
-///撤销前有效
+//撤销前有效
 #define CW_FTDC_TC_GTC '5'
-///集合竞价有效
+//集合竞价有效
 #define CW_FTDC_TC_GFA '6'
 
 typedef char cwFtdcTimeConditionType;
@@ -408,25 +426,25 @@ typedef char cwFtdcOrderSourceType;
 /////////////////////////////////////////////////////////////////////////
 ///cwFtdcOrderStatusType是一个报单状态类型
 /////////////////////////////////////////////////////////////////////////
-///全部成交
+//全部成交
 #define CW_FTDC_OST_AllTraded '0'
-///部分成交还在队列中
+//部分成交还在队列中
 #define CW_FTDC_OST_PartTradedQueueing '1'
-///部分成交不在队列中
+//部分成交不在队列中
 #define CW_FTDC_OST_PartTradedNotQueueing '2'
-///未成交还在队列中
+//未成交还在队列中
 #define CW_FTDC_OST_NoTradeQueueing '3'
-///未成交不在队列中
+//未成交不在队列中
 #define CW_FTDC_OST_NoTradeNotQueueing '4'
-///撤单
+//撤单
 #define CW_FTDC_OST_Canceled '5'
-///订单已报入交易所未应答
+//订单已报入交易所未应答
 #define CW_FTDC_OST_AcceptedNoReply '6'
-///未知
+//未知
 #define CW_FTDC_OST_Unknown 'a'
-///尚未触发
+//尚未触发
 #define CW_FTDC_OST_NotTouched 'b'
-///已触发
+//已触发
 #define CW_FTDC_OST_Touched 'c'
 
 

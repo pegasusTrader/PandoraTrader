@@ -1,7 +1,7 @@
 #pragma once
 
 #if !(defined cwMUTEX && defined cwAUTOMUTEX)
-#ifdef WIN32
+#ifdef _MSC_VER
 #include "cwAutoCriticalSection.h"
 #define cwMUTEX cwCriticalSection
 #define cwAUTOMUTEX cwAutoCriticalSection
@@ -9,5 +9,5 @@
 #include "cwAutoMutex.h"
 #define cwMUTEX std::mutex
 #define cwAUTOMUTEX cwAutoMutex
-#endif // WIN32
+#endif // _MSC_VER
 #endif // !(defined cwMUTEX && defined cwAUTOMUTEX)

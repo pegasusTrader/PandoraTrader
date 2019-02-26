@@ -5,11 +5,11 @@
 #include <deque>
 #include <fstream>
 #include <sys/stat.h>
-#ifdef WIN32
+#ifdef _MSC_VER
 #include <direct.h>
 #else
 #include <unistd.h>
-#endif // WIN32
+#endif // _MSC_VER
 
 
 #include "cwMutex.h"

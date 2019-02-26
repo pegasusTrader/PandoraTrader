@@ -35,6 +35,8 @@ public:
 
 	bool GetTradeTimeSpace(std::string ProductId, std::string updatetime,
 		cwTradeTimeSpace& iTradeIndex, int& iOpen, int& iClose);
+	int	 GetPreTimeSpaceInterval(std::string ProductId, cwTradeTimeSpace iTradeIndex);
+
 private:
 	std::map<std::string, std::vector<TradeTimePtr>> m_ProductTradeTimeMap;
 	void InitialTradeTimeMap();

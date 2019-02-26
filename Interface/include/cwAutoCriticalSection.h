@@ -1,5 +1,5 @@
 #pragma once
-#ifdef WIN32
+#ifdef _MSC_VER
 #include "cwCriticalSection.h"
 
 class cwAutoCriticalSection
@@ -17,4 +17,4 @@ private:
 	CRITICAL_SECTION&	m_CriticalSection;
 	bool				m_bHasLocked;
 };
-#endif // WIN32
+#endif // _MSC_VER

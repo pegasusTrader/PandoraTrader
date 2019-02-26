@@ -6,11 +6,34 @@
 #include "cwBasicStrategy.h"
 #include "cwBasicTradeSpi.h"
 
-#include "ThostFtdcTraderApi.h"
+#ifdef _WIN64
+//define something for Windows (64-bit)
+#include "CTPTradeApi64\ThostFtdcTraderApi.h"
+#elif _WIN32
+//define something for Windows (32-bit)
+#include "CTPTradeApi32\ThostFtdcTraderApi.h"
+#elif __APPLE__
+#include "TargetConditionals.h"
+#if TARGET_OS_IPHONE && TARGET_IPHONE_SIMULATOR
+// define something for simulator   
+#elif TARGET_OS_IPHONE
+// define something for iphone  
+#else
+#define TARGET_OS_OSX 1
+// define something for OSX
+#endif
+#elif __linux__ or _linux
+// linux
+#include "CTPTradeApiLinux/ThostFtdcTraderApi.h"
+#elif __unix // all unices not caught above
+// Unix
+#elif __posix
+// POSIX
+#endif
 
-#ifdef WIN32
+#ifdef _MSC_VER
 #pragma comment(lib, "thosttraderapi.lib")
-#endif // WIN32
+#endif // _MSC_VER
 
 class cwFtdTradeSpi 
 	: public CThostFtdcTraderSpi
@@ -467,5 +490,10 @@ protected:
 
 	TThostFtdcSessionIDType		m_SessionID;
 	TThostFtdcFrontIDType		m_FrontID;
+#ifdef NoCancelTooMuchPerTick
+	uint32_t					m_iLatestUpdateTime;
+#endif // NoCancelTooMuchPerTick
+
+	int m_iTradeAPIIndex;
 };
 
