@@ -25,6 +25,8 @@ public:
 
 	void AddLog(int LogType, const char * pData, bool bForceWrite = false);
 	void AddLog(int LogType, const char * lpParam, ...);
+	void AddLog(int LogType, int bForceWrite, const char * lpParam, ...);
+
 	void AddLog(LogDataPtr LogPtr);
 };
 
@@ -43,5 +45,7 @@ private:
 	std::string     m_strFunctionMsg;
 
 	std::deque<LogDataPtr>		m_LogTempDeque;
+
+	bool			m_bHasForceWrite;
 };
 

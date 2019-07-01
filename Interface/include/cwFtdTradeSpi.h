@@ -5,6 +5,7 @@
 
 #include "cwBasicStrategy.h"
 #include "cwBasicTradeSpi.h"
+#include "cwBasicCout.h"
 
 #ifdef _WIN64
 //define something for Windows (64-bit)
@@ -31,9 +32,18 @@
 // POSIX
 #endif
 
+#define CW_USING_AUTHCODE
+
 #ifdef _MSC_VER
+#ifdef CW_USING_AUTHCODE
+#pragma comment(lib, "thosttraderapi_se.lib")
+#else
 #pragma comment(lib, "thosttraderapi.lib")
+#endif // CW_USING_AUTHCODE
+
 #endif // _MSC_VER
+
+
 
 class cwFtdTradeSpi 
 	: public CThostFtdcTraderSpi
@@ -44,7 +54,8 @@ public:
 
 	enum cwReqType
 	{
-		cwReqUserLogin = 0
+		cwReqAuthenticate = 0
+		, cwReqUserLogin
 		, cwReqQryInvestor
 		, cwReqSettlementInfoConfirm
 		, cwReqQryInstrument
@@ -53,6 +64,7 @@ public:
 		, cwRspQryInvestorPositionDetail
 		, cwReqQryOrder
 		, cwReqQryTrade
+		, cwReqSettlementInfo
 	};
 
 public:
@@ -413,8 +425,9 @@ public:
 
 	void WaitForFinish();
 
-	void SetUserLoginField(char * szBrokerID, char * szUserID, char * szPassword);
+	void SetUserLoginField(char * szBrokerID, char * szUserID, char * szPassword, char * szUserProductInfo = INTERFACENAME);
 	void SetUserLoginField(CThostFtdcReqUserLoginField& reqUserLoginField);
+	void SetAuthenticateInfo(char * szAppID, char * szAuthCode);
 
 	//User Trader Method
 	//行情更新
@@ -490,10 +503,20 @@ protected:
 
 	TThostFtdcSessionIDType		m_SessionID;
 	TThostFtdcFrontIDType		m_FrontID;
+
+#ifdef CW_USING_AUTHCODE
+	TThostFtdcAuthCodeType		m_AuthCode;	///认证码
+	TThostFtdcAppIDType			m_AppID;	///App代码
+#endif // CW_USING_AUTHCODE
+
 #ifdef NoCancelTooMuchPerTick
 	uint32_t					m_iLatestUpdateTime;
 #endif // NoCancelTooMuchPerTick
 
 	int m_iTradeAPIIndex;
+
+#ifdef CWCOUTINFO
+	cwBasicCout					m_cwShow;
+#endif
 };
 

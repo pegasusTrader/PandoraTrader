@@ -9,6 +9,7 @@
 #include "cwFtdTradeSpi.h"
 #include "cwStrategyDemo.h"
 #include "tinyxml.h"
+#include "cwBasicCout.h"
 
 #ifdef _MSC_VER
 #pragma comment(lib, "cwCTPDLL.lib")
@@ -30,18 +31,22 @@ HANDLE  m_hAppMutex(NULL);
 //price Server
 cwFtdMdSpi				m_mdCollector;
 cwFtdTradeSpi			m_TradeChannel;
-cwStrategyDemo			m_cwTBSignalStategy;
+cwStrategyDemo			m_cwStategy;
 
+cwBasicCout				m_cwShow;
 //XML Config Parameter
-char		 m_szMdFront[64];
-TThostFtdcBrokerIDType	m_szMdBrokerID;
-TThostFtdcUserIDType	m_szMdUserID;
-TThostFtdcPasswordType	m_szMdPassWord;
+char					m_szMdFront[64];
+cwFtdcBrokerIDType		m_szMdBrokerID;
+cwFtdcUserIDType		m_szMdUserID;
+cwFtdcPasswordType		m_szMdPassWord;
 
-char		 m_szTdFront[64];
-TThostFtdcBrokerIDType	m_szTdBrokerID;
-TThostFtdcUserIDType	m_szTdUserID;
-TThostFtdcPasswordType	m_szTdPassWord;
+char					m_szTdFront[64];
+cwFtdcBrokerIDType		m_szTdBrokerID;
+cwFtdcUserIDType		m_szTdUserID;
+cwFtdcPasswordType		m_szTdPassWord;
+cwFtdcProductInfoType	m_szTdProductInfo;
+cwFtdcAppIDType			m_szTdAppID;
+cwFtdcPasswordType		m_szTdAuthCode;
 
 std::vector<std::string> m_SubscribeInstrument;
 
@@ -91,11 +96,10 @@ bool ReadXmlConfigFile()
 	strFullPath = strFullPath.substr(0, strFullPath.find_last_of("/\\"));
 
 #ifdef WIN32
-	strFullPath.append("\\PegasusTraderConfig.xml");
+	strFullPath.append("\\PandoraTraderConfig.xml");
 #else
-	strFullPath.append("/PegasusTraderConfig.xml");
+	strFullPath.append("/PandoraTraderConfig.xml");
 #endif // WIN32
-
 
 	std::cout << "Get Account Config File: " << strFullPath.c_str() << std::endl;
 
@@ -134,6 +138,9 @@ bool ReadXmlConfigFile()
 				GetCharElement(Td, BrokerID);
 				GetCharElement(Td, UserID);
 				GetCharElement(Td, PassWord);
+				GetCharElement(Td, ProductInfo);
+				GetCharElement(Td, AppID);
+				GetCharElement(Td, AuthCode);
 			}
 		}
 
@@ -169,6 +176,21 @@ bool ReadXmlConfigFile()
 	return true;
 }
 
+void ResetParameter()
+{
+	memset(m_szMdFront, 0, sizeof(m_szMdFront));
+	memset(m_szMdBrokerID, 0, sizeof(m_szMdBrokerID));
+	memset(m_szMdUserID, 0, sizeof(m_szMdUserID));
+	memset(m_szMdPassWord, 0, sizeof(m_szMdPassWord));
+
+	memset(m_szTdFront, 0, sizeof(m_szTdFront));
+	memset(m_szTdBrokerID, 0, sizeof(m_szTdBrokerID));
+	memset(m_szTdUserID, 0, sizeof(m_szTdUserID));
+	memset(m_szTdPassWord, 0, sizeof(m_szTdPassWord));
+	memset(m_szTdProductInfo, 0, sizeof(m_szTdProductInfo));
+	memset(m_szTdAppID, 0, sizeof(m_szTdAppID));
+	memset(m_szTdAuthCode, 0, sizeof(m_szTdAuthCode));
+}
 
 unsigned int PriceServerThread()
 {
@@ -183,7 +205,9 @@ unsigned int PriceServerThread()
 
 unsigned int TradeServerThread()
 {
-	m_TradeChannel.SetUserLoginField(m_szTdBrokerID, m_szTdUserID, m_szTdPassWord);
+	m_TradeChannel.SetUserLoginField(m_szTdBrokerID, m_szTdUserID, m_szTdPassWord, m_szTdProductInfo);
+	m_TradeChannel.SetAuthenticateInfo(m_szTdAppID, m_szTdAuthCode);
+
 	m_TradeChannel.Connect(m_szTdFront);
 	m_TradeChannel.WaitForFinish();
 	return 0;
@@ -273,18 +297,18 @@ int main()
 
 	if (m_strStrategyConfigFile.size() == 0)
 	{
-		m_cwTBSignalStategy.InitialStrategy(NULL);
+		m_cwStategy.InitialStrategy(NULL);
 	}
 	else
 	{
-		m_cwTBSignalStategy.InitialStrategy(m_strStrategyConfigFile.c_str());
+		m_cwStategy.InitialStrategy(m_strStrategyConfigFile.c_str());
 	}
 
 	//设置mutex 防止一个程序开多个
 	std::string strAppMutexName;
 	strAppMutexName = m_szTdUserID;
 	strAppMutexName.append("_");
-	strAppMutexName += m_cwTBSignalStategy.GetStrategyName().c_str();
+	strAppMutexName += m_cwStategy.GetStrategyName().c_str();
 
 #ifdef WIN32
 	int  unicodeLen = ::MultiByteToWideChar(CP_ACP,	0, strAppMutexName.c_str(),	-1,	NULL, 0);
@@ -316,12 +340,12 @@ int main()
 	delete [] TAppMutexName;
 #endif
 
-	std::string strStrategyName = m_cwTBSignalStategy.GetStrategyName();
+	std::string strStrategyName = m_cwStategy.GetStrategyName();
 
-	m_TradeChannel.RegisterBasicStrategy(&m_cwTBSignalStategy);
+	m_TradeChannel.RegisterBasicStrategy(&m_cwStategy);
 
 	m_mdCollector.RegisterTradeSPI(&m_TradeChannel);
-	m_mdCollector.RegisterStrategy(&m_cwTBSignalStategy);
+	m_mdCollector.RegisterStrategy(&m_cwStategy);
 
 	std::thread m_PriceServerThread = std::thread(PriceServerThread);
 
@@ -341,7 +365,7 @@ int main()
 			cwAccountPtr pAccount = m_TradeChannel.GetAccount();
 			if (pAccount.get() != NULL)
 			{
-				std::cout << m_cwTBSignalStategy.m_strCurrentUpdateTime.c_str()
+				std::cout << m_cwStategy.m_strCurrentUpdateTime.c_str()
 					<< " Total：" << pAccount->Balance 
 					<< " Available：" << pAccount->Available
 					<< " PL："	<< pAccount->CloseProfit + pAccount->PositionProfit - pAccount->Commission 

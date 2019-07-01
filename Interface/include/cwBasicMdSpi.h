@@ -7,8 +7,12 @@
 #include "cwBasicStrategy.h"
 #include "cwBasicTradeSpi.h"
 
-#define TIME_LICENCE_LIMIT
-#define TIME_LIMIT 20190601
+//#define TIME_LICENCE_LIMIT
+#define TIME_LIMIT 20190931
+
+#ifdef CWCOUTINFO
+#include "cwBasicCout.h"
+#endif
 
 class cwBasicMdSpi
 {
@@ -25,11 +29,31 @@ public:
 
 	virtual void SubscribeMarketData(std::vector<std::string>& SubscribeInstrument) = 0;
 	virtual void UnSubscribeMarketData(std::vector<std::string>& SubscribeInstrument) = 0;
-
+	//部分行情API支持订阅所有，故不保证该接口有效，请关注相应的子类的函数，有该函数再用
+	virtual void SubscribeMarketDataAll(bool bAll);
 
 	inline PriceServerStatus GetCurrentStatus()
 	{
 		return m_CurrentStatus;
+	}
+
+	inline const char * GetCurrentStatusString()
+	{
+		switch (m_CurrentStatus)
+		{
+		case cwBasicMdSpi::Status_UnConnected:
+			return " UnConnect ";
+			break;
+		case cwBasicMdSpi::Status_Connected:
+			return " Connecting ";
+			break;
+		case cwBasicMdSpi::Status_Logined:
+			return " Working ";
+			break;
+		default:
+			break;
+		}
+		return " UnConnect ";
 	}
 
 	inline cwMarketDataPtr	GetLastestMarketData(std::string InstrumentID)
@@ -56,6 +80,7 @@ public:
 	const cwMDAPIType					m_cwMdAPIType;
 	std::deque <cwMarketDataPtr>		m_DepthMarketDataDeque;
 
+	volatile bool						m_MdDequeDone;
 protected:
 	PriceServerStatus	m_CurrentStatus;
 
@@ -68,11 +93,14 @@ protected:
 ORIGIN->SIDE##Price##LEVEL = 0;\
 }
 
+#ifndef RESET_INVALIDDATA
 #define RESET_INVALIDDATA(ORIGIN, MEMBER) if (DBL_MAX - ORIGIN->MEMBER\
 <= std::numeric_limits<double>::epsilon())\
 {\
 ORIGIN->MEMBER = 0;\
 }
+#endif
+
 #ifdef _MSC_VER
 #pragma endregion
 #endif
@@ -127,5 +155,9 @@ ORIGIN->MEMBER = 0;\
 	std::map<std::string, cwMarketDataPtr>	m_LastestMarketDataMap;
 
 	static	int			m_iMdApiCount;
+
+#ifdef CWCOUTINFO
+	cwBasicCout			m_cwShow;
+#endif
 };
 

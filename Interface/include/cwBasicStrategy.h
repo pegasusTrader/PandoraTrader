@@ -18,26 +18,29 @@
 #include "cwTradeCommonDefine.h"
 #include "cwStrategyLog.h"
 
-enum cwOpenCloseMode:int
-{
-	CloseTodayThenYd = 0,//先平今，再平昨,可开，用于平今免的品种
-	OpenOnly = 1,//只开
-	CloseOnly = 2,//只平
-	CloseYdThenOpen = 3,//先平昨，后开仓，不平今，用于平今很贵的品种，弊病是要等全部平完再开仓
-	CloseYdOrOpen = 4,//优先平昨，可开仓，开仓后不再平仓，用于平今很贵的品种，又不耽误开仓，弊病是有一点昨仓可能没平
-	CloseYdThenToday = 5//先平昨，再平今,可开，用于平昨便宜，平今和开仓差不多的品种
-};
-
-enum cwInsertOrderType:int
-{
-	cwInsertLimitOrder = 0,			//限价单
-	cwInsertFAKOrder = 1,			//FAK 
-	cwInsertFOKOrder = 2,			//FOK
-	cwInsertMarketOrder				//市价单（暂不支持）
-};
-
 class cwBasicStrategy
 {
+public:
+	enum cwOpenCloseMode :int
+	{
+		CloseTodayThenYd = 0,//先平今，再平昨,可开，用于平今免的品种
+		OpenOnly = 1,//只开
+		CloseOnly = 2,//只平
+		CloseYdThenOpen = 3,//先平昨，后开仓，不平今，用于平今很贵的品种，弊病是要等全部平完再开仓
+		CloseYdOrOpen = 4,//优先平昨，可开仓，开仓后不再平仓，用于平今很贵的品种，又不耽误开仓，弊病是有一点昨仓可能没平
+		CloseYdThenToday = 5//先平昨，再平今,可开，用于平昨便宜，平今和开仓差不多的品种
+	};
+	const char * GetOpenCloseModeString(cwOpenCloseMode openclose);
+
+	enum cwInsertOrderType :int
+	{
+		cwInsertLimitOrder = 0,			//限价单
+		cwInsertFAKOrder = 1,			//FAK 
+		cwInsertFOKOrder = 2,			//FOK
+		cwInsertMarketOrder				//市价单（暂不支持）
+	};
+
+	const char * GetInsertOrderTypeString(cwInsertOrderType ordertype);
 public:
 	cwBasicStrategy();
 	~cwBasicStrategy();
@@ -56,7 +59,7 @@ public:
 	//成交回报
 	virtual void OnRtnTrade(cwTradePtr pTrade) = 0;
 	//报单回报
-	virtual void OnRtnOrder(cwOrderPtr pOrder) = 0;
+	virtual void OnRtnOrder(cwOrderPtr pOrder, cwOrderPtr pOriginOrder = cwOrderPtr()) = 0;
 	//撤单成功
 	virtual void OnOrderCanceled(cwOrderPtr pOrder) = 0;
 

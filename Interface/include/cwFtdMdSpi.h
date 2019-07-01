@@ -30,9 +30,15 @@
 // POSIX
 #endif
 
+#define CW_USING_AUTHCODE
+
 
 #ifdef WIN32
+#ifdef CW_USING_AUTHCODE
+#pragma comment(lib, "thostmduserapi_se.lib")
+#else
 #pragma comment(lib, "thostmduserapi.lib")
+#endif
 #endif
 
 class cwFtdMdSpi
@@ -96,7 +102,7 @@ public:
 
 	virtual void RegisterStrategy(cwBasicStrategy * pBasicStrategy);
 
-	void Connect(char * pszFrontAddress);
+	void Connect(char * pszFrontAddress, char * pszLocalAddr = NULL);
 	void DisConnect();
 
 	void WaitForFinish();

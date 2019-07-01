@@ -16,7 +16,8 @@
 
 #include "cwInterfaceDefine.h"
 
-#define INTERFACENAME	"DUNYU"
+#define INTERFACENAME	" "
+//#define INTERFACENAME	"DUNYU"
 //#define INTERFACENAME	"Pegasus"
 #ifndef INTERFACENAME
 #define INTERFACENAME ""
@@ -138,6 +139,8 @@ typedef uint32_t	cwFtdcFrontIDType;
 typedef uint32_t	cwFtdcSessionIDType;
 ///cwFtdcProductInfoType是一个产品信息类型
 typedef char		cwFtdcProductInfoType[11];
+///cwFtdcAppIDType是一个登录前认证appid类型
+typedef char		cwFtdcAppIDType[33];
 ///cwFtdcErrorMsgType是一个错误信息类型
 typedef char		cwFtdcErrorMsgType[87];
 ///cwFtdcCurrencyIDType是一个币种代码类型
@@ -571,6 +574,9 @@ struct OneLevelQuote
 	cwFtdcVolumeType	Volume;							// 数量
 };
 
+//是否使用内存池
+#define USING_CW_MEMORY_POOL
+
 ///深度行情
 struct cwFtdcDepthMarketDataField
 {
@@ -667,6 +673,12 @@ struct cwFtdcDepthMarketDataField
 	cwFtdcPriceType		CurrDelta;
 	///当日均价
 	//cwFtdcPriceType		AveragePrice;
+
+#ifdef USING_CW_MEMORY_POOL
+
+
+#endif // USING_CW_MEMORY_POOL
+
 };
 typedef std::shared_ptr<cwFtdcDepthMarketDataField> cwMarketDataPtr;
 
@@ -1062,3 +1074,4 @@ struct cwFtdcRspInfoField
 	///错误信息
 	cwFtdcErrorMsgType	ErrorMsg;
 };
+typedef std::shared_ptr<cwFtdcRspInfoField> cwRspInfoPtr;

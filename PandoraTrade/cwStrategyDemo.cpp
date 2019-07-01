@@ -186,7 +186,7 @@ void cwStrategyDemo::OnRtnTrade(cwTradePtr pTrade)
 {
 }
 
-void cwStrategyDemo::OnRtnOrder(cwOrderPtr pOrder)
+void cwStrategyDemo::OnRtnOrder(cwOrderPtr pOrder, cwOrderPtr pOriginOrder)
 {
 }
 

@@ -16,7 +16,7 @@ public:
 	///成交回报
 	virtual void OnRtnTrade(cwTradePtr pTrade);
 	//报单回报
-	virtual void OnRtnOrder(cwOrderPtr pOrder);
+	virtual void OnRtnOrder(cwOrderPtr pOrder, cwOrderPtr pOriginOrder = cwOrderPtr());
 	//撤单成功
 	virtual void OnOrderCanceled(cwOrderPtr pOrder);
 

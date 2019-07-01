@@ -40,7 +40,7 @@ public:
 	~cwLog();
 	
 	void AddTitle(const char * pData);
-	void AddLog(LogDataPtr LogPtr);
+	void AddLog(LogDataPtr LogPtr, bool bForceWrite = false);
 	void AddLog(int LogType, const char * pData, const char * szLogType = NULL, bool bForceWrite = false);
 	void WriteLog(bool bForceWrite = false);
 

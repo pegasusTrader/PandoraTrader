@@ -53,6 +53,31 @@ public:
 		return m_CurrentStatus;
 	}
 
+	inline const char * GetCurrentStatusString()
+	{
+		switch (m_CurrentStatus)
+		{
+		case cwBasicTradeSpi::Status_UnConnected:
+			return " UnConnected ";
+			break;
+		case cwBasicTradeSpi::Status_Connected:
+			return " Connecting ";
+			break;
+		case cwBasicTradeSpi::Status_Logined:
+			return " Logined ";
+			break;
+		case cwBasicTradeSpi::Status_Initial:
+			return " Initialing ";
+			break;
+		case cwBasicTradeSpi::Status_Normal:
+			return " Working ";
+			break;
+		default:
+			break;
+		}
+		return " UnConnected ";
+	}
+
 	virtual void RegisterBasicStrategy(cwBasicStrategy * pBasicStrategy, void * pSpi = NULL) = 0;
 
 	inline cwAccountPtr GetAccount()
@@ -133,6 +158,7 @@ public:
 	bool						m_bHasTradesChanged;
 protected:
 	TradeServerStatus			m_CurrentStatus;
+	cwFtdcTimeType				m_cwTradeLoginTime;
 
 	cwBasicStrategy	*			m_pBasicStrategy;
 
