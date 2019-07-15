@@ -23,7 +23,7 @@ public:
 	cwStrategyLog(const char * pFileName, const char * pFolder);
 	~cwStrategyLog();
 
-	void AddLog(int LogType, const char * pData, bool bForceWrite = false);
+	void AddLog(const char * pData, int LogType,  bool bForceWrite = false);
 	void AddLog(int LogType, const char * lpParam, ...);
 	void AddLog(int LogType, int bForceWrite, const char * lpParam, ...);
 
@@ -36,8 +36,8 @@ public:
 	cwEasyStrategyLog(cwStrategyLog& Log, const char * szFunctionName = NULL, const char * szFunctionMsg = NULL);
 	~cwEasyStrategyLog();
 
-	void AddLog(int LogType, const char * pData, bool bForceWrite = false);
 	void AddLog(int LogType, const char * lpParam, ...);
+	void AddLog(const char * pData, int LogType, bool bForceWrite = false);
 
 private:
 	cwStrategyLog&	m_SLog;
