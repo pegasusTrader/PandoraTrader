@@ -2,7 +2,7 @@
 <Config Generated_at="2016-12-26 23:21:47">
   <!-- Configs for PegasusTrader -->
   <User type="2">
-    <SimulatorServer Front="F:\HisData\HisMarketDataIndex.xml" Interval="0" Instruement="F:\HisData\Instrument.xml"/>
+    <SimulatorServer Front="F:\HisData\HisMarketDataIndex.xml" Interval="0" Instrument="F:\HisData\Instrument.xml"/>
   </User>
   <Subscription>
 <!--
