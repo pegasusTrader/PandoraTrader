@@ -1,7 +1,7 @@
 # PandoraTrader
 ##### A Trade Platform
 
-这是一个国内期货交易平台，采用 C++ 对 CTP 进行一层封装，提供友好的接口给策略交易模型。只需要利用策略模型进行策略开发即可，不用关心底层如何利用CTP进行下单撤单等控制。同时，我们也提供了回测平台，方便您对策略的测试。
+这是一个国内期货交易平台，采用 C++ 对 CTP 进行一层封装，提供友好的接口给策略交易模型。您只需要利用策略模型进行策略开发即可，不用关心底层如何利用CTP进行下单撤单等控制。同时，我们也提供了回测平台，方便您对策略的测试。
 
 该平台对交易策略进行抽象，提供统一的中间层接口给策略，策略需要的信息都通过平台提供的中间层进行访问，不关注交易接口的细节，从而实现策略开发和交易接口开发的分离。
 方便交易策略在多种交易接口进行移植。该平台亦提供了 Linux 版本，敬请期待！
@@ -13,7 +13,7 @@
 
        https://visualstudio.microsoft.com/zh-hans/vs/
 
-2. 通过 PandoraTrader.sln 打开项目组，其中包含了交易平台 PandoraTrader 和回测平台 PandoraSimulator。您可直接利用交易平台进行模拟盘交易，也可利用我们的回测平台进行测试。
+2. 通过 PandoraTrader.sln 打开项目组，其中包含了交易平台 PandoraTrader 和回测平台 PandoraSimulator。您可直接利用交易平台对策略进行模拟盘交易，也可利用我们的回测平台进行测试。
 
 
 3. 交易平台中，PandoraDemoStrategyTrader.cpp 是 main 函数的入口，作为一个如何实例化该平台代码的 demo。而 cwStrategyDemo 是一个策略demo，里面一些示例如何访问平台中间层提供的信息。如果您想利用此平台来开发策略，您只需要和策略demo 一样，以 cwBasicStrategy 为基类派生一个您的策略类。实现 PriceUpdate，OnRtnTrade，OnRtnOrder，OnOrderCanceled 这几个函数即可在相应的回调中做相应的处理。
