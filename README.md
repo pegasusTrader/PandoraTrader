@@ -34,14 +34,14 @@
 
        cwBasicCout.h：输出类，可将所需变量输出显示，基础用法与printf类似。
 
-5. 利用模拟盘测试您的策略时，您需要对 PandoraTraderConfig.xml 进行以下配置：
+5. 如利用模拟盘测试您的策略，您需要对 PandoraTraderConfig.xml 进行以下配置：
        
         将模拟盘交易的账号信息（系统后置、BrokerID、UserID及密码等）填写至<MarketDataServer Front="tcp://180.168.146.187:10011" BrokerID="9999" UserID="" PassWord=""/>和<TradeServer Front="tcp://180.168.146.187:10000" BrokerID="9999" UserID="" PassWord="" ProductInfo="Pandora" AppID="Pandora" AuthCode="Pandora"/>，并在<Instrument ID="j1909"/>中输入所需测试的期货名称即可。
 
 
     若您暂不知晓该信息，可联系模拟盘平台客服获取。
 
-6. 利用回测平台测试您的策略时，您需要对以下文件进行配置：
+6. 如利用回测平台测试您的策略，您需要对以下文件进行配置：
 
        HisMarketDataIndex.xml：用于读取历史交易数据。将交易数据文件的全路径放置于<MDFile DateIndexId="201905160" FilePath="\\Mac\Home\Desktop\PandoraTrader-master\MarketData_20190529_084005.csv" />，DateIndexId为9位数字，最后一位0表示白盘，2则表示夜盘。如需同时回测多天数据，按照此格式在后面继续补充即可；
 
