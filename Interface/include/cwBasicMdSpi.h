@@ -1,13 +1,14 @@
 #pragma once
 #include <deque>
 #include <thread>
+#include <condition_variable>
 #include <float.h>
 
 #include "cwMutex.h"
 #include "cwBasicStrategy.h"
 #include "cwBasicTradeSpi.h"
 
-//#define TIME_LICENCE_LIMIT
+#define TIME_LICENCE_LIMIT
 #define TIME_LIMIT 20191231
 
 #ifdef CWCOUTINFO
@@ -142,8 +143,10 @@ ORIGIN->MEMBER = 0;\
 		//}
 
 	}
+	inline void			NotifyMDUpdateThread() { m_MDUpdateMutexCv.notify_one(); };
 
 	cwMUTEX				m_MarketDataUpdateMutex;
+	std::condition_variable	m_MDUpdateMutexCv;
 
 	std::thread			m_MarketDataUpdateThread;
 	volatile bool		m_bMarketDataUpdateThreadRun;

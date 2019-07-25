@@ -40,6 +40,7 @@ public:
 	void		UnSubScribePrice(std::vector<std::string>& UnSubscribeInstrument);
 
 	bool		GetIsSubscribedInstrument(char * Ins);
+	size_t		GetSubscribedInstrumentCount() { return m_SubscribeInstrumentMap.size(); };
 	///Trade
 
 	///系统自用接口信息，勿动

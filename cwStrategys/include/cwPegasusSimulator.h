@@ -46,8 +46,11 @@ private:
 	std::string m_strFrontAddr;
 	std::string m_strInstrumentFile;
 
-	std::thread			m_MarketDataUpdateThread;
+	std::thread			m_SimulatorProcessorThread;
 	volatile bool		m_bMarketDataUpdateThreadRun;
+	void				SimulatorProcessor();
+
+	std::thread			m_MarketDataUpdateThread;
 	void				CsvMarketDataUpdate();
 	void				BinMarketDataUpdate();
 
@@ -93,5 +96,9 @@ private:
 	cwBasicCout									m_cwShow;
 
 	cwMUTEX										m_ProcessMutex;
+
+	std::deque<cwMarketDataPtr>					m_MDCasheDeque;
+	cwMUTEX										m_MDCasheMutex;
+	volatile bool								m_bMDCasheMutexReady;
 };
 

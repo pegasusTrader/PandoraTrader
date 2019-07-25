@@ -63,6 +63,12 @@ public:
 	//撤单成功
 	virtual void OnOrderCanceled(cwOrderPtr pOrder) = 0;
 
+	///Special For Simulation 
+	///These functions will NOT be called in normal mode
+	//回测部分结束（夜盘结束和日盘结束将被调用）
+	virtual void OnSimulationPartEnd() {};
+	//整个回测结束将被调用
+	virtual void OnSimulationFinished() {};
 
 	virtual void InitialStrategy(const char * pConfigFilePath);
 	std::string			m_strConfigFileFullPath;
@@ -126,8 +132,11 @@ public:
 	///系统自用接口信息，勿动
 	void			   SetMdSpi(cwMDAPIType apiType, void * pSpi);
 	void			   SetTradeSpi(cwTradeAPIType apiType, void *pSpi);
+	void			   SetIsSimulation(bool IsSimulation = false) { m_bIsSimulation = IsSimulation; };
 private:
 	///系统自用接口信息，勿动
+	bool				m_bIsSimulation;
+
 	void *				m_pTradeSpi;
 	cwTradeAPIType		m_TradeApiType;
 

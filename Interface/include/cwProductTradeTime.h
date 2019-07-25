@@ -21,6 +21,7 @@ public:
 		, AMPartTwo
 		, PMPartOne
 		, NightPartOne
+		, TradeTimeSpaceCnt
 	};
 
 	typedef struct tagProductTradeTime
@@ -36,6 +37,7 @@ public:
 	bool GetTradeTimeSpace(std::string ProductId, std::string updatetime,
 		cwTradeTimeSpace& iTradeIndex, int& iOpen, int& iClose);
 	int	 GetPreTimeSpaceInterval(std::string ProductId, cwTradeTimeSpace iTradeIndex);
+	int	 GetTimeSpaceInterval(std::string productId, std::string starttime, std::string endTime);
 
 private:
 	std::map<std::string, std::vector<TradeTimePtr>> m_ProductTradeTimeMap;
