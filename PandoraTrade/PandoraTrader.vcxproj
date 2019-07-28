@@ -96,8 +96,14 @@
       <AdditionalLibraryDirectories>../Interface/CTPTradeApi32/;../Interface/lib/Debug/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>copy "..\Interface\CTPTradeApi32\*.dll" "$(SolutionDir)$(Platform)\$(Configuration)\";</Command>
+      <Command>echo 请在PandoraTraderConfig.xml配置账户等信息！
+if not exist $(SolutionDir)$(Configuration)\PandoraTraderConfig.xml (copy "PandoraTraderConfig.xml" "$(SolutionDir)$(Configuration)\";)
+copy "..\Interface\CTPTradeApi32\*.dll" "$(SolutionDir)$(Configuration)\";</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -114,8 +120,10 @@
       <AdditionalLibraryDirectories>../Interface/CTPTradeApi64/;../Interface/lib/X64/Debug/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>copy "..\Interface\CTPTradeApi64\*.dll" "$(SolutionDir)$(Platform)\$(Configuration)\";
-copy "PandoraTraderConfig.xml" "$(SolutionDir)$(Platform)\$(Configuration)\"</Command>
+      <Command>echo 请在PandoraTraderConfig.xml配置账户等信息！
+if not exist $(SolutionDir)$(Platform)\$(Configuration)\PandoraTraderConfig.xml (copy "PandoraTraderConfig.xml" "$(SolutionDir)$(Platform)\$(Configuration)\";)
+copy "..\Interface\CTPTradeApi64\*.dll" "$(SolutionDir)$(Platform)\$(Configuration)\";
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -137,7 +145,9 @@ copy "PandoraTraderConfig.xml" "$(SolutionDir)$(Platform)\$(Configuration)\"</Co
       <AdditionalLibraryDirectories>../Interface/CTPTradeApi32/;../Interface/lib/Release/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>copy "..\Interface\CTPTradeApi32\*.dll" "$(SolutionDir)$(Platform)\$(Configuration)\";</Command>
+      <Command>echo 请在PandoraTraderConfig.xml配置账户等信息！
+if not exist $(SolutionDir)$(Configuration)\PandoraTraderConfig.xml (copy "PandoraTraderConfig.xml" "$(SolutionDir)$(Configuration)\";)
+copy "..\Interface\CTPTradeApi32\*.dll" "$(SolutionDir)$(Configuration)\";</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -159,7 +169,9 @@ copy "PandoraTraderConfig.xml" "$(SolutionDir)$(Platform)\$(Configuration)\"</Co
       <AdditionalLibraryDirectories>../Interface/CTPTradeApi64/;../Interface/lib/X64/Release/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>copy "..\Interface\CTPTradeApi64\*.dll" "$(SolutionDir)$(Platform)\$(Configuration)\";</Command>
+      <Command>echo 请在PandoraTraderConfig.xml配置账户等信息！
+if not exist $(SolutionDir)$(Platform)\$(Configuration)\PandoraTraderConfig.xml (copy "PandoraTraderConfig.xml" "$(SolutionDir)$(Platform)\$(Configuration)\";)
+copy "..\Interface\CTPTradeApi64\*.dll" "$(SolutionDir)$(Platform)\$(Configuration)\";</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -181,7 +193,12 @@ copy "PandoraTraderConfig.xml" "$(SolutionDir)$(Platform)\$(Configuration)\"</Co
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="PandoraTraderConfig.xml" />
+    <Xml Include="PandoraTraderConfig.xml">
+      <SubType>Designer</SubType>
+    </Xml>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\README.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
