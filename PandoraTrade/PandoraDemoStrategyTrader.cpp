@@ -1,19 +1,28 @@
 // ArbitrageStrategyTrader.cpp : Defines the entry point for the console application.
 //
 
+//#define EMPTYSTRATEGY
+
 #include <thread>
 #include <iostream>
 
 #include <string.h>
 #include "cwFtdMdSpi.h"
 #include "cwFtdTradeSpi.h"
+#ifdef EMPTYSTRATEGY
+#include "cwEmptyStrategy.h"
+#else
 #include "cwStrategyDemo.h"
+#endif
 #include "tinyxml.h"
 #include "cwBasicCout.h"
 
 #ifdef _MSC_VER
 #pragma comment(lib, "cwCTPDLL.lib")
 #pragma comment(lib, "tinyxml.lib")
+#ifdef EMPTYSTRATEGY
+#pragma comment(lib, "PandoraStrategy.lib")
+#endif
 #endif // WIN32
 
 //#define WCS_DISCLAIMER
@@ -31,7 +40,11 @@ HANDLE  m_hAppMutex(NULL);
 //price Server
 cwFtdMdSpi				m_mdCollector;
 cwFtdTradeSpi			m_TradeChannel;
+#ifdef EMPTYSTRATEGY
+cwEmptyStrategy			m_cwStategy;
+#else
 cwStrategyDemo			m_cwStategy;
+#endif
 
 cwBasicCout				m_cwShow;
 //XML Config Parameter
