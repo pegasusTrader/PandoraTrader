@@ -85,6 +85,10 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>../Interface/lib/X64/Release/;../cwStrategys/lib/X64/Release/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>echo 请在PegasusSimulatorConfig.xml配置账户等信息！
+if not exist $(SolutionDir)$(Configuration)\PegasusSimulatorConfig.xml (copy "PegasusSimulatorConfig.xml" "$(SolutionDir)$(Configuration)\";)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -97,6 +101,10 @@
     <Link>
       <AdditionalLibraryDirectories>../Interface/lib/Debug/;../cwStrategys/lib/Debug/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>echo 请在PegasusSimulatorConfig.xml配置账户等信息！
+if not exist $(SolutionDir)$(Configuration)\PegasusSimulatorConfig.xml (copy "PegasusSimulatorConfig.xml" "$(SolutionDir)$(Configuration)\";)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -109,6 +117,10 @@
     <Link>
       <AdditionalLibraryDirectories>../Interface/lib/X64/Debug/;../cwStrategys/lib/X64/Debug/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>echo 请在PegasusSimulatorConfig.xml配置账户等信息！
+if not exist $(SolutionDir)$(Configuration)\PegasusSimulatorConfig.xml (copy "PegasusSimulatorConfig.xml" "$(SolutionDir)$(Configuration)\";)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -125,6 +137,10 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>../Interface/lib/Release/;../cwStrategys/lib/Release/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>echo 请在PegasusSimulatorConfig.xml配置账户等信息！
+if not exist $(SolutionDir)$(Configuration)\PegasusSimulatorConfig.xml (copy "PegasusSimulatorConfig.xml" "$(SolutionDir)$(Configuration)\";)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="cwStrategyDemo.cpp" />
