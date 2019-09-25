@@ -100,5 +100,6 @@ private:
 	std::deque<cwMarketDataPtr>					m_MDCasheDeque;
 	cwMUTEX										m_MDCasheMutex;
 	volatile bool								m_bMDCasheMutexReady;
+	volatile bool								m_bSimulationPartEnd;
 };
 

@@ -9,7 +9,7 @@
 #include "cwBasicTradeSpi.h"
 
 #define TIME_LICENCE_LIMIT
-#define TIME_LIMIT 20191231
+#define TIME_LIMIT 20200631
 
 #ifdef CWCOUTINFO
 #include "cwBasicCout.h"
