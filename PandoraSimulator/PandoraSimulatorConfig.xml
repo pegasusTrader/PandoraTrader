@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Config Generated_at="2016-12-26 23:21:47">
+  <!-- Configs for PegasusTrader -->
+  <User type="2">
+    <SimulatorServer Front="F:\HisData\HisMarketDataIndex.xml" Interval="0" Instrument="F:\HisData\Instrument.xml"/>
+  </User>
+  <Subscription>
+<!--
+    <Instrument ID="j1909"/>
+-->
+  </Subscription>
+    <StrategyConfigFile>
+.\StrategyTest.xml
+    </StrategyConfigFile>
+
+</Config>

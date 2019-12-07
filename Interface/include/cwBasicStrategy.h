@@ -125,8 +125,11 @@ public:
 	//获取前一个交易时段到当前交易时段开盘时间间隔
 	int		  GetPreTimeSpaceInterval(const char * szInstrumentID, cwProductTradeTime::cwTradeTimeSpace iTradeIndex);
 
-
+	//获取合约当前撤单次数
 	int		  GetInstrumentCancelCount(std::string InstrumentID);
+	//获取当前状态是否为回测模拟情况
+	inline bool GetIsSimulation() { return m_bIsSimulation; }
+
 	///如果重载该函数，请确保最后基类的函数能够被调用到！
 	virtual void	   SetStrategyReady();
 	///系统自用接口信息，勿动

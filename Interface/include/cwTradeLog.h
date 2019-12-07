@@ -21,6 +21,9 @@ public:
 	static char s_szTradeLogType[cwTradeLog::enCount][4];
 public:
 	cwTradeLog();
+	cwTradeLog(const char * pFileName);
+	cwTradeLog(const char * pFileName, const char * pFolder);
+
 	~cwTradeLog();
 
 	void AddLog(int LogType, const char * pData, bool bForceWrite = false);

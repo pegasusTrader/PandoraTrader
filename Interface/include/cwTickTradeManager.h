@@ -19,6 +19,8 @@ public:
 	cwTickTradeManager(bool bNeedStatic = false);
 	~cwTickTradeManager();
 
+	void Reset();
+
 	//update Instrument Data
 	void SetInstrumentData(std::map<std::string, cwInstrumentDataPtr>& InstrumentMap);
 

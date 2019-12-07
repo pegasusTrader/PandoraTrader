@@ -32,6 +32,7 @@ public:
 	virtual void OnRspOrderAction(cwOrderPtr pInputOrderAction, cwRspInfoPtr pRspInfo, int nRequestID, bool bIsLast);
 
 	virtual void OnSimulationPartEnd();
+	virtual void OnSimulationFinished();
 
 	virtual	cwOrderPtr InputLimitOrder(const char * szInstrumentID, cwFtdcDirectionType direction,
 		cwOpenClose openclose, int volume, double price);

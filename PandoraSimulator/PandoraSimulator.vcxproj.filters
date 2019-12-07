@@ -28,6 +28,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="PegasusSimulatorConfig.xml" />
+    <Xml Include="PandoraSimulatorConfig.xml" />
   </ItemGroup>
 </Project>

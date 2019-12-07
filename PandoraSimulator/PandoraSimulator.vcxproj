@@ -86,8 +86,8 @@
       <AdditionalLibraryDirectories>../Interface/lib/X64/Release/;../cwStrategys/lib/X64/Release/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>echo 请在PegasusSimulatorConfig.xml配置账户等信息！
-if not exist $(SolutionDir)$(Configuration)\PegasusSimulatorConfig.xml (copy "PegasusSimulatorConfig.xml" "$(SolutionDir)$(Configuration)\";)</Command>
+      <Command>echo 请在PandoraSimulatorConfig.xml配置账户等信息！
+if not exist $(SolutionDir)$(Platform)\$(Configuration)\PandoraSimulatorConfig.xml (copy "PandoraSimulatorConfig.xml" "$(SolutionDir)$(Platform)\$(Configuration)\";)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -102,8 +102,8 @@ if not exist $(SolutionDir)$(Configuration)\PegasusSimulatorConfig.xml (copy "Pe
       <AdditionalLibraryDirectories>../Interface/lib/Debug/;../cwStrategys/lib/Debug/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>echo 请在PegasusSimulatorConfig.xml配置账户等信息！
-if not exist $(SolutionDir)$(Configuration)\PegasusSimulatorConfig.xml (copy "PegasusSimulatorConfig.xml" "$(SolutionDir)$(Configuration)\";)</Command>
+      <Command>echo 请在PandoraSimulatorConfig.xml配置账户等信息！
+if not exist $(SolutionDir)$(Configuration)\PandoraSimulatorConfig.xml (copy "PandoraSimulatorConfig.xml" "$(SolutionDir)$(Configuration)\";)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -118,8 +118,8 @@ if not exist $(SolutionDir)$(Configuration)\PegasusSimulatorConfig.xml (copy "Pe
       <AdditionalLibraryDirectories>../Interface/lib/X64/Debug/;../cwStrategys/lib/X64/Debug/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>echo 请在PegasusSimulatorConfig.xml配置账户等信息！
-if not exist $(SolutionDir)$(Configuration)\PegasusSimulatorConfig.xml (copy "PegasusSimulatorConfig.xml" "$(SolutionDir)$(Configuration)\";)</Command>
+      <Command>echo 请在PandoraSimulatorConfig.xml配置账户等信息！
+if not exist $(SolutionDir)$(Platform)\$(Configuration)\PandoraSimulatorConfig.xml (copy "PandoraSimulatorConfig.xml" "$(SolutionDir)$(Platform)\$(Configuration)\";)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -138,8 +138,8 @@ if not exist $(SolutionDir)$(Configuration)\PegasusSimulatorConfig.xml (copy "Pe
       <AdditionalLibraryDirectories>../Interface/lib/Release/;../cwStrategys/lib/Release/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>echo 请在PegasusSimulatorConfig.xml配置账户等信息！
-if not exist $(SolutionDir)$(Configuration)\PegasusSimulatorConfig.xml (copy "PegasusSimulatorConfig.xml" "$(SolutionDir)$(Configuration)\";)</Command>
+      <Command>echo 请在PandoraSimulatorConfig.xml配置账户等信息！
+if not exist $(SolutionDir)$(Configuration)\PandoraSimulatorConfig.xml (copy "PandoraSimulatorConfig.xml" "$(SolutionDir)$(Configuration)\";)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -150,7 +150,7 @@ if not exist $(SolutionDir)$(Configuration)\PegasusSimulatorConfig.xml (copy "Pe
     <ClInclude Include="cwStrategyDemo.h" />
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="PegasusSimulatorConfig.xml" />
+    <Xml Include="PandoraSimulatorConfig.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

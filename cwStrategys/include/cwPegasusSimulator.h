@@ -4,6 +4,7 @@
 #include "cwBasicSimulator.h"
 #include "cwTickTradeManager.h"
 #include "cwProductTradeTime.h"
+#include "cwSettlement.h"
 
 #include "tinyxml.h"
 
@@ -30,6 +31,12 @@ public:
 
 	cwOrderPtr	GetOrder(cwOrderPtr pOrder);
 	cwTradePtr	GetTrade(cwOrderPtr pOrder, double dTradePrice, int iTradeCnt = 1);
+
+	cwFtdcDateType								m_CurrentTradingDay;
+	cwFtdcTimeType								m_CurrentSimulationTime;
+
+	volatile bool								m_bSimulationFinished;
+
 private:
 	enum SIMTYPE:int
 	{
@@ -60,9 +67,6 @@ private:
 
 	int					m_iSysOrderID;
 	int					m_iSysTradeID;
-
-	cwFtdcDateType		m_CurrentTradingDay;
-	cwFtdcTimeType		m_CurrentSimulationTime;
 
 	cwTickTradeManager	m_cwTickManager;
 
@@ -101,5 +105,7 @@ private:
 	cwMUTEX										m_MDCasheMutex;
 	volatile bool								m_bMDCasheMutexReady;
 	volatile bool								m_bSimulationPartEnd;
+
+	cwSettlement								m_cwSettlement;
 };
 

@@ -69,6 +69,7 @@ public:
 
 public:
 	cwFtdTradeSpi();
+	cwFtdTradeSpi(const char * pLogFileName);
 	~cwFtdTradeSpi();
 
 public:

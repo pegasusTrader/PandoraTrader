@@ -9,11 +9,13 @@
 #include "cwBasicTradeSpi.h"
 
 #define TIME_LICENCE_LIMIT
-#define TIME_LIMIT 20200631
+#define TIME_LIMIT 20200931
 
 #ifdef CWCOUTINFO
 #include "cwBasicCout.h"
 #endif
+
+//#define CV_NOTIFY
 
 class cwBasicMdSpi
 {
@@ -57,6 +59,8 @@ public:
 		return " UnConnect ";
 	}
 
+	inline int			GetMarketDataDequeSize() { return (int)m_iDequeSize; }
+
 	inline cwMarketDataPtr	GetLastestMarketData(std::string InstrumentID)
 	{
 		cwAUTOMUTEX mt(m_MarketDataUpdateMutex, true);
@@ -80,7 +84,7 @@ public:
 
 	const cwMDAPIType					m_cwMdAPIType;
 	std::deque <cwMarketDataPtr>		m_DepthMarketDataDeque;
-
+	size_t								m_iDequeSize;
 	volatile bool						m_MdDequeDone;
 protected:
 	PriceServerStatus	m_CurrentStatus;
@@ -143,7 +147,13 @@ ORIGIN->MEMBER = 0;\
 		//}
 
 	}
-	inline void			NotifyMDUpdateThread() { m_MDUpdateMutexCv.notify_one(); };
+
+#ifdef  CV_NOTIFY
+	inline void			NotifyMDUpdateThread() { m_MDUpdateMutexCv.notify_all(); };
+#else
+	inline void			NotifyMDUpdateThread() { };
+#endif //  CV_NOTIFY
+
 
 	cwMUTEX				m_MarketDataUpdateMutex;
 	std::condition_variable	m_MDUpdateMutexCv;

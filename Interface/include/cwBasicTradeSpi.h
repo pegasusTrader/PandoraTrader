@@ -18,7 +18,7 @@
 
 #define CWRISK
 #define TRADELOG
-#define UPDATE_ORDERRANKED
+//#define UPDATE_ORDERRANKED
 #define	NoCancelTooMuchPerTick
 
 #ifdef UPDATE_ORDERRANKED
@@ -46,6 +46,8 @@ public:
 
 public:
 	cwBasicTradeSpi(cwTradeAPIType apiType);
+	cwBasicTradeSpi(cwTradeAPIType apiType, const char * pLogFileName);
+	cwBasicTradeSpi(cwTradeAPIType apiType, const char * pLogFileName, const char * pFolder);
 	~cwBasicTradeSpi();
 
 	inline TradeServerStatus GetCurrentStatus()
