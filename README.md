@@ -7,7 +7,7 @@
 神灵们每人给她一件礼物，但唯独智慧女神雅典娜拒绝给她智慧。古希腊语中，潘是所有的意思，多拉则是礼物。“潘多拉”即为“拥有一切天赋的女人”。
 我们设计这样一个平台拥有设计者赋予各种技能，唯独不携带智慧，这个智慧是属于策略设计者的，期待策略设计者给予交易策略软件足够的智慧，能够在飘荡的市场上乘风破浪，挂云帆济沧海。
 
-##### 架构介绍
+##### 架构介绍:
 这是一个中国国内期货交易平台，采用 C++ 对 CTP 进行一层封装，提供友好的接口给策略交易模型。
 您只需要关注策略模型进行策略开发即可，不用关心底层如何利用CTP进行下单撤单等控制。同时，我们也提供了回测平台，方便您对策略的测试。
 
@@ -31,43 +31,68 @@
 该平台对交易策略进行抽象，提供统一的中间层接口给策略，策略需要的信息都通过平台提供的中间层进行访问，不关注交易接口的细节，从而实现策略开发和交易接口开发的分离。
 方便交易策略在多种交易接口进行移植。该平台亦提供了 Linux 版本，如有需求请与作者联系更新！
 
-##### 目录结构
--PandoraTrader
----cwStrategy
------include
--------|cwEmptyStrategy.h                        空策略的头文件
--------|cwMarketDataBinaryReceiver.h             二进制形式数据接收存储策略
--------|cwMarketDataReceiver.h                   csv形式数据接收存储策略
--------|cwPegasusSimulator.h                     回测模拟器必要头文件
------lib
--------Debug                                     
----------|PandoraStrategy.lib                    Win32 Debug Lib
--------Release                                   
----------|PandoraStrategy.lib                    Win32 Release Lib
--------X64
----------Debug                                     
------------|PandoraStrategy.lib                  X64 Debug Lib
----------Release                                   
------------|PandoraStrategy.lib                  X64 Release Lib
----Interface
------CTPTradeApi32                               Win32 CTP API 6.3.15
------CTPTradeApi64                               X64 CTP API 6.3.15
------include                                     平台头文件
------lib                                         平台支持库文件
----PandoraSimulator                              平台回测工程
------|cwStrategyDemo.cpp                         演示策略cpp文件
------|cwStrategyDemo.h                           演示策略h文件
------|HisMarketDataIndex                         回测历史数据文件表
------|PandoraSimulator.cpp                       回测平台主程序，负责实例化回测系统，包括策略，模拟交易模块和模拟撮合等
------|PandoraSimulator.vcxproj                   vs工程文件
------|PandoraSimulator.vcxproj.filters           vs工程文件
------|PandoraSimulatorConfig.xml                 回测平台配置文件
----PandoraTrade                                  平台交易工程
------|cwStrategyDemo.cpp                         演示策略cpp文件
------|cwStrategyDemo.h                           演示策略h文件
------|PandoraDemoStrategyTrader.cpp              策略交易平台主程序，负责实例化策略，行情和交易，并初始化他们
------|PandoraTrader.vcxproj                      vs工程文件
------|PandoraTraderConfig.xml                    策略交易配置文件，负责配置行情（前置地址，用户，密码等），交易（前置地址，用户，密码，授权等），策略配置文件等
+##### 目录结构:
+PANDORATRADER
+│  PandoraTrader.sln
+│  README.md
+│
+├─Interface
+│  ├─lib-----------------------------------------------------平台支持库文件
+│  │  ├─Debug
+│  │  │
+│  │  ├─Release
+│  │  │
+│  │  └─X64
+│  │      ├─Debug
+│  │      │
+│  │      └─Release
+│  │
+│  ├─include-------------------------------------------------平台公共头文件
+│  │
+│  ├─CTPTradeApi64-------------------------------------------X64 CTP API 6.3.15
+│  │
+│  └─CTPTradeApi32-------------------------------------------Win32 CTP API 6.3.15
+│
+├─PandoraTrade
+│      ReadMe.txt
+│      PandoraTrader.vcxproj
+│      stdafx.cpp
+│      stdafx.h
+│      targetver.h
+│      PandoraTrader.vcxproj.user
+│      cwStrategyDemo.h--------------------------------------演示策略h文件
+│      cwStrategyDemo.cpp------------------------------------演示策略cpp文件
+│      PandoraTraderConfig.xml-------------------------------策略交易配置文件，负责配置行情（前置地址，用户，密码等），交易（前置地址，用户，密码，授权等），策略配置文件等
+│      PandoraDemoStrategyTrader.cpp-------------------------策略交易平台主程序，负责实例化策略，行情和交易，并初始化他们
+│
+├─PandoraSimulator
+│      PandoraSimulator.vcxproj
+│      PandoraSimulator.vcxproj.user
+│      PandoraSimulator.vcxproj.filters
+│      PandoraSimulator.cpp----------------------------------回测平台主程序，负责实例化回测系统，包括策略，模拟交易模块和模拟撮合等
+│      cwStrategyDemo.h--------------------------------------演示策略h文件
+│      cwStrategyDemo.cpp------------------------------------演示策略cpp文件
+│      HisMarketDataIndex.xml--------------------------------回测历史数据文件表
+│      PandoraSimulatorConfig.xml----------------------------回测使用配置文件
+│
+├─cwStrategys
+   │
+   ├─include
+   │      cwPegasusSimulator.h-------------------------------回测模拟器必要头文件
+   │      cwEmptyStrategy.h----------------------------------空策略(啥操作都不执行，用于检验连接登录等）的头文件
+   │      cwMarketDataBinaryReceiver.h-----------------------二进制形式数据接收存储策略
+   │      cwMarketDataReceiver.h-----------------------------csv形式数据接收存储策略
+   │
+   └─lib-----------------------------------------------------回测模拟器和策略的库文件
+       ├─X64
+       │  ├─Debug
+       │  │
+       │  └─Release
+       │
+       ├─Debug
+       │
+       └─Release
+
 
 ##### 快速入门：
 这是为了您能够快速使用该平台的介绍说明。
