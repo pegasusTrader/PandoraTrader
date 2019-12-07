@@ -32,66 +32,67 @@
 方便交易策略在多种交易接口进行移植。该平台亦提供了 Linux 版本，如有需求请与作者联系更新！
 
 ##### 目录结构:
-PANDORATRADER
-│  PandoraTrader.sln
-│  README.md
-│
-├─Interface
-│  ├─lib-----------------------------------------------------平台支持库文件
-│  │  ├─Debug
-│  │  │
-│  │  ├─Release
-│  │  │
-│  │  └─X64
-│  │      ├─Debug
-│  │      │
-│  │      └─Release
-│  │
-│  ├─include-------------------------------------------------平台公共头文件
-│  │
-│  ├─CTPTradeApi64-------------------------------------------X64 CTP API 6.3.15
-│  │
-│  └─CTPTradeApi32-------------------------------------------Win32 CTP API 6.3.15
-│
-├─PandoraTrade
-│      ReadMe.txt
-│      PandoraTrader.vcxproj
-│      stdafx.cpp
-│      stdafx.h
-│      targetver.h
-│      PandoraTrader.vcxproj.user
-│      cwStrategyDemo.h--------------------------------------演示策略h文件
-│      cwStrategyDemo.cpp------------------------------------演示策略cpp文件
-│      PandoraTraderConfig.xml-------------------------------策略交易配置文件，负责配置行情（前置地址，用户，密码等），交易（前置地址，用户，密码，授权等），策略配置文件等
-│      PandoraDemoStrategyTrader.cpp-------------------------策略交易平台主程序，负责实例化策略，行情和交易，并初始化他们
-│
-├─PandoraSimulator
-│      PandoraSimulator.vcxproj
-│      PandoraSimulator.vcxproj.user
-│      PandoraSimulator.vcxproj.filters
-│      PandoraSimulator.cpp----------------------------------回测平台主程序，负责实例化回测系统，包括策略，模拟交易模块和模拟撮合等
-│      cwStrategyDemo.h--------------------------------------演示策略h文件
-│      cwStrategyDemo.cpp------------------------------------演示策略cpp文件
-│      HisMarketDataIndex.xml--------------------------------回测历史数据文件表
-│      PandoraSimulatorConfig.xml----------------------------回测使用配置文件
-│
-├─cwStrategys
-   │
-   ├─include
-   │      cwPegasusSimulator.h-------------------------------回测模拟器必要头文件
-   │      cwEmptyStrategy.h----------------------------------空策略(啥操作都不执行，用于检验连接登录等）的头文件
-   │      cwMarketDataBinaryReceiver.h-----------------------二进制形式数据接收存储策略
-   │      cwMarketDataReceiver.h-----------------------------csv形式数据接收存储策略
-   │
-   └─lib-----------------------------------------------------回测模拟器和策略的库文件
-       ├─X64
-       │  ├─Debug
-       │  │
-       │  └─Release
-       │
-       ├─Debug
-       │
-       └─Release
+
+		PANDORATRADER
+		│  PandoraTrader.sln
+		│  README.md
+		│
+		├─Interface
+		│  ├─lib-----------------------------------------------------平台支持库文件
+		│  │  ├─Debug
+		│  │  │
+		│  │  ├─Release
+		│  │  │
+		│  │  └─X64
+		│  │      ├─Debug
+		│  │      │
+		│  │      └─Release
+		│  │
+		│  ├─include-------------------------------------------------平台公共头文件
+		│  │
+		│  ├─CTPTradeApi64-------------------------------------------X64 CTP API 6.3.15
+		│  │
+		│  └─CTPTradeApi32-------------------------------------------Win32 CTP API 6.3.15
+		│
+		├─PandoraTrade
+		│      ReadMe.txt
+		│      PandoraTrader.vcxproj
+		│      stdafx.cpp
+		│      stdafx.h
+		│      targetver.h
+		│      PandoraTrader.vcxproj.user
+		│      cwStrategyDemo.h--------------------------------------演示策略h文件
+		│      cwStrategyDemo.cpp------------------------------------演示策略cpp文件
+		│      PandoraTraderConfig.xml-------------------------------策略交易配置文件，负责配置行情（前置地址，用户，密码等），交易（前置地址，用户，密码，授权等），策略配置文件等
+		│      PandoraDemoStrategyTrader.cpp-------------------------策略交易平台主程序，负责实例化策略，行情和交易，并初始化他们
+		│
+		├─PandoraSimulator
+		│      PandoraSimulator.vcxproj
+		│      PandoraSimulator.vcxproj.user
+		│      PandoraSimulator.vcxproj.filters
+		│      PandoraSimulator.cpp----------------------------------回测平台主程序，负责实例化回测系统，包括策略，模拟交易模块和模拟撮合等
+		│      cwStrategyDemo.h--------------------------------------演示策略h文件
+		│      cwStrategyDemo.cpp------------------------------------演示策略cpp文件
+		│      HisMarketDataIndex.xml--------------------------------回测历史数据文件表
+		│      PandoraSimulatorConfig.xml----------------------------回测使用配置文件
+		│
+		└─cwStrategys
+		   │
+		   ├─include
+		   │      cwPegasusSimulator.h-------------------------------回测模拟器必要头文件
+		   │      cwEmptyStrategy.h----------------------------------空策略(啥操作都不执行，用于检验连接登录等）的头文件
+		   │      cwMarketDataBinaryReceiver.h-----------------------二进制形式数据接收存储策略
+		   │      cwMarketDataReceiver.h-----------------------------csv形式数据接收存储策略
+		   │
+		   └─lib-----------------------------------------------------回测模拟器和策略的库文件
+			   ├─X64
+			   │  ├─Debug
+			   │  │
+			   │  └─Release
+			   │
+			   ├─Debug
+			   │
+			   └─Release
 
 
 ##### 快速入门：
