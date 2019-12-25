@@ -11,6 +11,7 @@
 
 #ifdef _MSC_VER
 #pragma comment(lib, "cwCTPDLL.lib")
+#pragma comment(lib, "cwStrategys.lib")
 #pragma comment(lib, "PandoraStrategy.lib")
 #pragma comment(lib, "tinyxml.lib")
 #endif // WIN32
