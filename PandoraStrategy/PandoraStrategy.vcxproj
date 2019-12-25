@@ -20,32 +20,32 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{C387EEDA-64D2-4CC3-8E9C-5704E53A16F5}</ProjectGuid>
-    <RootNamespace>PandoraSimulator</RootNamespace>
+    <ProjectGuid>{B3B810B5-370E-4A47-ACF9-3BC14481DC94}</ProjectGuid>
+    <RootNamespace>PandoraStrategy</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -78,17 +78,13 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../PandoraStrategy/;../cwStrategys/include/;../Interface/include/;../Interface/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../Interface/include/;../Interface/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>../x64/Release/;../Interface/lib/X64/Release/;../cwStrategys/lib/X64/Release/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
-    <PostBuildEvent>
-      <Command>echo 请在PandoraSimulatorConfig.xml配置账户等信息！
-if not exist $(SolutionDir)$(Platform)\$(Configuration)\PandoraSimulatorConfig.xml (copy "PandoraSimulatorConfig.xml" "$(SolutionDir)$(Platform)\$(Configuration)\";)</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -96,15 +92,9 @@ if not exist $(SolutionDir)$(Platform)\$(Configuration)\PandoraSimulatorConfig.x
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../PandoraStrategy/;../cwStrategys/include/;../Interface/include/;../Interface/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../Interface/include/;../Interface/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
-    <Link>
-      <AdditionalLibraryDirectories>../Debug/;../Interface/lib/Debug/;../cwStrategys/lib/Debug/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-    </Link>
-    <PostBuildEvent>
-      <Command>echo 请在PandoraSimulatorConfig.xml配置账户等信息！
-if not exist $(SolutionDir)$(Configuration)\PandoraSimulatorConfig.xml (copy "PandoraSimulatorConfig.xml" "$(SolutionDir)$(Configuration)\";)</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -112,15 +102,9 @@ if not exist $(SolutionDir)$(Configuration)\PandoraSimulatorConfig.xml (copy "Pa
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../PandoraStrategy/;../cwStrategys/include/;../Interface/include/;../Interface/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../Interface/include/;../Interface/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
-    <Link>
-      <AdditionalLibraryDirectories>../x64/Debug/;../Interface/lib/X64/Debug/;../cwStrategys/lib/X64/Debug/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-    </Link>
-    <PostBuildEvent>
-      <Command>echo 请在PandoraSimulatorConfig.xml配置账户等信息！
-if not exist $(SolutionDir)$(Platform)\$(Configuration)\PandoraSimulatorConfig.xml (copy "PandoraSimulatorConfig.xml" "$(SolutionDir)$(Platform)\$(Configuration)\";)</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -130,23 +114,21 @@ if not exist $(SolutionDir)$(Platform)\$(Configuration)\PandoraSimulatorConfig.x
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../PandoraStrategy/;../cwStrategys/include/;../Interface/include/;../Interface/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../Interface/include/;../Interface/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>../Release/;../Interface/lib/Release/;../cwStrategys/lib/Release/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
-    <PostBuildEvent>
-      <Command>echo 请在PandoraSimulatorConfig.xml配置账户等信息！
-if not exist $(SolutionDir)$(Configuration)\PandoraSimulatorConfig.xml (copy "PandoraSimulatorConfig.xml" "$(SolutionDir)$(Configuration)\";)</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="PandoraSimulator.cpp" />
+    <ClCompile Include="cwEmptyStrategy.cpp" />
+    <ClCompile Include="cwStrategyDemo.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="PandoraSimulatorConfig.xml" />
+    <ClInclude Include="cwEmptyStrategy.h" />
+    <ClInclude Include="cwStrategyDemo.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

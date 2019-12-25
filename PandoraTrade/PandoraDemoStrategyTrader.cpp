@@ -20,9 +20,7 @@
 #ifdef _MSC_VER
 #pragma comment(lib, "cwCTPDLL.lib")
 #pragma comment(lib, "tinyxml.lib")
-#ifdef EMPTYSTRATEGY
 #pragma comment(lib, "PandoraStrategy.lib")
-#endif
 #endif // WIN32
 
 //#define WCS_DISCLAIMER
