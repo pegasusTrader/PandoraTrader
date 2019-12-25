@@ -4,8 +4,16 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 15.0.28010.2046
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PandoraTrader", "PandoraTrade\PandoraTrader.vcxproj", "{478B0471-4B94-48C8-8A8D-6539B9457D54}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B3B810B5-370E-4A47-ACF9-3BC14481DC94} = {B3B810B5-370E-4A47-ACF9-3BC14481DC94}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PandoraSimulator", "PandoraSimulator\PandoraSimulator.vcxproj", "{C387EEDA-64D2-4CC3-8E9C-5704E53A16F5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B3B810B5-370E-4A47-ACF9-3BC14481DC94} = {B3B810B5-370E-4A47-ACF9-3BC14481DC94}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PandoraStrategy", "PandoraStrategy\PandoraStrategy.vcxproj", "{B3B810B5-370E-4A47-ACF9-3BC14481DC94}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,6 +39,14 @@ Global
 		{C387EEDA-64D2-4CC3-8E9C-5704E53A16F5}.Release|x64.Build.0 = Release|x64
 		{C387EEDA-64D2-4CC3-8E9C-5704E53A16F5}.Release|x86.ActiveCfg = Release|Win32
 		{C387EEDA-64D2-4CC3-8E9C-5704E53A16F5}.Release|x86.Build.0 = Release|Win32
+		{B3B810B5-370E-4A47-ACF9-3BC14481DC94}.Debug|x64.ActiveCfg = Debug|x64
+		{B3B810B5-370E-4A47-ACF9-3BC14481DC94}.Debug|x64.Build.0 = Debug|x64
+		{B3B810B5-370E-4A47-ACF9-3BC14481DC94}.Debug|x86.ActiveCfg = Debug|Win32
+		{B3B810B5-370E-4A47-ACF9-3BC14481DC94}.Debug|x86.Build.0 = Debug|Win32
+		{B3B810B5-370E-4A47-ACF9-3BC14481DC94}.Release|x64.ActiveCfg = Release|x64
+		{B3B810B5-370E-4A47-ACF9-3BC14481DC94}.Release|x64.Build.0 = Release|x64
+		{B3B810B5-370E-4A47-ACF9-3BC14481DC94}.Release|x86.ActiveCfg = Release|Win32
+		{B3B810B5-370E-4A47-ACF9-3BC14481DC94}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
