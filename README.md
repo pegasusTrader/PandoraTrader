@@ -2,9 +2,9 @@
 ##### A Trade Platform
 
 ##### 起名由来：
-据百度百科介绍，Pandora 是希腊神话中赫菲斯托斯用粘土做成的第一个女人。
-众神赠予使她拥有更诱人的魅力的礼物：火神赫菲斯托斯给她做了华丽的金长袍；爱神维纳斯赋予她妩媚与诱惑男人的力量；众神使者赫耳墨斯教会了她言语的技能。
-神灵们每人给她一件礼物，但唯独智慧女神雅典娜拒绝给她智慧。古希腊语中，潘是所有的意思，多拉则是礼物。“潘多拉”即为“拥有一切天赋的女人”。
+据百度百科介绍，Pandora 是希腊神话中赫菲斯托斯用粘土做成的第一个女人。  
+众神赠予使她拥有更诱人的魅力的礼物：火神赫菲斯托斯给她做了华丽的金长袍；爱神维纳斯赋予她妩媚与诱惑男人的力量；众神使者赫耳墨斯教会了她言语的技能。  
+神灵们每人给她一件礼物，但唯独智慧女神雅典娜拒绝给她智慧。古希腊语中，潘是所有的意思，多拉则是礼物。“潘多拉”即为“拥有一切天赋的女人”。  
 我们设计这样一个平台拥有设计者赋予各种技能，唯独不携带智慧，这个智慧是属于策略设计者的，期待策略设计者给予交易策略软件足够的智慧，能够在飘荡的市场上乘风破浪，挂云帆济沧海。
 
 ##### 架构介绍:
@@ -54,33 +54,37 @@
 		│  │
 		│  └─CTPTradeApi32-------------------------------------------Win32 CTP API 6.3.15
 		│
-		├─PandoraTrade
+		├─PandoraTrade-----------------------------------------------实盘交易程序
 		│      ReadMe.txt
 		│      PandoraTrader.vcxproj
 		│      stdafx.cpp
 		│      stdafx.h
 		│      targetver.h
 		│      PandoraTrader.vcxproj.user
-		│      cwStrategyDemo.h--------------------------------------演示策略h文件
-		│      cwStrategyDemo.cpp------------------------------------演示策略cpp文件
 		│      PandoraTraderConfig.xml-------------------------------策略交易配置文件，负责配置行情（前置地址，用户，密码等），交易（前置地址，用户，密码，授权等），策略配置文件等
 		│      PandoraDemoStrategyTrader.cpp-------------------------策略交易平台主程序，负责实例化策略，行情和交易，并初始化他们
 		│
-		├─PandoraSimulator
+		├─PandoraSimulator-------------------------------------------回测验证程序
 		│      PandoraSimulator.vcxproj
 		│      PandoraSimulator.vcxproj.user
 		│      PandoraSimulator.vcxproj.filters
 		│      PandoraSimulator.cpp----------------------------------回测平台主程序，负责实例化回测系统，包括策略，模拟交易模块和模拟撮合等
-		│      cwStrategyDemo.h--------------------------------------演示策略h文件
-		│      cwStrategyDemo.cpp------------------------------------演示策略cpp文件
 		│      HisMarketDataIndex.xml--------------------------------回测历史数据文件表
 		│      PandoraSimulatorConfig.xml----------------------------回测使用配置文件
 		│
-		└─cwStrategys
+		├─PandoraStrategy--------------------------------------------用户策略库
+		│  PandoraStrategy.vcxproj
+		│  PandoraStrategy.vcxproj.user
+		│  PandoraStrategy.vcxproj.filters
+		│  cwEmptyStrategy.cpp---------------------------------------空策略cpp
+		│  cwEmptyStrategy.h-----------------------------------------空策略(啥操作都不执行，用于检验连接登录等）的头文件
+		│  cwStrategyDemo.h------------------------------------------演示策略头文件
+		│  cwStrategyDemo.cpp----------------------------------------演示策略cpp
+		│
+		└─cwStrategys------------------------------------------------系统策略库，提供编写好的策略以及必要的支撑
 		   │
 		   ├─include
 		   │      cwPegasusSimulator.h-------------------------------回测模拟器必要头文件
-		   │      cwEmptyStrategy.h----------------------------------空策略(啥操作都不执行，用于检验连接登录等）的头文件
 		   │      cwMarketDataBinaryReceiver.h-----------------------二进制形式数据接收存储策略
 		   │      cwMarketDataReceiver.h-----------------------------csv形式数据接收存储策略
 		   │
@@ -109,7 +113,7 @@
 3. 交易平台中，PandoraDemoStrategyTrader.cpp 是 main 函数的入口，作为一个如何实例化该平台代码的 demo。
 cwStrategyDemo 是一个策略demo，里面一些示例如何访问平台中间层提供的信息。直接编译就可以获得一个自动交易策略。
 该策略主要演示了如何获取持仓，获取挂单等，如何根据行情下单，如何撤单等操作，有这些基础元操作后，您就可以组合搭建属于您自己的策略。
-如果您想利用此平台来开发策略，您只需要和策略demo 一样，以 cwBasicStrategy 为基类派生一个您的策略类。
+如果您想利用此平台来开发策略，您只需要和策略demo 一样，以 cwBasicStrategy 为基类派生一个您的策略类，平台提供的报单撤单等函数都在该类中定义。
 实现 PriceUpdate，OnRtnTrade，OnRtnOrder，OnOrderCanceled 这几个函数即可在相应的回调中做相应的处理。
 
        PriceUpdate：进行行情更新，对每个最新的tick行情进行处理；
@@ -128,13 +132,13 @@ cwStrategyDemo 是一个策略demo，里面一些示例如何访问平台中间�
 
        cwBasicCout.h：输出类，可将所需变量输出显示，基础用法与printf类似。
 
-5. 利用模拟盘测试您的策略时，您需要对 PandoraTraderConfig.xml 进行以下配置：
+5. 利用Simnow模拟盘测试您的策略时，您需要对 PandoraTraderConfig.xml 进行以下配置：
        
         将模拟盘交易的账号信息（后置、BrokerID、UserID及密码）填写至
-		<MarketDataServer Front="tcp://180.168.146.187:10011" BrokerID="9999" UserID="" PassWord=""/>		//行情配置信息
+		<MarketDataServer Front="tcp://180.168.146.187:10110" BrokerID="9999" UserID="" PassWord=""/>		//行情配置信息
 		和
-		<TradeServer Front="tcp://180.168.146.187:10000" BrokerID="9999" UserID="" PassWord="" ProductInfo="Pandora" AppID="Pandora" AuthCode="Pandora"/>		//交易配置信息
-		并在<Instrument ID="j1909"/>中输入所需测试的期货合约（可以配置多个）即可。
+		<TradeServer Front="tcp://180.168.146.187:10100" BrokerID="9999" UserID="" PassWord="" ProductInfo="Pandora" AppID="Pandora" AuthCode="Pandora"/>		//交易配置信息
+		并在<Instrument ID="j1909"/>中输入所需测试的期货合约（可以配置多个）即可，也可以在策略中调用。
 
 
     若您暂不知晓该信息，可联系模拟盘平台客服获取。
