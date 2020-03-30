@@ -216,6 +216,7 @@ unsigned int PriceServerThread()
 
 unsigned int TradeServerThread()
 {
+	m_TradeChannel.SetSaveInstrumentDataToFile(true);
 	m_TradeChannel.SetUserLoginField(m_szTdBrokerID, m_szTdUserID, m_szTdPassWord, m_szTdProductInfo);
 	m_TradeChannel.SetAuthenticateInfo(m_szTdAppID, m_szTdAuthCode);
 
@@ -227,18 +228,6 @@ unsigned int TradeServerThread()
 #ifdef WIN32
 bool CtrlHandler(DWORD fdwCtrlType)
 {
-	m_mdCollector.DisConnect();
-	m_TradeChannel.DisConnect();
-
-#ifdef WIN32
-	if (m_hAppMutex != NULL)
-	{
-		ReleaseMutex(m_hAppMutex);
-		CloseHandle(m_hAppMutex);
-		m_hAppMutex = NULL;
-	}
-#endif
-
 	switch (fdwCtrlType)
 	{
 		// Handle the CTRL-C signal.   
@@ -250,7 +239,18 @@ bool CtrlHandler(DWORD fdwCtrlType)
 		// CTRL-CLOSE: confirm that the user wants to exit.   
 	case CTRL_CLOSE_EVENT:
 		//Beep(600, 200);
-		printf("Ctrl-Close event\n\n");
+		//printf("Ctrl-Close event\n\n");
+		m_mdCollector.DisConnect();
+		m_TradeChannel.DisConnect();
+
+#ifdef WIN32
+		if (m_hAppMutex != NULL)
+		{
+			ReleaseMutex(m_hAppMutex);
+			CloseHandle(m_hAppMutex);
+			m_hAppMutex = NULL;
+		}
+#endif
 		return(TRUE);
 
 		// Pass other signals to the next handler.   
