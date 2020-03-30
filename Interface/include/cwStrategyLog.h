@@ -39,6 +39,8 @@ public:
 	void AddLog(int LogType, const char * lpParam, ...);
 	void AddLog(const char * pData, int LogType, bool bForceWrite = false);
 
+	inline void SetForceWrite(bool bForceWrite) { m_bHasForceWrite = bForceWrite; }
+
 private:
 	cwStrategyLog&	m_SLog;
 	std::string		m_strFunctionName;

@@ -9,7 +9,7 @@
 #include "cwBasicTradeSpi.h"
 
 #define TIME_LICENCE_LIMIT
-#define TIME_LIMIT 20200931
+#define TIME_LIMIT 20210931
 
 #ifdef CWCOUTINFO
 #include "cwBasicCout.h"
@@ -86,6 +86,7 @@ public:
 	std::deque <cwMarketDataPtr>		m_DepthMarketDataDeque;
 	size_t								m_iDequeSize;
 	volatile bool						m_MdDequeDone;
+	bool								m_bNoUseBasicMdUpdate;
 protected:
 	PriceServerStatus	m_CurrentStatus;
 

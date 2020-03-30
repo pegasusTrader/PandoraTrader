@@ -33,15 +33,23 @@
 #endif
 
 #define CW_USING_AUTHCODE
+//#define CW_USING_DYNAMIC_LOADING_DLL
 
+#ifndef CW_USING_DYNAMIC_LOADING_DLL
 #ifdef _MSC_VER
 #ifdef CW_USING_AUTHCODE
 #pragma comment(lib, "thosttraderapi_se.lib")
 #else
 #pragma comment(lib, "thosttraderapi.lib")
 #endif // CW_USING_AUTHCODE
+#endif // _MSC_VER
+#else
+#ifdef _MSC_VER
+#include <Windows.h>
+#else
 
 #endif // _MSC_VER
+#endif // !CW_USING_DYNAMIC_LOADING_DLL
 
 
 
@@ -421,7 +429,7 @@ public:
 
 	virtual void RegisterBasicStrategy(cwBasicStrategy * pBasicStrategy, void * pSpi = NULL);
 
-	void Connect(char * pszFrontAddress);
+	void Connect(char * pszFrontAddress, char * pszDllPath = NULL);
 	void DisConnect();
 
 	void WaitForFinish();
@@ -487,7 +495,15 @@ protected:
 #endif // _MSC_VER
 
 private:
-	CThostFtdcTraderApi * m_pTraderUserApi;
+#ifdef CW_USING_DYNAMIC_LOADING_DLL
+#ifdef _MSC_VER
+	HINSTANCE 					m_cwhDllInstance;
+#else
+	void *						m_cwhDllInstance;
+#endif // _MSC_VER
+#endif // CW_USING_DYNAMIC_LOADING_DLL
+
+	CThostFtdcTraderApi *		m_pTraderUserApi;
 
 	int							m_iRequestId;
 

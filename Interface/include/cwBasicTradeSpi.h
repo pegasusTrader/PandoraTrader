@@ -124,6 +124,13 @@ public:
 	}
 	bool		IsWaitOrder(cwOrderPtr pOrder);
 	bool		IsIOCTypeOrder(cwOrderPtr pOrder);
+
+	cwInsertOrderType GetInsertOrderType(cwOrderPtr pOrder);
+	cwInsertOrderType GetInsertOrderType(cwFtdcOrderPriceType OrderPriceType,
+		cwFtdcContingentConditionType ContingentCondition,
+		cwFtdcTimeConditionType TimeCondition,
+		cwFtdcVolumeConditionType VolumeCondition);
+
 	bool		GetPosition(std::string InstrumentID, cwFtdcDirectionType direction,
 		int& TotalPositon, int& TodayPosition);
 	bool		GetPositionAndActiveOrders(std::string InstrumentID, cwFtdcDirectionType direction,
@@ -148,16 +155,21 @@ public:
 
 	void	SetDisConnectExit(bool bDisConnectExit = true) { m_bDisConnectExit = bDisConnectExit; }
 
-	std::map<std::string, cwInstrumentDataPtr> m_InstrumentMap;
+	std::map<std::string, cwInstrumentDataPtr>	m_InstrumentMap;
+
+	std::string									m_strInstrumentDataFileName;
+	void	SetSaveInstrumentDataToFile(bool bSave) { m_bSaveInstrumentDataToFile = bSave; }
+	void	SetInstrumentDataFileName(const char * fileName);
+	void	GetInstrumentDataFromFile();
+	bool	GenerateInstrumentDataToFile();
 
 	const cwTradeAPIType		m_cwTradeAPIType;
 
 	bool						m_bHasPositionChanged;
-
 	bool						m_bHasOrdersChanged;
 	bool						m_bHasActiveOrdersChanged;
-
 	bool						m_bHasTradesChanged;
+
 protected:
 	TradeServerStatus			m_CurrentStatus;
 	cwFtdcTimeType				m_cwTradeLoginTime;
@@ -201,12 +213,16 @@ protected:
 
 	//CWRISK
 #ifdef CWRISK
-	const int					m_iMaxCancelLimitNum;
-	std::map<std::string, int>	m_iCancelLimitMap;
+	const int					m_iMaxCancelLimitNum;			//最大撤单次数
+	std::map<std::string, int>	m_iCancelLimitMap;				//撤单次数统计，key:InstrumentID
+	//本地报单 Ref登记， 遇到错单，减回撤单次数，便于准确统计
+	//key Isntrument, value : OrderRefSet;
+	std::map<std::string, std::set<std::string>>	m_MayCancelOrderRefSetMap;		
 #endif // CWRISK
 
 	bool						m_bDisConnectExit;
 
 	static	int					m_iTradeApiCount;
+	bool						m_bSaveInstrumentDataToFile;
 };
 

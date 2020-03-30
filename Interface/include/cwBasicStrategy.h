@@ -5,7 +5,7 @@
 //---
 //---	CreateTime:	2016/12/12
 //---
-//---	VerifyTime:	2016/12/12
+//---	VerifyTime:	2020/03/26
 //---
 //*******************************************************************************
 //////////////////////////////////////////////////////////////////////////////////
@@ -32,15 +32,6 @@ public:
 	};
 	const char * GetOpenCloseModeString(cwOpenCloseMode openclose);
 
-	enum cwInsertOrderType :int
-	{
-		cwInsertLimitOrder = 0,			//限价单
-		cwInsertFAKOrder = 1,			//FAK 
-		cwInsertFOKOrder = 2,			//FOK
-		cwInsertMarketOrder				//市价单（暂不支持）
-	};
-
-	const char * GetInsertOrderTypeString(cwInsertOrderType ordertype);
 public:
 	cwBasicStrategy();
 	~cwBasicStrategy();
@@ -51,6 +42,10 @@ public:
 	//表示策略名称
 	virtual std::string  GetStrategyName() { return "BasicStrategy"; }
 
+	/*
+	PriceUpdate，OnRtnTrade，OnOrderCanceled，OnRspOrderInsert，OnRspOrderCancel这几个函数是系统回调函数，即策略的同名虚函数
+	会在相应的情况下被系统调用，并执行用以实现策略功能。
+	*/
 	///MarketData SPI
 	//行情更新
 	virtual void PriceUpdate(cwMarketDataPtr pPriceData) = 0;
@@ -58,10 +53,14 @@ public:
 	///Trade SPI
 	//成交回报
 	virtual void OnRtnTrade(cwTradePtr pTrade) = 0;
-	//报单回报
+	//报单回报, pOrder为最新报单，pOriginOrder为上一次更新报单结构体，有可能为NULL
 	virtual void OnRtnOrder(cwOrderPtr pOrder, cwOrderPtr pOriginOrder = cwOrderPtr()) = 0;
 	//撤单成功
 	virtual void OnOrderCanceled(cwOrderPtr pOrder) = 0;
+	//报单录入请求响应
+	virtual void OnRspOrderInsert(cwOrderPtr pOrder, cwFtdcRspInfoField * pRspInfo) {};
+	//报单操作请求响应
+	virtual void OnRspOrderCancel(cwOrderPtr pOrder, cwFtdcRspInfoField * pRspInfo) {};
 
 	///Special For Simulation 
 	///These functions will NOT be called in normal mode
@@ -72,6 +71,9 @@ public:
 
 	virtual void InitialStrategy(const char * pConfigFilePath);
 	std::string			m_strConfigFileFullPath;
+
+	//在Trade SPI准备就绪前，策略需要用到合约信息，可以利用该函数先从文件中获取合约信息，参数为NULL时，默认和程序在同一路径
+	virtual void InitalInstrumentData(const char * pInstrumentDataFilePath = NULL);
 
 	///Action  Function
 	//获取最新的行情
@@ -96,12 +98,19 @@ public:
 	bool GetPositionsAndActiveOrders(std::string InstrumentID, cwPositionPtr& pPosition, std::map<std::string, cwOrderPtr>& ActiveOrders);
 	//获取合约信息
 	cwInstrumentDataPtr GetInstrumentData(std::string InstrumentID);
-	//报单函数
+
+	//报单函数--限价单
 	cwOrderPtr InputLimitOrder(const char * szInstrumentID, cwFtdcDirectionType direction, cwOpenClose openclose, int volume, double price);
+	//报单函数--FAK单（Filled And Kill 立即成交剩余自动撤销指令）
+	cwOrderPtr InputFAKOrder(const char * szInstrumentID, cwFtdcDirectionType direction, cwOpenClose openclose, int volume, double price);
+	//报单函数--FOK单(FOK Filled Or Kill 立即全部成交否则自动撤销指令)
+	cwOrderPtr InputFOKOrder(const char * szInstrumentID, cwFtdcDirectionType direction, cwOpenClose openclose, int volume, double price);
+
 	//简化报单函数， volume正表示买，负表示卖，自动开平，有持仓就平仓，没有就开仓
 	cwOrderPtr EasyInputOrder(const char * szInstrumentID, int volume, double price,
 		cwOpenCloseMode openclosemode = cwOpenCloseMode::CloseTodayThenYd,
 		cwInsertOrderType insertordertype = cwInsertOrderType::cwInsertLimitOrder);
+
 	//撤单函数
 	bool CancelOrder(cwOrderPtr pOrder);
 

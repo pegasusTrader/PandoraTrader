@@ -17,7 +17,6 @@
 #include "cwInterfaceDefine.h"
 
 #define INTERFACENAME	" "
-//#define INTERFACENAME	"DUNYU"
 //#define INTERFACENAME	"Pegasus"
 #ifndef INTERFACENAME
 #define INTERFACENAME ""
@@ -449,7 +448,8 @@ typedef char cwFtdcOrderSourceType;
 #define CW_FTDC_OST_NotTouched 'b'
 //已触发
 #define CW_FTDC_OST_Touched 'c'
-
+//Default
+#define CW_FTDC_OST_cwDefault ' '
 
 typedef char cwFtdcOrderStatusType;
 
@@ -562,6 +562,16 @@ typedef char cwFtdcTradeSourceType;
 typedef char cwFtdcInstrumentStatusType;
 const char * g_cwGetInstrumentStatus(cwFtdcInstrumentStatusType insstatustype);
 
+enum cwInsertOrderType :int
+{
+	cwInsertLimitOrder = 0,			//限价单
+	cwInsertFAKOrder = 1,			//FAK Filled And Kill 立即成交剩余自动撤销指令
+	cwInsertFOKOrder = 2,			//FOK Filled Or Kill 立即全部成交否则自动撤销指令
+	cwInsertMarketOrder = 3,		//市价单（暂不支持）
+	cwInsertOtherTypeOrder
+};
+
+const char * GetInsertOrderTypeString(cwInsertOrderType ordertype);
 
 #ifdef _MSC_VER
 #pragma endregion
@@ -781,8 +791,11 @@ typedef std::shared_ptr<cwFtdcACCOUNTFIELD>	cwAccountPtr;
 ///Order
 enum  cwOpenClose
 {
+	//开仓
 	cwOpen = 0
+	//平仓（平昨）
 	, cwClose
+	//平今
 	, cwCloseToday
 };
 
