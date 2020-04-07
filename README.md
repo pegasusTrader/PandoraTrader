@@ -106,15 +106,16 @@
 
        https://visualstudio.microsoft.com/zh-hans/vs/
 
-2. 通过 PandoraTrader.sln 打开项目组，其中包含了交易平台 PandoraTrader 和回测平台 PandoraSimulator，详细如目录结构所示。
-您可直接利用交易平台对策略进行模拟盘交易，也可利用我们的回测平台进行测试。
+2. 通过 PandoraTrader.sln 打开项目组，其中包含了交易平台 PandoraTrader， 策略库工程PandoraStrategy 和回测平台 PandoraSimulator，详细如目录结构所示。
+您可直接利用交易平台对策略进行实盘交易或者模拟环境交易，也可利用我们的回测平台进行测试。
 
 
-3. 交易平台中，PandoraDemoStrategyTrader.cpp 是 main 函数的入口，作为一个如何实例化该平台代码的 demo。
-cwStrategyDemo 是一个策略demo，里面一些示例如何访问平台中间层提供的信息。直接编译就可以获得一个自动交易策略。
-该策略主要演示了如何获取持仓，获取挂单等，如何根据行情下单，如何撤单等操作，有这些基础元操作后，您就可以组合搭建属于您自己的策略。
-如果您想利用此平台来开发策略，您只需要和策略demo一样，以 cwBasicStrategy 为基类派生一个您的策略类，平台提供的报单撤单等功能函数都在该类中定义。
-实现 PriceUpdate，OnRtnTrade，OnRtnOrder，OnOrderCanceled 这几个函数即可在相应的回调中做相应的处理。
+3. 交易平台中，PandoraTrader 工程中有PandoraDemoStrategyTrader.cpp 是 main 函数的入口，作为一个如何实例化该平台代码的 demo。
+该实例化过程可以作为通用代码，只要替换其中包含的策略，就可以编译出一个新的交易程序。
+策略库工程PandoraStrateg中自带一个demo策略，即cwStrategyDemo，直接编译就可以获得一个自动交易策略，可以边运行边了解其中功能。
+这个demo提供了如何通过cwBasicStrategy访问平台中维护的持仓信息，挂单信息，根据行情下单，以及进行报单撤单等操作。有这些基础操作知识后，您就可以组合搭建属于您自己的策略。
+只需在PandoraStrateg工程中添加一个新的策略，以 cwBasicStrategy 为基类派生一个您的策略类，实现 PriceUpdate，OnRtnTrade，OnRtnOrder，OnOrderCanceled 这几个函数即可在相应的回调中做相应的处理。
+可以在回调函数中根据行情，持仓和挂单信息，进行报单，撤单等操作。如果有复杂耗时的数学计算，请起一个线程进行计算。秉持原则是让回调函数尽快返回处理后续的操作。
 
        PriceUpdate：行情更新，当有最新行情更新时，该函数会被调用，可以在该函数内完成行情处理；
 
@@ -124,9 +125,10 @@ cwStrategyDemo 是一个策略demo，里面一些示例如何访问平台中间�
 
        OnOrderCanceled：当撤单成功后随即进入该函数并作出反应。
    
-	完成策略开发后，将 PandoraDemoStrategyTrader 中的策略demo替换为您的策略即可。
+	完成策略开发后，记得将 PandoraDemoStrategyTrader 中的策略demo替换为您的新策略。
+	在开发新策略的时候，强烈建议新建一个策略类。因为平台维护升级，可能会为了丰富这个Demo策略内容进行更新修改，以免您获取最新更新时，遇到不必要的麻烦。
 
-4. Interface 文件夹下有该平台支持的交易接口和平台定义的头文件和封装库，例如：
+4. Interface 文件夹下提供一些工具，可以更方便进行开发，排查问题。例如：
 
        cwStrategyLog.h：可自由实现log日志，观察报单、撤单及成交等情况；
 
@@ -160,7 +162,7 @@ cwStrategyDemo 是一个策略demo，里面一些示例如何访问平台中间�
 
 软件开放到公共域，您可以免费使用，但不可用于出售。
 
-作者勤勉，尽可能提供可靠软件，但不保证没有疏忽遗漏，由此造成的损失，与作者无关。
+作者勤勉，尽可能提供可靠软件，但因系统复杂，无法保证没有疏忽遗漏，由此造成的损失，与作者无关。
 
 如果上期技术暂停对CTP支持或者使用许可，请务必暂停使用该平台。
 
