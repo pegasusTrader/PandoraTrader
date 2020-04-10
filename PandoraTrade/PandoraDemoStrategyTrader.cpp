@@ -23,8 +23,6 @@
 #pragma comment(lib, "PandoraStrategy.lib")
 #endif // WIN32
 
-//#define WCS_DISCLAIMER
-//#define WCS_USER_AUTHORIZE
 
 //本程序互斥量，用于判断是否有该程序在运行
 #ifdef WIN32
@@ -45,6 +43,7 @@ cwStrategyDemo			m_cwStategy;
 #endif
 
 cwBasicCout				m_cwShow;
+
 //XML Config Parameter
 char					m_szMdFront[64];
 cwFtdcBrokerIDType		m_szMdBrokerID;
@@ -58,6 +57,7 @@ cwFtdcPasswordType		m_szTdPassWord;
 cwFtdcProductInfoType	m_szTdProductInfo;
 cwFtdcAppIDType			m_szTdAppID;
 cwFtdcPasswordType		m_szTdAuthCode;
+char					m_szTdDllPath[MAX_PATH];
 
 std::vector<std::string> m_SubscribeInstrument;
 
@@ -121,7 +121,6 @@ bool ReadXmlConfigFile()
 	{
 		std::cout << "Load Config File Failed ! " << std::endl;
 		return false;
-		//WriteXmlConfigFile();
 	}
 
 	TiXmlNode* RootNode = doc.RootElement();
@@ -152,6 +151,7 @@ bool ReadXmlConfigFile()
 				GetCharElement(Td, ProductInfo);
 				GetCharElement(Td, AppID);
 				GetCharElement(Td, AuthCode);
+				GetCharElement(Td, DllPath);
 			}
 		}
 
@@ -371,7 +371,10 @@ int main()
 		{
 			if (iCnt % 80 == 0)
 			{
-				std::cout << m_szTdUserID << " " << strStrategyName.c_str() << std::endl;
+				std::cout << m_szTdUserID << " " 
+					<< strStrategyName.c_str() << " "
+					<< m_mdCollector.GetCurrentStatusString()  << " "
+					<< m_TradeChannel.GetCurrentStatusString() << std::endl;
 			}
 			cwAccountPtr pAccount = m_TradeChannel.GetAccount();
 			if (pAccount.get() != NULL)
@@ -383,7 +386,7 @@ int main()
 					<< " Fee：" << pAccount->Commission << std::endl;
 			}
 
-			std::map<std::string, cwPositionPtr> PosMap = m_TradeChannel.GetPosition();
+			/*std::map<std::string, cwPositionPtr> PosMap = m_TradeChannel.GetPosition();
 			for (auto it = PosMap.begin(); it != PosMap.end(); it++)
 			{
 				if (it->second.get() != NULL
@@ -400,7 +403,7 @@ int main()
 						<< it->second->GetShortYdPosition() << " "
 						<< it->second->GetShortAveragePosPrice() << std::endl;
 				}
-			}
+			}*/
 		}
 		cwSleep(1000);
 	}

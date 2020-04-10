@@ -2,8 +2,8 @@
 <Config Generated_at="2016-12-26 23:21:47">
     <!-- Configs for PegasusTrader -->
     <User>
-	<MarketDataServer Front="tcp://180.168.146.187:10011" BrokerID="9999" UserID="" PassWord=""/>
-	<TradeServer Front="tcp://180.168.146.187:10000" BrokerID="9999" UserID="" PassWord="" ProductInfo="Pandora" AppID="Pandora" AuthCode="Pandora"/>
+	<MarketDataServer Front="tcp://180.168.146.187:10110" BrokerID="9999" UserID="" PassWord=""/>
+	<TradeServer Front="tcp://180.168.146.187:10100" BrokerID="9999" UserID="" PassWord="" ProductInfo="Pandora" AppID="Pandora" AuthCode="Pandora"/>
     </User>
     <Subscription>
 	<Instrument ID="SR909"/>

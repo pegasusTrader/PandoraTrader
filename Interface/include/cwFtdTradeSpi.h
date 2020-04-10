@@ -530,6 +530,9 @@ protected:
 	uint32_t					m_iLatestUpdateTime;
 #endif // NoCancelTooMuchPerTick
 
+	std::deque<CThostFtdcOrderField>	m_UndealedOrdersDeque;
+	std::deque<CThostFtdcTradeField>	m_UndealedTradesDeque;
+
 	int m_iTradeAPIIndex;
 
 #ifdef CWCOUTINFO
