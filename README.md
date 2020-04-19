@@ -110,12 +110,12 @@
 您可直接利用交易平台对策略进行实盘交易或者模拟环境交易，也可利用我们的回测平台进行测试。
 
 
-3. 交易平台中，PandoraTrader 工程中有PandoraDemoStrategyTrader.cpp 是 main 函数的入口，作为一个如何实例化该平台代码的 demo。
-该实例化过程可以作为通用代码，只要替换其中包含的策略，就可以编译出一个新的交易程序。
-策略库工程PandoraStrateg中自带一个demo策略，即cwStrategyDemo，直接编译就可以获得一个自动交易策略，可以边运行边了解其中功能。
-这个demo提供了如何通过cwBasicStrategy访问平台中维护的持仓信息，挂单信息，根据行情下单，以及进行报单撤单等操作。有这些基础操作知识后，您就可以组合搭建属于您自己的策略。
-只需在PandoraStrateg工程中添加一个新的策略，以 cwBasicStrategy 为基类派生一个您的策略类，实现 PriceUpdate，OnRtnTrade，OnRtnOrder，OnOrderCanceled 这几个函数即可在相应的回调中做相应的处理。
-可以在回调函数中根据行情，持仓和挂单信息，进行报单，撤单等操作。如果有复杂耗时的数学计算，请起一个线程进行计算。秉持原则是让回调函数尽快返回处理后续的操作。
+3. 交易平台中，PandoraTrader 工程中有PandoraDemoStrategyTrader.cpp 是 main 函数的入口，作为一个如何实例化该平台代码的 demo。  
+该实例化过程可以作为通用代码，只要替换其中包含的策略，就可以编译出一个新的交易程序。  
+策略库工程PandoraStrateg中自带一个demo策略，即cwStrategyDemo，直接编译就可以获得一个自动交易策略，可以边运行边了解其中功能。  
+这个demo提供了如何通过cwBasicStrategy访问平台中维护的持仓信息，挂单信息，根据行情下单，以及进行报单撤单等操作。有这些基础操作知识后，您就可以组合搭建属于您自己的策略。  
+只需在PandoraStrateg工程中添加一个新的策略，以 cwBasicStrategy 为基类派生一个您的策略类，实现 PriceUpdate，OnRtnTrade，OnRtnOrder，OnOrderCanceled 这几个函数即可在相应的回调中做相应的处理。  
+可以在回调函数中根据行情，持仓和挂单信息，进行报单，撤单等操作。如果有复杂耗时的数学计算，请起一个线程进行计算。秉持原则是让回调函数尽快返回处理后续的操作。  
 
        PriceUpdate：行情更新，当有最新行情更新时，该函数会被调用，可以在该函数内完成行情处理；
 
@@ -153,9 +153,15 @@
 		HisMarketDataIndex.xml：用于读取历史交易数据。将交易数据文件的全路径放置于<MDFile DateIndexId="201905160" FilePath="\\Mac\Home\Desktop\PandoraTrader-master\MarketData_20190529_084005.csv" />，DateIndexId为9位数字，最后一位0表示白盘，1则表示夜盘。如需同时回测多天数据，按照此格式在后面继续补充即可；
 
 		PegasusSimulatorConfig.xml：将HisMarketDataIndex.xml和Instrument.xml的全路径填写至<SimulatorServer Front="F:\HisData\HisMarketDataIndex.xml" Interval="0" Instrument="F:\HisData\Instrument.xml"/>，并在<Instrument ID="j1909"/>中输入所需测试的期货名称。
+如果需要历史数据，可以用cwMarketDataReceiver或cwMarketDataBinaryReceiver提供的类，作为策略类编译一个行情存储程序。用计划任务的方式定时启动，来收取历史数据。
+cwMarketDataReceiver存下csv文件，cwMarketDataBinaryReceiver存下的是bin的二进制文件。
+这两个策略要正确配置行情和交易配置信息，因为需要从交易柜台获取当前有交易合约，从而实现自动订阅合约。
+也可以自行编写行情存储程序来自动收行情，程序启动之后，从交易spi中获取合约信息，订阅行情，然后将行情存储下来。Simulator定义的行情csv文件列如下：
+		Localtime,MD,InstrumentID,TradingDay,UpdateTime,UpdateMillisec,LastPrice,Volume,LastVolume,Turnover,LastTurnover,AskPrice5,AskPrice4,AskPrice3,AskPrice2,AskPrice1,BidPrice1,BidPrice2,BidPrice3,BidPrice4,BidPrice5,AskVolume5,AskVolume4,AskVolume3,AskVolume2,AskVolume1,BidVolume1,BidVolume2,BidVolume3,BidVolume4,BidVolume5,OpenInterest,UpperLimitPrice,LowerLimitPrice
 
 ##### 建议反馈：
 如果有什么疑问和建议，您可以发送有邮件给pandoratrader@163.com于作者取得联系。
+欢迎加入QQ群（615093081）参与讨论。
 
 ##### 特别提示：
 请在法律和监管允许下使用该平台。
