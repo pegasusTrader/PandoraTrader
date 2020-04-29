@@ -353,10 +353,10 @@ int main()
 
 	std::string strStrategyName = m_cwStategy.GetStrategyName();
 
-	m_TradeChannel.RegisterBasicStrategy(&m_cwStategy);
+	m_TradeChannel.RegisterBasicStrategy(dynamic_cast<cwBasicStrategy*>(&m_cwStategy));
 
-	m_mdCollector.RegisterTradeSPI(&m_TradeChannel);
-	m_mdCollector.RegisterStrategy(&m_cwStategy);
+	m_mdCollector.RegisterTradeSPI(dynamic_cast<cwBasicTradeSpi*>(&m_TradeChannel));
+	m_mdCollector.RegisterStrategy(dynamic_cast<cwBasicStrategy*>(&m_cwStategy));
 
 	std::thread m_PriceServerThread = std::thread(PriceServerThread);
 

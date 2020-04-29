@@ -50,16 +50,47 @@ unsigned int PriceServerThread()
 
 int main()
 {
+	char exeFullPath[MAX_PATH];
+	memset(exeFullPath, 0, MAX_PATH);
+	std::string strFullPath;
+#ifdef WIN32
+	WCHAR TexeFullPath[MAX_PATH] = { 0 };
+
+	GetModuleFileName(NULL, TexeFullPath, MAX_PATH);
+	int iLength;
+	//获取字节长度   
+	iLength = WideCharToMultiByte(CP_ACP, 0, TexeFullPath, -1, NULL, 0, NULL, NULL);
+	//将tchar值赋给_char    
+	WideCharToMultiByte(CP_ACP, 0, TexeFullPath, -1, exeFullPath, iLength, NULL, NULL);
+#else
+	size_t cnt = readlink("/proc/self/exe", exeFullPath, MAX_PATH);
+	if (cnt < 0 || cnt >= MAX_PATH)
+	{
+		printf("***Error***\n");
+		exit(-1);
+	}
+#endif // WIN32
+
+	strFullPath = exeFullPath;
+	strFullPath = strFullPath.substr(0, strFullPath.find_last_of("/\\"));
+
+#ifdef WIN32
+	strFullPath.append("\\PandoraSimulatorConfig.xml");
+#else
+	strFullPath.append("/PandoraSimulatorConfig.xml");
+#endif // WIN32
+
+
 	m_Strategy.InitialStrategy(NULL);
 
-	m_PegasusSimulator.InitialStrategy(NULL);
+	m_PegasusSimulator.InitialStrategy(strFullPath.c_str());
 	m_PegasusSimulator.SetMdSpi((void*)(&m_mdCollector));
 	m_PegasusSimulator.SetTradeSpi((void*)&m_TradeChannel);
 
-	m_TradeChannel.RegisterBasicStrategy(&m_Strategy);
+	m_TradeChannel.RegisterBasicStrategy(dynamic_cast<cwBasicStrategy*>(&m_Strategy));
 
-	m_mdCollector.RegisterTradeSPI(&m_TradeChannel);
-	m_mdCollector.RegisterStrategy(&m_Strategy);
+	m_mdCollector.RegisterTradeSPI(dynamic_cast<cwBasicTradeSpi*>(&m_TradeChannel));
+	m_mdCollector.RegisterStrategy(dynamic_cast<cwBasicStrategy*>(&m_Strategy));
 
 	std::thread m_PriceServerThread = std::thread(PriceServerThread);
 	//std::thread m_TradeServerThread = std::thread(TradeServerThread);

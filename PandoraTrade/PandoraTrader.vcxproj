@@ -97,7 +97,7 @@
     </Link>
     <PostBuildEvent>
       <Command>echo 请在PandoraTraderConfig.xml配置账户等信息！
-if not exist $(SolutionDir)$(Configuration)\PandoraTraderConfig.xml (copy "PandoraTraderConfig.xml" "$(SolutionDir)$(Configuration)\";)
+if not exist "$(SolutionDir)$(Configuration)\PandoraTraderConfig.xml" (copy "PandoraTraderConfig.xml" "$(SolutionDir)$(Configuration)\")
 copy "..\Interface\CTPTradeApi32\*.dll" "$(SolutionDir)$(Configuration)\";</Command>
     </PostBuildEvent>
     <PreBuildEvent>
@@ -121,7 +121,7 @@ copy "..\Interface\CTPTradeApi32\*.dll" "$(SolutionDir)$(Configuration)\";</Comm
     </Link>
     <PostBuildEvent>
       <Command>echo 请在PandoraTraderConfig.xml配置账户等信息！
-if not exist $(SolutionDir)$(Platform)\$(Configuration)\PandoraTraderConfig.xml (copy "PandoraTraderConfig.xml" "$(SolutionDir)$(Platform)\$(Configuration)\";)
+if not exist "$(SolutionDir)$(Platform)\$(Configuration)\PandoraTraderConfig.xml" (copy "PandoraTraderConfig.xml" "$(SolutionDir)$(Platform)\$(Configuration)\";)
 copy "..\Interface\CTPTradeApi64\*.dll" "$(SolutionDir)$(Platform)\$(Configuration)\";
 </Command>
     </PostBuildEvent>
@@ -146,7 +146,7 @@ copy "..\Interface\CTPTradeApi64\*.dll" "$(SolutionDir)$(Platform)\$(Configurati
     </Link>
     <PostBuildEvent>
       <Command>echo 请在PandoraTraderConfig.xml配置账户等信息！
-if not exist $(SolutionDir)$(Configuration)\PandoraTraderConfig.xml (copy "PandoraTraderConfig.xml" "$(SolutionDir)$(Configuration)\";)
+if not exist "$(SolutionDir)$(Configuration)\PandoraTraderConfig.xml" (copy "PandoraTraderConfig.xml" "$(SolutionDir)$(Configuration)\";)
 copy "..\Interface\CTPTradeApi32\*.dll" "$(SolutionDir)$(Configuration)\";</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -170,13 +170,10 @@ copy "..\Interface\CTPTradeApi32\*.dll" "$(SolutionDir)$(Configuration)\";</Comm
     </Link>
     <PostBuildEvent>
       <Command>echo 请在PandoraTraderConfig.xml配置账户等信息！
-if not exist $(SolutionDir)$(Platform)\$(Configuration)\PandoraTraderConfig.xml (copy "PandoraTraderConfig.xml" "$(SolutionDir)$(Platform)\$(Configuration)\";)
+if not exist "$(SolutionDir)$(Platform)\$(Configuration)\PandoraTraderConfig.xml" (copy "PandoraTraderConfig.xml" "$(SolutionDir)$(Platform)\$(Configuration)\";)
 copy "..\Interface\CTPTradeApi64\*.dll" "$(SolutionDir)$(Platform)\$(Configuration)\";</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
