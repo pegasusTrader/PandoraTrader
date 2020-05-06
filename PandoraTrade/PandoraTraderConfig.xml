@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <Config Generated_at="2016-12-26 23:21:47">
-    <!-- Configs for PegasusTrader -->
+    <!-- Configs for PandoraTrader -->
     <User>
 	<MarketDataServer Front="tcp://180.168.146.187:10110" BrokerID="9999" UserID="" PassWord=""/>
 	<TradeServer Front="tcp://180.168.146.187:10100" BrokerID="9999" UserID="" PassWord="" ProductInfo="Pandora" AppID="Pandora" AuthCode="Pandora"/>
@@ -12,7 +12,7 @@
     
 
     <StrategyConfigFile>
-K:\Release\StrategyDemo.xml
+.\StrategyDemo.xml
     </StrategyConfigFile>
 
 </Config>
