@@ -49,7 +49,8 @@
 方便交易策略在多种交易接口进行移植。该平台亦提供了 Linux 版本，需要别的api接入，如有需求请与作者联系更新（邮件地址：pandoratrader@163.com）！
 
 ##### 程序展示
-![avatar](./pic/simnow_screenshot.png)
+![Simnow Trade](https://github.com/pegasusTrader/PandoraTrader/blob/master/pic/simnow_screenshot.png)
+![Simnow Trade](https://github.com/pegasusTrader/PandoraTrader/blob/master/pic/simnow_screenshot1.png)
 
 ##### 目录结构:
 
