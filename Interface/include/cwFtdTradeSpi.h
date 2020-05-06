@@ -485,6 +485,7 @@ protected:
 	cwFtdcTradeSourceType		GetCtp2CwTradeSourceType(TThostFtdcTradeSourceType tradesourcetype);
 	cwFtdcInstrumentStatusType	GetCtp2CwInstrumentStatusType(TThostFtdcInstrumentStatusType intrumentstatustype);
 
+	THOST_TE_RESUME_TYPE		Getcw2CtpResumeType(CW_TE_RESUME_TYPE type);
 	TThostFtdcDirectionType		GetCw2CtpDirectionType(cwFtdcDirectionType direction);
 
 	cwOrderPtr					GetcwOrderPtr(CThostFtdcOrderField * pOrder);
@@ -538,5 +539,7 @@ protected:
 #ifdef CWCOUTINFO
 	cwBasicCout					m_cwShow;
 #endif
+
+	THOST_TE_RESUME_TYPE		m_iResumeType;
 };
 

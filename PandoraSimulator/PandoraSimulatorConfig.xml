@@ -3,6 +3,7 @@
   <!-- Configs for PegasusTrader -->
   <User type="2">
     <SimulatorServer Front="F:\HisData\HisMarketDataIndex.xml" Interval="0" Instrument="F:\HisData\Instrument.xml"/>
+    <Account PreBalance="0"/>
   </User>
   <Subscription>
 <!--
@@ -10,7 +11,10 @@
 -->
   </Subscription>
     <StrategyConfigFile>
-.\StrategyTest.xml
+      .\StrategyTest.xml
     </StrategyConfigFile>
-
+ <Result>
+  	<TotalResult bSave="1" Interval="10" />
+  	<InsResult ID="IC1907" bSave="0" Interval="1"/>
+  </Result>
 </Config>

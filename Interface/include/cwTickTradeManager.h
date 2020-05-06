@@ -28,7 +28,7 @@ public:
 	void UpdatePrice(cwMarketDataPtr pPriceData);
 
 	//Get this tick's trade volume
-	std::map<uint32_t, uint32_t>& GetCurrentTradeMap() 
+	std::map<int64_t, uint32_t>& GetCurrentTradeMap() 
 	{
 		cwAUTOMUTEX mt(m_CurrentTradeMutex, true);
 		return m_CurrentTradeMap; 
@@ -46,7 +46,7 @@ public:
 	}
 
 	void SaveTotalTradeMap();
-	std::map<uint32_t, uint64_t>&GetTotalTradeMap() { return m_TotalTradeMap; }
+	std::map<int64_t, uint64_t>&GetTotalTradeMap() { return m_TotalTradeMap; }
 	void ResetTotalTradeMap() { m_TotalTradeMap.clear(); }
 
 	void SaveTotalTradeVolumeNumMap();
@@ -64,7 +64,7 @@ private:
 
 	//price update
 	//Key:Price*1000 value:TradeVolume
-	std::map<uint32_t, uint32_t> m_CurrentTradeMap;
+	std::map<int64_t, uint32_t> m_CurrentTradeMap;
 	cwMUTEX						 m_CurrentTradeMutex;
 
 	uint32_t					 m_iCurrentBuyVolume;
@@ -72,7 +72,7 @@ private:
 
 	//static Update
 	//Key:Price*1000 value:TradeVolume	
-	std::map<uint32_t, uint64_t> m_TotalTradeMap;
+	std::map<int64_t, uint64_t> m_TotalTradeMap;
 	//Key:TradeVolume value:how many times appear
 	std::map<uint64_t, uint32_t> m_TotalTradeVolumeNumMap;
 

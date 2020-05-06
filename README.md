@@ -9,28 +9,45 @@
 
 ##### 架构介绍:
 这是一个中国国内期货交易平台，采用 C++ 对 CTP 进行一层封装，提供友好的接口给策略交易模型。
-您只需要关注策略模型进行策略开发即可，不用关心底层如何利用CTP进行下单撤单等控制。同时，我们也提供了回测平台，方便您对策略的测试。
-
-            --------------------------
-            |                        |
+您只需要关注策略模型进行策略开发即可，不用关心底层如何利用CTP进行下单撤单等控制。同时，我们也提供了回测平台，方便您对策略进行测试验证。
+              
+                实盘交易通路示意图                                      
+                  PandoraTrader                                      
+            --------------------------                           
+            |       用户策略         |                         
             |    User  Strategy      |
             |                        |
             --------------------------
                 |                |
              Get Info        Call Back
+             获取信息         回调通知
                 |                |
-        ----------------------------------
-        |                                |
-        |       Basic Strategy           |
-        |                                |
-        ----------------------------------
+        ----------------------------------                      -------------------------   
+        |                                |                      |                        |
+        |         Basic Strategy         |-----Sim Trade API----|      PandoraSimulator  |
+        |        Pandora 策略平台        |                       |      回测模拟系统      |
+        |        (内嵌风控)              |-----Sim Md API--------|                       |
+        |                                |                      |                       |
+        ----------------------------------                      -------------------------
              |                    |
-        Trade API               MD API 
+         Trade API              MD API 
+          交易接口             行情接口   
              |                    |
+        -----------------------------------
+        |          期货公司                |
+        |           broker                 |
+        |          CTP 柜台                |
+        -----------------------------------
+             |      |       |        |
+           CFFEX   SHFE    DCE      ZCE
+           中金所  上期所  大商所   郑商所
 
 该平台对交易策略进行抽象，提供统一的中间层接口给策略，策略需要的信息都通过平台提供的中间层进行访问，不关注交易接口的细节，从而实现策略开发和交易接口开发的分离。
 上图中的Trade API可以替换成飞马，QDP等柜台的api，交易api替换，策略可以不用调整。MD API同样可以替换成别的api，甚至是组播，广播数据。
 方便交易策略在多种交易接口进行移植。该平台亦提供了 Linux 版本，需要别的api接入，如有需求请与作者联系更新（邮件地址：pandoratrader@163.com）！
+
+##### 程序展示
+
 
 ##### 目录结构:
 
@@ -158,6 +175,8 @@ cwMarketDataReceiver存下csv文件，cwMarketDataBinaryReceiver存下的是bin�
 这两个策略要正确配置行情和交易配置信息，因为需要从交易柜台获取当前有交易合约，从而实现自动订阅合约。
 也可以自行编写行情存储程序来自动收行情，程序启动之后，从交易spi中获取合约信息，订阅行情，然后将行情存储下来。Simulator定义的行情csv文件列如下：
 		Localtime,MD,InstrumentID,TradingDay,UpdateTime,UpdateMillisec,LastPrice,Volume,LastVolume,Turnover,LastTurnover,AskPrice5,AskPrice4,AskPrice3,AskPrice2,AskPrice1,BidPrice1,BidPrice2,BidPrice3,BidPrice4,BidPrice5,AskVolume5,AskVolume4,AskVolume3,AskVolume2,AskVolume1,BidVolume1,BidVolume2,BidVolume3,BidVolume4,BidVolume5,OpenInterest,UpperLimitPrice,LowerLimitPrice
+
+##### 
 
 ##### 建议反馈：
 如果有什么疑问和建议，您可以发送有邮件给pandoratrader@163.com于作者取得联系。

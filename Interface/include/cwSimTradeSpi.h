@@ -25,6 +25,9 @@ public:
 	///成交通知
 	virtual void OnRtnTrade(cwTradePtr pTrade);
 
+	///账户通知
+	virtual void OnRtnAccount(cwAccountPtr pAccount);
+
 	///报单录入错误回报
 	virtual void OnErrRtnOrderInsert(cwOrderPtr pInputOrder, cwRspInfoPtr pRspInfo);
 

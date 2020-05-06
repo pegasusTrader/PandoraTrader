@@ -17,10 +17,10 @@ public:
 	enum cwTradeTimeSpace
 	{
 		NoTrading = 0
+		, NightPartOne
 		, AMPartOne
 		, AMPartTwo
 		, PMPartOne
-		, NightPartOne
 		, TradeTimeSpaceCnt
 	};
 

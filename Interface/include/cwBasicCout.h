@@ -34,6 +34,8 @@ public:
 	//static void AddLog(bool bNoPara, const char * pData);
 	static void AddLog(const char * lpParam, ...);
 
+	static void SetNoWorkRequired(bool NoWork = false);
+private:
 	static std::thread			m_CoutWorkingThread;
 	static volatile bool		m_bCoutWorkingThreadRun;
 	static void					CoutWorkingThread();
@@ -41,5 +43,8 @@ public:
 	static int					m_iInitialCount;
 
 	static cwMUTEX				m_DequeMutex;
+
+	//不需要工作
+	static volatile bool		m_bNoWorkRequired;
 };
 
