@@ -65,7 +65,7 @@ Pandora策略平台，通过回测交易接口，SimTrade API和SimMdAPI,可以�
          Trade API              MD API 
           交易接口             行情接口   
              |                    |
-    		 期货公司 柜台（CTP, QDP…）
+           期货公司 柜台（CTP, QDP etc.）
         ┌────────────────────────────────┐
         |                                |
         |              broker            |
@@ -243,6 +243,3 @@ I accept no liability for any damage or loss of business that this software may 
 
 If SFIT suspends CTP support or license, be sure to suspend the platform.
 
-
-
-[Simnow_Pic]:
