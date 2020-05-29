@@ -18,7 +18,7 @@ public:
 	cwPegasusSimulator();
 	~cwPegasusSimulator();
 
-	virtual void InitialStrategy(const char * pConfigFilePath);
+	virtual void InitialSimulator(const char * pConfigFilePath);
 
 	virtual int ReqUserMdLogin();
 	virtual int ReqQryInstrument();
@@ -36,7 +36,7 @@ public:
 	cwFtdcTimeType								m_CurrentSimulationTime;
 
 	volatile bool								m_bSimulationFinished;
-
+	cwSettlement								m_cwSettlement;
 private:
 	enum SIMTYPE:int
 	{
@@ -44,14 +44,15 @@ private:
 		type_BIN_file,
 		type_CSV_List_file,
 		type_BIN_List_file,
-		type_DB
+		type_DB,
+		type_REAL_Time_Quote
 	};
 
-	SIMTYPE		m_SimType;
-	int			m_iInterval;
+	SIMTYPE				m_SimType;
+	int					m_iInterval;
 
-	std::string m_strFrontAddr;
-	std::string m_strInstrumentFile;
+	std::string			m_strFrontAddr;
+	std::string			m_strInstrumentFile;
 
 	std::thread			m_SimulatorProcessorThread;
 	volatile bool		m_bMarketDataUpdateThreadRun;
@@ -60,6 +61,7 @@ private:
 	std::thread			m_MarketDataUpdateThread;
 	void				CsvMarketDataUpdate();
 	void				BinMarketDataUpdate();
+	void				RealTimeMarketDataUpdate();
 
 	std::map<std::string, std::string>			m_MarketDataFileMap;
 
@@ -74,11 +76,11 @@ private:
 	std::map<std::string, cwMarketDataPtr>								m_LastestMarketDataMap;
 
 	std::map<std::string, cwOrderPtr>									m_TotalOrderMap;
-	std::map<std::string, std::map<uint32_t, std::deque<cwOrderPtr>>>	m_TotalLongOrderMap;
-	std::map<std::string, std::map<uint32_t, std::deque<cwOrderPtr>>>	m_TotalShortOrderMap;
+	std::map<std::string, std::map<int64_t, std::deque<cwOrderPtr>>>	m_TotalLongOrderMap;
+	std::map<std::string, std::map<int64_t, std::deque<cwOrderPtr>>>	m_TotalShortOrderMap;
 
-	std::map<std::string, std::map <uint32_t, std::deque<cwOrderPtr>>>	m_LongWaitOrderListMap;
-	std::map<std::string, std::map <uint32_t, std::deque<cwOrderPtr>>>	m_ShortWaitOrderListMap;
+	std::map<std::string, std::map<int64_t, std::deque<cwOrderPtr>>>	m_LongWaitOrderListMap;
+	std::map<std::string, std::map<int64_t, std::deque<cwOrderPtr>>>	m_ShortWaitOrderListMap;
 
 	enum UserActionType :int
 	{
@@ -106,6 +108,17 @@ private:
 	volatile bool								m_bMDCasheMutexReady;
 	volatile bool								m_bSimulationPartEnd;
 
-	cwSettlement								m_cwSettlement;
+	cwAccountPtr								m_pAccount;
+
+	double										m_dDeposit;
+
+	//Result 
+	bool													m_bSaveAccountResult;
+	int														m_iAccountResultInterval;
+	std::map<std::string, double>							m_dTimeBalanceMap;
+
+	std::map<std::string, bool>								m_bSaveInsResultMap;
+	std::map<std::string, int>								m_iInsResultInterval;
+	std::map<std::string, std::map<std::string, double>>	m_dInsTimeBalanceMap;
 };
 

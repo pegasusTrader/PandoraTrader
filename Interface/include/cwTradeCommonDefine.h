@@ -61,13 +61,17 @@
 #define MAX_PATH          260
 #endif // !MAX_PATH
 
-#define CWCOUTINFO
+#define		CWCOUTINFO
 
 #define		InstrumentIDLength	32
 #define		MARKET_PRICE_DEPTH	5
 
-
-
+enum CW_TE_RESUME_TYPE
+{
+	CW_TERT_RESTART = 0,
+	CW_TERT_RESUME,
+	CW_TERT_QUICK
+};
 
 ///--------------------Market Data---------------------------------------------
 

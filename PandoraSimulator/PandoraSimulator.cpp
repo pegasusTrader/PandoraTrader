@@ -83,7 +83,7 @@ int main()
 
 	m_Strategy.InitialStrategy(NULL);
 
-	m_PegasusSimulator.InitialStrategy(strFullPath.c_str());
+	m_PegasusSimulator.InitialSimulator(strFullPath.c_str());
 	m_PegasusSimulator.SetMdSpi((void*)(&m_mdCollector));
 	m_PegasusSimulator.SetTradeSpi((void*)&m_TradeChannel);
 

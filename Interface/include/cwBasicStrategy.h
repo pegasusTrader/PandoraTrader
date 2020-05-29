@@ -14,6 +14,7 @@
 #include <vector>
 #include <set>
 #include <map>
+#include <thread>
 #include "cwProductTradeTime.h"
 #include "cwTradeCommonDefine.h"
 #include "cwStrategyLog.h"
@@ -62,6 +63,9 @@ public:
 	//报单操作请求响应
 	virtual void OnRspOrderCancel(cwOrderPtr pOrder, cwFtdcRspInfoField * pRspInfo) {};
 
+	///Strategy Timer
+	virtual void OnStrategyTimer(int iTimerId) {};
+
 	///Special For Simulation 
 	///These functions will NOT be called in normal mode
 	//回测部分结束（夜盘结束和日盘结束将被调用）
@@ -80,15 +84,15 @@ public:
 	cwMarketDataPtr	GetLastestMarketData(std::string InstrumentID);
 	//获取账户信息
 	cwAccountPtr GetAccount();
-	//获取挂单列表，传入map用于返回信息，本地报单编号为Key
+	//获取挂单列表，传入map用于返回信息，本地报单编号(OrderRef)为Key
 	bool GetActiveOrders(std::map<std::string, cwOrderPtr>& ActiveOrders);		///key OrderRef
-	//获取挂单列表，传入合约，map用于返回信息，本地报单编号为Key
+	//获取挂单列表，传入合约，map用于返回信息，本地报单编号(OrderRef)为Key
 	bool GetActiveOrders(std::string InstrumentID, std::map<std::string, cwOrderPtr>& ActiveOrders);		///key OrderRef
 	//获取多头挂单数量，传入合约
 	int GetActiveOrdersLong(std::string InstrumentID);		///key OrderRef
 	//获取空头挂单数量，传入合约
 	int GetActiveOrdersShort(std::string InstrumentID);		///key OrderRef
-	//获取所有报单列表，传入map用于返回信息，交易所报单编号为Key
+	//获取所有报单列表，传入map用于返回信息，交易所报单编号(sysOrderID)为Key
 	bool GetAllOrders(std::map<std::string, cwOrderPtr>& Orders);				///Key OrderSysID
 	//获取持仓列表，传入map用于返回信息，合约ID为Key
 	bool GetPositions(std::map<std::string, cwPositionPtr>& PositionMap);		///Key InstrumentID
@@ -136,28 +140,43 @@ public:
 
 	//获取合约当前撤单次数
 	int		  GetInstrumentCancelCount(std::string InstrumentID);
+	//获取合约是否是订阅
+	bool	  IsThisStrategySubScribed(std::string InstrumentID);
 	//获取当前状态是否为回测模拟情况
 	inline bool GetIsSimulation() { return m_bIsSimulation; }
+
+	//设置定时器 iTimerId定时器id，在OnTimer回调依据此id判定是哪个定时器触发, iElapse 触发间隔（毫秒）
+	//目前仅支持10个定时器，定时器内回调函数请勿处理复杂逻辑，所有定时器回调共用一个线程。
+	//同个id下，触发间隔将会被覆盖
+	bool	  SetTimer(int iTimerId, int iElapse);
+	void	  RemoveTimer(int iTimerId);
 
 	///如果重载该函数，请确保最后基类的函数能够被调用到！
 	virtual void	   SetStrategyReady();
 	///系统自用接口信息，勿动
-	void			   SetMdSpi(cwMDAPIType apiType, void * pSpi);
-	void			   SetTradeSpi(cwTradeAPIType apiType, void *pSpi);
-	void			   SetIsSimulation(bool IsSimulation = false) { m_bIsSimulation = IsSimulation; };
+	void					SetMdSpi(cwMDAPIType apiType, void * pSpi);
+	void					SetTradeSpi(cwTradeAPIType apiType, void *pSpi);
+	void					SetIsSimulation(bool IsSimulation = false) { m_bIsSimulation = IsSimulation; };
 private:
 	///系统自用接口信息，勿动
-	bool				m_bIsSimulation;
+	bool					m_bIsSimulation;
 
-	void *				m_pTradeSpi;
-	cwTradeAPIType		m_TradeApiType;
+	void *					m_pTradeSpi;
+	cwTradeAPIType			m_TradeApiType;
 
-	void *				m_pMdSpi;
-	cwMDAPIType			m_MdApiType;
+	void *					m_pMdSpi;
+	cwMDAPIType				m_MdApiType;
 
 
 	std::set<std::string>	m_SubscribeInstrumentSet;
 	cwProductTradeTime		m_ProductTradeTime;
 
 	cwStrategyLog			m_BasicStrategyLog;
+
+	//Timer	key:TimerID, value:Elapse in ms
+	std::map<int, int>		m_cwTimerElapseMap;
+
+	std::thread				m_StrategyTimerWorkingThread;
+	volatile bool			m_bStrategyTimerWorkingThreadRun;
+	void					StrategyTimerWorkingThread();
 };

@@ -23,7 +23,7 @@ public:
 	cwBasicSimulator();
 	~cwBasicSimulator();
 
-	virtual void InitialStrategy(const char * pConfigFilePath);
+	virtual void InitialSimulator(const char * pConfigFilePath);
 	std::string			m_strConfigFileFullPath;
 
 

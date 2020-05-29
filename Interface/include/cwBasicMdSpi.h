@@ -75,18 +75,25 @@ public:
 	}
 
 	//User Setting Method
-	inline void RegisterTradeSPI(cwBasicTradeSpi * pTradeSpi)
+	inline void		RegisterTradeSPI(cwBasicTradeSpi * pTradeSpi)
 	{
 		m_pTradeSpi = pTradeSpi;
 	}
 
-	virtual void RegisterStrategy(cwBasicStrategy * pBasicStrategy) = 0;
+	virtual void	RegisterStrategy(cwBasicStrategy * pBasicStrategy) = 0;
+
+	void			SetMdInfo(const char * pszInfo);
+
 
 	const cwMDAPIType					m_cwMdAPIType;
+	char								m_szMdInfo[128];
 	std::deque <cwMarketDataPtr>		m_DepthMarketDataDeque;
 	size_t								m_iDequeSize;
 	volatile bool						m_MdDequeDone;
 	bool								m_bNoUseBasicMdUpdate;
+
+	cwMUTEX								m_MarketDataUpdateMutex;
+	cwBasicStrategy*					m_pBasicStrategy;
 protected:
 	PriceServerStatus	m_CurrentStatus;
 
@@ -156,7 +163,6 @@ ORIGIN->MEMBER = 0;\
 #endif //  CV_NOTIFY
 
 
-	cwMUTEX				m_MarketDataUpdateMutex;
 	std::condition_variable	m_MDUpdateMutexCv;
 
 	std::thread			m_MarketDataUpdateThread;
@@ -164,7 +170,6 @@ ORIGIN->MEMBER = 0;\
 	void				MarketDataUpdate();
 
 	cwBasicTradeSpi*	m_pTradeSpi;
-	cwBasicStrategy*	m_pBasicStrategy;
 
 	std::map<std::string, cwMarketDataPtr>	m_LastestMarketDataMap;
 

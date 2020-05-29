@@ -82,6 +82,8 @@ public:
 
 	virtual void RegisterBasicStrategy(cwBasicStrategy * pBasicStrategy, void * pSpi = NULL) = 0;
 
+	void		SetTradeInfo(const char * pszInfo);
+
 	inline cwAccountPtr GetAccount()
 	{
 		return m_pAccount;
@@ -164,6 +166,7 @@ public:
 	bool	GenerateInstrumentDataToFile();
 
 	const cwTradeAPIType		m_cwTradeAPIType;
+	char						m_szTradeInfo[128];
 
 	bool						m_bHasPositionChanged;
 	bool						m_bHasOrdersChanged;
