@@ -18,6 +18,10 @@
 
 cwBasicCout				m_cwShow;
 
+cwFtdcBrokerIDType		m_szMdBrokerID;
+cwFtdcUserIDType		m_szMdUserID;
+cwFtdcPasswordType		m_szMdPassWord;
+
 cwPegasusSimulator		m_PegasusSimulator;
 cwSimMdSpi				m_mdCollector;
 cwSimTradeSpi			m_TradeChannel;
@@ -36,7 +40,7 @@ unsigned int PriceServerThread()
 	//m_SubscribeInstrument.push_back("zn1904");
 	//m_SubscribeInstrument.push_back("SR909");
 
-	m_mdCollector.SetUserLoginField(" ", " ", " ");
+	m_mdCollector.SetUserLoginField(m_szMdBrokerID, m_szMdUserID, m_szMdPassWord);
 	m_mdCollector.SubscribeMarketData(m_SubscribeInstrument);
 
 	m_mdCollector.Connect(&m_PegasusSimulator);
