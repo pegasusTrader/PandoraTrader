@@ -10,7 +10,6 @@ public:
 	~cwOrderReference();
 
 	void			UpdateOrderRef(const char * pOrderRef);
-	void			UpdateOrderRef(char * pOrderRef);
 
 	uint64_t		GetOrderRef();
 private:

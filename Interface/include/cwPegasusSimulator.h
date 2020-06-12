@@ -18,19 +18,25 @@ public:
 	cwPegasusSimulator();
 	~cwPegasusSimulator();
 
-	virtual void InitialSimulator(const char * pConfigFilePath);
+	//初始化模拟器，读取配置和合约信息
+	virtual void		InitialSimulator(const char * pConfigFilePath);
+	//读取配置信息
+	bool				ReadXmlConfigFile();
 
-	virtual int ReqUserMdLogin();
-	virtual int ReqQryInstrument();
+	//启动模拟器
+	bool				SimulationStart();
+	//启动行情服务
+	virtual bool		StartMarketDataServer();
 
-	virtual int ReqOrderInsert(cwOrderPtr pOrder);
-	virtual int CancelOrder(cwOrderPtr pOrder);
+	//请求
+	virtual int			ReqUserMdLogin();
+	virtual int			ReqQryInstrument();
 
-	bool		SimulationStart();
-	bool		ReadXmlConfigFile();
+	virtual int			ReqOrderInsert(cwOrderPtr pOrder);
+	virtual int			CancelOrder(cwOrderPtr pOrder);
 
-	cwOrderPtr	GetOrder(cwOrderPtr pOrder);
-	cwTradePtr	GetTrade(cwOrderPtr pOrder, double dTradePrice, int iTradeCnt = 1);
+	cwOrderPtr			GetOrder(cwOrderPtr pOrder);
+	cwTradePtr			GetTrade(cwOrderPtr pOrder, double dTradePrice, int iTradeCnt = 1);
 
 	cwFtdcDateType								m_CurrentTradingDay;
 	cwFtdcTimeType								m_CurrentSimulationTime;

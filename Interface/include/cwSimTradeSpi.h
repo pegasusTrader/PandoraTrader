@@ -43,19 +43,19 @@ public:
 		cwOpenClose openclose, int volume, double price);
 	virtual cwOrderPtr InputFOKOrder(const char * szInstrumentID, cwFtdcDirectionType direction,
 		cwOpenClose openclose, int volume, double price);
-	virtual void CancelOrder(char * szLocalOrderID);
+	virtual void CancelOrder(const char * szLocalOrderID);
 	virtual void CancelOrder(cwOrderPtr pOrder);
 
 	cwOrderPtr GetcwOrderPtr(const char * szInstrumentID, cwFtdcDirectionType direction,
 		cwOpenClose openclose, int volume, double price);
 
-	void Connect(char * pszFrontAddress);
+	void Connect(const char * pszFrontAddress);
 	void Connect(cwBasicSimulator * pBaiscSimulator);
 	void DisConnect();
 
 	void WaitForFinish();
 
-	void SetUserLoginField(char * szBrokerID, char * szUserID, char * szPassword);
+	void SetUserLoginField(const char * szBrokerID, const char * szUserID, const char * szPassword);
 
 private:
 	cwBasicSimulator *			m_pMarketDataUserApi;

@@ -16,7 +16,7 @@
 #include "cwBasicStrategy.h"
 #include "cwOrderReference.h"
 
-#define CWRISK
+//#define CWRISK
 #define TRADELOG
 //#define UPDATE_ORDERRANKED
 #define	NoCancelTooMuchPerTick
@@ -138,10 +138,7 @@ public:
 	bool		GetPositionAndActiveOrders(std::string InstrumentID, cwFtdcDirectionType direction,
 		int& TotalPositon, int& TodayPosition, int& FrozenTdPosition, int& FrozenYdPosition);
 
-	//CWRISK
-#ifdef CWRISK
 	int			GetOrderCancelCount(std::string InstrumentID);
-#endif
 
 	//User Trader Method
 	//行情更新
@@ -152,7 +149,7 @@ public:
 		cwOpenClose openclose, int volume, double price) = 0;
 	virtual cwOrderPtr InputFOKOrder(const char * szInstrumentID, cwFtdcDirectionType direction,
 		cwOpenClose openclose, int volume, double price) = 0;
-	virtual void CancelOrder(char * szLocalOrderID) = 0;
+	virtual void CancelOrder(const char * szLocalOrderID) = 0;
 	virtual void CancelOrder(cwOrderPtr pOrder) = 0;
 
 	void	SetDisConnectExit(bool bDisConnectExit = true) { m_bDisConnectExit = bDisConnectExit; }

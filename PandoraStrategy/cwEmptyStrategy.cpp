@@ -105,7 +105,4 @@ void cwEmptyStrategy::SetStrategyReady()
 	}
 	
 	SubScribePrice(SubscribeInstrument);
-
-	//Call Basic Strategy;
-	cwBasicStrategy::SetStrategyReady();
 }

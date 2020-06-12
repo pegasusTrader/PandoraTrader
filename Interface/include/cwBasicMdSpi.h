@@ -84,7 +84,6 @@ public:
 
 	void			SetMdInfo(const char * pszInfo);
 
-
 	const cwMDAPIType					m_cwMdAPIType;
 	char								m_szMdInfo[128];
 	std::deque <cwMarketDataPtr>		m_DepthMarketDataDeque;

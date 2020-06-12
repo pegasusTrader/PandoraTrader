@@ -102,12 +102,12 @@ public:
 
 	virtual void RegisterStrategy(cwBasicStrategy * pBasicStrategy);
 
-	void Connect(char * pszFrontAddress, char * pszLocalAddr = NULL);
+	void Connect(const char * pszFrontAddress, const char * pszLocalAddr = NULL);
 	void DisConnect();
 
 	void WaitForFinish();
 
-	void SetUserLoginField(char * szBrokerID, char * szUserID, char * szPassword);
+	void SetUserLoginField(const char * szBrokerID, const char * szUserID, const char * szPassword);
 	void SetUserLoginField(CThostFtdcReqUserLoginField& reqUserLoginField);
 
 	virtual void SubscribeMarketData(std::vector<std::string>& SubscribeInstrument);

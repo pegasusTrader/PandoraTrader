@@ -1031,7 +1031,7 @@ struct POSITIONFIELD
 
 	void Reset();
 
-	void UpdatePosition(char * szInstrumentID, cwFtdcDirectionType cPosiDirection, cwFtdcHedgeFlagType cHedgeFlag,
+	void UpdatePosition(const char * szInstrumentID, cwFtdcDirectionType cPosiDirection, cwFtdcHedgeFlagType cHedgeFlag,
 		cwFtdcVolumeType iYdPosition, cwFtdcVolumeType iTdPosition, cwFtdcVolumeType iPosition,
 		cwFtdcVolumeType iLongFrozen, cwFtdcVolumeType iShortFrozen, cwFtdcMoneyType dPositionCost,
 		cwFtdcMoneyType dOpenCost, cwFtdcMoneyType dExchangeMargin,

@@ -39,7 +39,7 @@ public:
 	//取消订阅合约
 	void		UnSubScribePrice(std::vector<std::string>& UnSubscribeInstrument);
 
-	bool		GetIsSubscribedInstrument(char * Ins);
+	bool		GetIsSubscribedInstrument(const char * Ins);
 	size_t		GetSubscribedInstrumentCount() { return m_SubscribeInstrumentMap.size(); };
 	///Trade
 

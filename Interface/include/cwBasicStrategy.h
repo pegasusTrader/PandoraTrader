@@ -59,12 +59,14 @@ public:
 	//撤单成功
 	virtual void OnOrderCanceled(cwOrderPtr pOrder) = 0;
 	//报单录入请求响应
-	virtual void OnRspOrderInsert(cwOrderPtr pOrder, cwFtdcRspInfoField * pRspInfo) {};
+	virtual void OnRspOrderInsert(cwOrderPtr pOrder, cwRspInfoPtr pRspInfo) {};
 	//报单操作请求响应
-	virtual void OnRspOrderCancel(cwOrderPtr pOrder, cwFtdcRspInfoField * pRspInfo) {};
+	virtual void OnRspOrderCancel(cwOrderPtr pOrder, cwRspInfoPtr pRspInfo) {};
 
 	///Strategy Timer
 	virtual void OnStrategyTimer(int iTimerId) {};
+	//当策略交易初始化完成时会调用OnReady, 可以在此函数做策略的初始化操作
+	virtual void OnReady() {};
 
 	///Special For Simulation 
 	///These functions will NOT be called in normal mode
@@ -99,21 +101,13 @@ public:
 	//获取持仓和挂单列表
 	bool GetPositionsAndActiveOrders(std::map<std::string, cwPositionPtr>& PositionMap,
 		std::map<std::string, cwOrderPtr>& ActiveOrders);
+	//获取指定合约持仓和挂单列表
 	bool GetPositionsAndActiveOrders(std::string InstrumentID, cwPositionPtr& pPosition, std::map<std::string, cwOrderPtr>& ActiveOrders);
+	//获取指定合约净持仓和挂单列表
+	bool GetNetPositionAndActiveOrders(std::string InstrumentID, int & iPosition, std::map<std::string, cwOrderPtr> & ActiveOrders);
 	//获取合约信息
 	cwInstrumentDataPtr GetInstrumentData(std::string InstrumentID);
 
-	//报单函数--限价单
-	cwOrderPtr InputLimitOrder(const char * szInstrumentID, cwFtdcDirectionType direction, cwOpenClose openclose, int volume, double price);
-	//报单函数--FAK单（Filled And Kill 立即成交剩余自动撤销指令）
-	cwOrderPtr InputFAKOrder(const char * szInstrumentID, cwFtdcDirectionType direction, cwOpenClose openclose, int volume, double price);
-	//报单函数--FOK单(FOK Filled Or Kill 立即全部成交否则自动撤销指令)
-	cwOrderPtr InputFOKOrder(const char * szInstrumentID, cwFtdcDirectionType direction, cwOpenClose openclose, int volume, double price);
-
-	//简化报单函数， volume正表示买，负表示卖，自动开平，有持仓就平仓，没有就开仓
-	cwOrderPtr EasyInputOrder(const char * szInstrumentID, int volume, double price,
-		cwOpenCloseMode openclosemode = cwOpenCloseMode::CloseTodayThenYd,
-		cwInsertOrderType insertordertype = cwInsertOrderType::cwInsertLimitOrder);
 
 	//撤单函数
 	bool CancelOrder(cwOrderPtr pOrder);
@@ -151,13 +145,33 @@ public:
 	bool	  SetTimer(int iTimerId, int iElapse);
 	void	  RemoveTimer(int iTimerId);
 
-	///如果重载该函数，请确保最后基类的函数能够被调用到！
-	virtual void	   SetStrategyReady();
 	///系统自用接口信息，勿动
-	void					SetMdSpi(cwMDAPIType apiType, void * pSpi);
-	void					SetTradeSpi(cwTradeAPIType apiType, void *pSpi);
-	void					SetIsSimulation(bool IsSimulation = false) { m_bIsSimulation = IsSimulation; };
-private:
+	void					_SetMdSpi(cwMDAPIType apiType, void * pSpi);
+	void					_SetTradeSpi(cwTradeAPIType apiType, void *pSpi);
+	void					_SetIsSimulation(bool IsSimulation = false) { m_bIsSimulation = IsSimulation; };
+
+	virtual void			_SetReady() = 0;
+	virtual void			_PriceUpdate(cwMarketDataPtr pPriceData) = 0;
+	virtual void			_OnRtnTrade(cwTradePtr pTrade) = 0;
+	virtual void			_OnRtnOrder(cwOrderPtr pOrder, cwOrderPtr pOriginOrder = cwOrderPtr()) = 0;
+	virtual void			_OnOrderCanceled(cwOrderPtr pOrder) = 0;
+	virtual void			_OnRspOrderInsert(cwOrderPtr pOrder, cwRspInfoPtr pRspInfo) = 0;
+	virtual void			_OnRspOrderCancel(cwOrderPtr pOrder, cwRspInfoPtr pRspInfo) = 0;
+
+protected:
+	///系统自用接口信息，勿动
+	std::set<std::string>	m_SubscribeInstrumentSet;
+
+	cwOrderPtr				_InputLimitOrder(const char * szInstrumentID, cwFtdcDirectionType direction, cwOpenClose openclose, int volume, double price);		///报单函数--限价单
+	cwOrderPtr				_InputFAKOrder(const char * szInstrumentID, cwFtdcDirectionType direction, cwOpenClose openclose, int volume, double price);		///报单函数--FAK单（Filled And Kill 立即成交剩余自动撤销指令）
+	cwOrderPtr				_InputFOKOrder(const char * szInstrumentID, cwFtdcDirectionType direction, cwOpenClose openclose, int volume, double price);		///报单函数--FOK单(FOK Filled Or Kill 立即全部成交否则自动撤销指令)
+
+	cwOrderPtr				_EasyInputOrder(const char * szInstrumentID, int volume, double price,
+		cwOpenCloseMode openclosemode = cwOpenCloseMode::CloseTodayThenYd,
+		cwInsertOrderType insertordertype = cwInsertOrderType::cwInsertLimitOrder);																				///简化报单函数， volume正表示买，负表示卖，自动开平，有持仓就平仓，没有就开仓
+
+
+private:	
 	///系统自用接口信息，勿动
 	bool					m_bIsSimulation;
 
@@ -167,10 +181,7 @@ private:
 	void *					m_pMdSpi;
 	cwMDAPIType				m_MdApiType;
 
-
-	std::set<std::string>	m_SubscribeInstrumentSet;
 	cwProductTradeTime		m_ProductTradeTime;
-
 	cwStrategyLog			m_BasicStrategyLog;
 
 	//Timer	key:TimerID, value:Elapse in ms

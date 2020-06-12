@@ -18,13 +18,13 @@ public:
 
 	virtual void RegisterStrategy(cwBasicStrategy * pBasicStrategy);
 
-	void Connect(char * pszFrontAddress);
+	void Connect(const char * pszFrontAddress);
 	void Connect(cwBasicSimulator * pBaiscSimulator);
 	void DisConnect();
 
 	void WaitForFinish();
 
-	void SetUserLoginField(char * szBrokerID, char * szUserID, char * szPassword);
+	void SetUserLoginField(const char * szBrokerID, const char * szUserID, const char * szPassword);
 
 	virtual void SubscribeMarketData(std::vector<std::string>& SubscribeInstrument);
 	virtual void UnSubscribeMarketData(std::vector<std::string>& SubscribeInstrument);

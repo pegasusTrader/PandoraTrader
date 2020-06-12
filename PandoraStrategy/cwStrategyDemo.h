@@ -1,8 +1,8 @@
 #pragma once
-#include "cwBasicStrategy.h"
+#include "cwBasicKindleStrategy.h"
 
 class cwStrategyDemo :
-	public cwBasicStrategy
+	public cwBasicKindleStrategy
 {
 public:
 	cwStrategyDemo();

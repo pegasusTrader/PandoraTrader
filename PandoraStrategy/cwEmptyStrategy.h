@@ -1,10 +1,10 @@
 #pragma once
 #include <fstream>
-#include "cwBasicStrategy.h"
+#include "cwBasicKindleStrategy.h"
 #include <iostream>
 
 class cwEmptyStrategy :
-	public cwBasicStrategy
+	public cwBasicKindleStrategy
 {
 public:
 	cwEmptyStrategy();

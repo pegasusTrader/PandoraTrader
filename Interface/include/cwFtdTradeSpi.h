@@ -429,14 +429,14 @@ public:
 
 	virtual void RegisterBasicStrategy(cwBasicStrategy * pBasicStrategy, void * pSpi = NULL);
 
-	void Connect(char * pszFrontAddress, char * pszDllPath = NULL);
+	void Connect(const char * pszFrontAddress, const char * pszDllPath = NULL);
 	void DisConnect();
 
 	void WaitForFinish();
 
-	void SetUserLoginField(char * szBrokerID, char * szUserID, char * szPassword, char * szUserProductInfo = INTERFACENAME);
+	void SetUserLoginField(const char * szBrokerID, const char * szUserID, const char * szPassword, const char * szUserProductInfo = INTERFACENAME);
 	void SetUserLoginField(CThostFtdcReqUserLoginField& reqUserLoginField);
-	void SetAuthenticateInfo(char * szAppID, char * szAuthCode);
+	void SetAuthenticateInfo(const char * szAppID, const char * szAuthCode);
 
 	//User Trader Method
 	//行情更新
@@ -459,7 +459,7 @@ public:
 	virtual void InputOrder(cwOrderPtr pOrder);
 #endif
 
-	virtual void CancelOrder(char * szLocalOrderID);
+	virtual void CancelOrder(const char * szLocalOrderID);
 	virtual void CancelOrder(cwOrderPtr pOrder);
 protected:
 	bool		MyReqFunction(cwReqType nType, void * pData);
@@ -526,6 +526,8 @@ protected:
 	TThostFtdcAuthCodeType		m_AuthCode;	///认证码
 	TThostFtdcAppIDType			m_AppID;	///App代码
 #endif // CW_USING_AUTHCODE
+
+	char						m_szTradeFrount[1024];
 
 #ifdef NoCancelTooMuchPerTick
 	uint32_t					m_iLatestUpdateTime;
