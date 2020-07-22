@@ -88,6 +88,10 @@ Pandora策略平台，通过回测交易接口，SimTrade API和SimMdAPI,可以�
 - Github: https://github.com/pegasusTrader/PandoraTrader
 - Gitee：https://gitee.com/wuchangsheng/PandoraTrader
 
+### 分支说明
+- Master: 目前实盘程序交易的版本
+- develop: 新功能添加和测试的版本，会持续更新，可能部分功能处于开发中间状态。
+
 ### 目录结构:
 
 		PANDORATRADER
