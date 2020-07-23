@@ -1,12 +1,11 @@
 //////////////////////////////////////////////////////////////////////////////////
 //*******************************************************************************
 //---
-//---	author: Wu Chang Sheng
+//---	Created by Wu Chang Sheng on Dec.8th, 2016
 //---
-//---	CreateTime:	2016/12/12
-//---
-//---	VerifyTime:	2016/12/12
-//---
+//--	Copyright (c) by Wu Chang Sheng. All rights reserved.
+//--    Consult your license regarding permissions and restrictions.
+//--
 //*******************************************************************************
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -16,7 +15,7 @@
 #include "cwBasicStrategy.h"
 #include "cwOrderReference.h"
 
-//#define CWRISK
+#define CWRISK
 #define TRADELOG
 //#define UPDATE_ORDERRANKED
 #define	NoCancelTooMuchPerTick
@@ -154,7 +153,7 @@ public:
 
 	void	SetDisConnectExit(bool bDisConnectExit = true) { m_bDisConnectExit = bDisConnectExit; }
 
-	std::map<std::string, cwInstrumentDataPtr>	m_InstrumentMap;
+	std::unordered_map<std::string, cwInstrumentDataPtr>	m_InstrumentMap;
 
 	std::string									m_strInstrumentDataFileName;
 	void	SetSaveInstrumentDataToFile(bool bSave) { m_bSaveInstrumentDataToFile = bSave; }
@@ -213,16 +212,17 @@ protected:
 
 	//CWRISK
 #ifdef CWRISK
-	const int					m_iMaxCancelLimitNum;			//最大撤单次数
-	std::map<std::string, int>	m_iCancelLimitMap;				//撤单次数统计，key:InstrumentID
+	const int													m_iMaxCancelLimitNum;			//最大撤单次数
+	std::unordered_map<std::string, int>						m_iCancelLimitMap;				//撤单次数统计，key:InstrumentID
+
 	//本地报单 Ref登记， 遇到错单，减回撤单次数，便于准确统计
 	//key Isntrument, value : OrderRefSet;
-	std::map<std::string, std::set<std::string>>	m_MayCancelOrderRefSetMap;		
+	std::unordered_map<std::string, std::set<std::string>>		m_MayCancelOrderRefSetMap;
 #endif // CWRISK
 
-	bool						m_bDisConnectExit;
+	bool														m_bDisConnectExit;
 
-	static	int					m_iTradeApiCount;
-	bool						m_bSaveInstrumentDataToFile;
+	static	int													m_iTradeApiCount;
+	bool														m_bSaveInstrumentDataToFile;
 };
 

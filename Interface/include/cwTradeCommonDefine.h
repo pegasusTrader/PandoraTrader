@@ -3,8 +3,9 @@
 //---
 //---	author: Wu Chang Sheng
 //---
-//---	CreateTime:	2019/12/12
-//---
+//--	Copyright (c) by Wu Chang Sheng. All rights reserved.
+//--    Consult your license regarding permissions and restrictions.
+//--
 //*******************************************************************************
 //////////////////////////////////////////////////////////////////////////////////
 

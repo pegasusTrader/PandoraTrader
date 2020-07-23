@@ -1,8 +1,20 @@
+//////////////////////////////////////////////////////////////////////////////////
+//*******************************************************************************
+//---
+//---	author: Wu Chang Sheng
+//---
+//--	Copyright (c) by Wu Chang Sheng. All rights reserved.
+//--    Consult your license regarding permissions and restrictions.
+//--
+//*******************************************************************************
+//////////////////////////////////////////////////////////////////////////////////
+
 #pragma once
 #include <string>
 #include <map>
 #include <thread>
 
+#include "cwCommonUtility.h"
 #include "cwBasicStrategy.h"
 #include "cwBasicTradeSpi.h"
 #include "cwBasicCout.h"
@@ -455,9 +467,6 @@ public:
 		cwOpenClose openclose, int volume, double price);
 	virtual cwOrderPtr InputFOKOrder(const char * szInstrumentID, cwFtdcDirectionType direction,
 		cwOpenClose openclose, int volume, double price);
-#if 0
-	virtual void InputOrder(cwOrderPtr pOrder);
-#endif
 
 	virtual void CancelOrder(const char * szLocalOrderID);
 	virtual void CancelOrder(cwOrderPtr pOrder);
@@ -518,6 +527,7 @@ protected:
 	//Investor Data
 	CThostFtdcReqUserLoginField m_ReqUserLoginField;
 	std::string					m_strInvestorID;
+	std::string					m_strInvestorName;
 
 	TThostFtdcSessionIDType		m_SessionID;
 	TThostFtdcFrontIDType		m_FrontID;
@@ -527,10 +537,10 @@ protected:
 	TThostFtdcAppIDType			m_AppID;	///App´úÂë
 #endif // CW_USING_AUTHCODE
 
-	char						m_szTradeFrount[1024];
+	char								m_szTradeFrount[1024];
 
 #ifdef NoCancelTooMuchPerTick
-	uint32_t					m_iLatestUpdateTime;
+	uint32_t							m_iLatestUpdateTime;
 #endif // NoCancelTooMuchPerTick
 
 	std::deque<CThostFtdcOrderField>	m_UndealedOrdersDeque;
@@ -539,9 +549,11 @@ protected:
 	int m_iTradeAPIIndex;
 
 #ifdef CWCOUTINFO
-	cwBasicCout					m_cwShow;
+	cwBasicCout							m_cwShow;
 #endif
 
-	THOST_TE_RESUME_TYPE		m_iResumeType;
+	THOST_TE_RESUME_TYPE				m_iResumeType;
+
+	CW_DISALLOW_COPYCTOR_AND_ASSIGNMENT(cwFtdTradeSpi);
 };
 

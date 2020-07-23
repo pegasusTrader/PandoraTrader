@@ -1,8 +1,20 @@
+//////////////////////////////////////////////////////////////////////////////////
+//*******************************************************************************
+//---
+//---	author: Wu Chang Sheng
+//---
+//--	Copyright (c) by Wu Chang Sheng. All rights reserved.
+//--    Consult your license regarding permissions and restrictions.
+//--
+//*******************************************************************************
+//////////////////////////////////////////////////////////////////////////////////
+
 #pragma once
 #include <map>
 #include <vector>
 #include <string>
 
+#include "cwCommonUtility.h"
 #include "cwBasicMdSpi.h"
 
 #ifdef _WIN64
@@ -128,5 +140,6 @@ private:
 
 	int m_iMdAPIIndex;
 
+	CW_DISALLOW_COPYCTOR_AND_ASSIGNMENT(cwFtdMdSpi);
 }; 
 

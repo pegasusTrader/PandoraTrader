@@ -24,7 +24,7 @@
 #include "cwBasicCout.h"
 
 #ifdef _MSC_VER
-#pragma comment(lib, "cwCTPDLL.lib")
+#pragma comment(lib, "cwPandoraDLL.lib")
 #pragma comment(lib, "tinyxml.lib")
 #pragma comment(lib, "PandoraStrategy.lib")
 #endif // WIN32

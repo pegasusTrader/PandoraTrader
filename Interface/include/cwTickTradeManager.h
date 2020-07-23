@@ -1,6 +1,17 @@
+//////////////////////////////////////////////////////////////////////////////////
+//*******************************************************************************
+//---
+//---	author: Wu Chang Sheng
+//---
+//--	Copyright (c) by Wu Chang Sheng. All rights reserved.
+//--    Consult your license regarding permissions and restrictions.
+//--
+//*******************************************************************************
+//////////////////////////////////////////////////////////////////////////////////
+
 #pragma once
 #include <map>
-
+#include <unordered_map>
 #include "cwTradeCommonDefine.h"
 #include "cwMutex.h"
 
@@ -22,7 +33,7 @@ public:
 	void Reset();
 
 	//update Instrument Data
-	void SetInstrumentData(std::map<std::string, cwInstrumentDataPtr>& InstrumentMap);
+	void SetInstrumentData(std::unordered_map<std::string, cwInstrumentDataPtr>& InstrumentMap);
 
 	//update Price values
 	void UpdatePrice(cwMarketDataPtr pPriceData);
@@ -59,7 +70,7 @@ public:
 
 	std::map<uint32_t, uint32_t> GetLevelChange(cwMarketDataPtr pPrePriceData, cwMarketDataPtr pCurPriceData);					
 private:
-	std::map<std::string, cwInstrumentDataPtr>	m_InstrumentMap;
+	std::unordered_map<std::string, cwInstrumentDataPtr>	m_InstrumentMap;
 	std::map<std::string, cwMarketDataPtr>		m_PreMarketDataMap;
 
 	//price update

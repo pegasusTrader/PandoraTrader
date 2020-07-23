@@ -3,10 +3,9 @@
 //---
 //---	author: Wu Chang Sheng
 //---
-//---	CreateTime:	2016/12/12
-//---
-//---	VerifyTime:	2020/03/26
-//---
+//--	Copyright (c) by Wu Chang Sheng. All rights reserved.
+//--    Consult your license regarding permissions and restrictions.
+//--
 //*******************************************************************************
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -14,6 +13,7 @@
 #include <vector>
 #include <set>
 #include <map>
+#include <unordered_map>
 #include <thread>
 #include "cwProductTradeTime.h"
 #include "cwTradeCommonDefine.h"
@@ -109,16 +109,13 @@ public:
 	cwInstrumentDataPtr GetInstrumentData(std::string InstrumentID);
 
 
-	//撤单函数
-	bool CancelOrder(cwOrderPtr pOrder);
-
 	//订阅合约
 	void	   SubScribePrice(std::vector<std::string>& SubscribeInstrument);
 	//取消订阅合约
 	void	   UnSubScribePrice(std::vector<std::string>& UnSubscribeInstrument);
 
 	//合约信息列表，需要最小变动，合约乘数等信息可以通过这个map获取，合约ID为Key
-	std::map<std::string, cwInstrumentDataPtr> m_InstrumentMap;
+	std::unordered_map<std::string, cwInstrumentDataPtr> m_InstrumentMap;
 	//获取合约最小变动，如果获取失败返回-1
 	double    GetTickSize(const char * szInstrumentID);
 	//获取合约乘数，如果获取失败返回-1
@@ -140,7 +137,7 @@ public:
 	inline bool GetIsSimulation() { return m_bIsSimulation; }
 
 	//设置定时器 iTimerId定时器id，在OnTimer回调依据此id判定是哪个定时器触发, iElapse 触发间隔（毫秒）
-	//目前仅支持10个定时器，定时器内回调函数请勿处理复杂逻辑，所有定时器回调共用一个线程。
+	//目前仅支持100个定时器，定时器内回调函数请勿处理复杂逻辑，所有定时器回调共用一个线程。
 	//同个id下，触发间隔将会被覆盖
 	bool	  SetTimer(int iTimerId, int iElapse);
 	void	  RemoveTimer(int iTimerId);
@@ -157,7 +154,7 @@ public:
 	virtual void			_OnOrderCanceled(cwOrderPtr pOrder) = 0;
 	virtual void			_OnRspOrderInsert(cwOrderPtr pOrder, cwRspInfoPtr pRspInfo) = 0;
 	virtual void			_OnRspOrderCancel(cwOrderPtr pOrder, cwRspInfoPtr pRspInfo) = 0;
-
+	virtual void			_OnTimer(int iTimerId) = 0;
 protected:
 	///系统自用接口信息，勿动
 	std::set<std::string>	m_SubscribeInstrumentSet;
@@ -170,6 +167,7 @@ protected:
 		cwOpenCloseMode openclosemode = cwOpenCloseMode::CloseTodayThenYd,
 		cwInsertOrderType insertordertype = cwInsertOrderType::cwInsertLimitOrder);																				///简化报单函数， volume正表示买，负表示卖，自动开平，有持仓就平仓，没有就开仓
 
+	bool					_CancelOrder(cwOrderPtr pOrder);
 
 private:	
 	///系统自用接口信息，勿动

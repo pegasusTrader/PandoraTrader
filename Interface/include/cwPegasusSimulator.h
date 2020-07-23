@@ -1,3 +1,14 @@
+//////////////////////////////////////////////////////////////////////////////////
+//*******************************************************************************
+//---
+//---	author: Wu Chang Sheng
+//---
+//--	Copyright (c) by Wu Chang Sheng. All rights reserved.
+//--    Consult your license regarding permissions and restrictions.
+//--
+//*******************************************************************************
+//////////////////////////////////////////////////////////////////////////////////
+
 #pragma once
 #include <thread>
 
@@ -71,7 +82,7 @@ private:
 
 	std::map<std::string, std::string>			m_MarketDataFileMap;
 
-	std::map<std::string, cwInstrumentDataPtr>	m_InstrumentMap;
+	std::unordered_map<std::string, cwInstrumentDataPtr>	m_InstrumentMap;
 
 	int					m_iSysOrderID;
 	int					m_iSysTradeID;

@@ -1,9 +1,21 @@
+//////////////////////////////////////////////////////////////////////////////////
+//*******************************************************************************
+//---
+//---	author: Wu Chang Sheng
+//---
+//--	Copyright (c) by Wu Chang Sheng. All rights reserved.
+//--    Consult your license regarding permissions and restrictions.
+//--
+//*******************************************************************************
+//////////////////////////////////////////////////////////////////////////////////
+
 #pragma once
 
 #include "cwTradeCommonDefine.h"
 #include "cwMutex.h"
 
 #include <map>
+#include <unordered_map>
 #include <string>
 #include <deque>
 
@@ -38,11 +50,11 @@ public:
 	}
 
 	//update Instrument Data
-	void SetInstrumentData(std::map<std::string, cwInstrumentDataPtr>& InstrumentMap);
+	void SetInstrumentData(std::unordered_map<std::string, cwInstrumentDataPtr>& InstrumentMap);
 
 	cwMUTEX										m_ProcessMutex;
 
-	std::map<std::string, cwInstrumentDataPtr>	m_InstrumentMap;				//kye Isntrumentid, value: InstrumentData
+	std::unordered_map<std::string, cwInstrumentDataPtr>	m_InstrumentMap;	//kye Isntrumentid, value: InstrumentData
 
 	std::map<std::string, cwMarketDataPtr>		m_LastPriceMap;					//Key Insrumentid,	value: MarketData
 

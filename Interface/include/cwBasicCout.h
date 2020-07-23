@@ -1,3 +1,14 @@
+//////////////////////////////////////////////////////////////////////////////////
+//*******************************************************************************
+//---
+//---	author: Wu Chang Sheng
+//---
+//--	Copyright (c) by Wu Chang Sheng. All rights reserved.
+//--    Consult your license regarding permissions and restrictions.
+//--
+//*******************************************************************************
+//////////////////////////////////////////////////////////////////////////////////
+
 #pragma once
 
 #include <iostream>
@@ -10,22 +21,21 @@
 
 #define cw_COUT_DATAMSG_LENGTH 4096
 
-struct CoutData
-{
-	char szDataMsg[cw_COUT_DATAMSG_LENGTH];
-
-	CoutData()
-	{
-		memset(this, 0, sizeof(CoutData));
-	}
-};
-
 class cwBasicCout
 {
 public:
 	cwBasicCout();
 	~cwBasicCout();
 
+	struct CoutData
+	{
+		char szDataMsg[cw_COUT_DATAMSG_LENGTH];
+
+		CoutData()
+		{
+			memset(this, 0, sizeof(CoutData));
+		}
+	};
 	typedef std::shared_ptr<CoutData> CoutDataPtr;
 
 	static std::deque<CoutDataPtr>		m_LogDataDeque;

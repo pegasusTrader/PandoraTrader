@@ -1,8 +1,20 @@
+//////////////////////////////////////////////////////////////////////////////////
+//*******************************************************************************
+//---
+//---	author: Wu Chang Sheng
+//---
+//--	Copyright (c) by Wu Chang Sheng. All rights reserved.
+//--    Consult your license regarding permissions and restrictions.
+//--
+//*******************************************************************************
+//////////////////////////////////////////////////////////////////////////////////
+
 #pragma once
 #include <deque>
 #include <thread>
 #include <condition_variable>
 #include <float.h>
+#include <unordered_map>
 
 #include "cwMutex.h"
 #include "cwBasicStrategy.h"
@@ -28,10 +40,11 @@ public:
 	};
 public:
 	cwBasicMdSpi(cwMDAPIType apiType);
-	~cwBasicMdSpi();
+	virtual ~cwBasicMdSpi();
 
 	virtual void SubscribeMarketData(std::vector<std::string>& SubscribeInstrument) = 0;
 	virtual void UnSubscribeMarketData(std::vector<std::string>& SubscribeInstrument) = 0;
+
 	//部分行情API支持订阅所有，故不保证该接口有效，请关注相应的子类的函数，有该函数再用
 	virtual void SubscribeMarketDataAll(bool bAll);
 
@@ -170,7 +183,7 @@ ORIGIN->MEMBER = 0;\
 
 	cwBasicTradeSpi*	m_pTradeSpi;
 
-	std::map<std::string, cwMarketDataPtr>	m_LastestMarketDataMap;
+	std::unordered_map<std::string, cwMarketDataPtr>	m_LastestMarketDataMap;
 
 	static	int			m_iMdApiCount;
 

@@ -1,34 +1,36 @@
 //////////////////////////////////////////////////////////////////////////////////
 //*******************************************************************************
 //---
-//---	author: Wu Chang Sheng
+//---	Create by Wu Chang Sheng on May. 10th 2020
 //---
-//---	CreateTime:	2020/05/10
-//---
-//---	VerifyTime:	2020/06/02
-//---
+//--	Copyright (c) by Wu Chang Sheng. All rights reserved.
+//--    Consult your license regarding permissions and restrictions.
+//--
 //*******************************************************************************
 //////////////////////////////////////////////////////////////////////////////////
 
 
 #pragma once
+#include "cwCommonUtility.h"
 #include "cwBasicStrategy.h"
 #include "cwKindleStickSeries.h"
+#include <condition_variable>
 
 class cwBasicKindleStrategy :
 	public cwBasicStrategy
 {
+public:
 	typedef std::shared_ptr<cwKindleStickSeries>				cwKindleSeriesPtr;
 
 public:
 	cwBasicKindleStrategy();
-	~cwBasicKindleStrategy();
+	virtual ~cwBasicKindleStrategy();
 
 	///MarketData SPI
 	//行情更新（PriceUpdate回调会先于OnBar， 在PriceUpdate已经可以获取更新好的K线）
 	virtual void			PriceUpdate(cwMarketDataPtr pPriceData) {};
 	//当生成一根新K线的时候，会调用该回调
-	virtual void			OnBar(std::string InstrumentID, int iTimeScale, cwKindleSeriesPtr pKindle) {};
+	virtual void			OnBar(std::string InstrumentID, int iTimeScale, cwBasicKindleStrategy::cwKindleSeriesPtr pKindle) {};
 
 	///Trade SPI
 	//成交回报
@@ -66,9 +68,20 @@ public:
 		cwOpenCloseMode openclosemode = cwOpenCloseMode::CloseTodayThenYd,
 		cwInsertOrderType insertordertype = cwInsertOrderType::cwInsertLimitOrder);
 
+	//撤单
+	bool					CancelOrder(cwOrderPtr pOrder);
+	//全部撤单
+	int						CancelAll();
+	//按指定合约全部撤单
+	int						CancelAll(const char * szInstrumentID);
+	//按指定合约和方向全部撤单
+	int						CancelAll(const char * szInstrumentID, cwFtdcDirectionType direction);
 
 	//委托交易，PositionAgency代理机构将会按需求管理好持仓
 	//注意，当启用PositionAgency功能之后，请勿做下单或者撤单操作，以免产生冲突。
+
+	virtual void			SetAgentManager(void * pAgentMgr);
+
 
 	///系统自用接口信息，勿动
 	virtual void			_SetReady();
@@ -78,12 +91,16 @@ public:
 	virtual void			_OnOrderCanceled(cwOrderPtr pOrder);
 	virtual void			_OnRspOrderInsert(cwOrderPtr pOrder, cwRspInfoPtr pRspInfo);
 	virtual void			_OnRspOrderCancel(cwOrderPtr pOrder, cwRspInfoPtr pRspInfo);
- 
+	virtual void			_OnTimer(int iTimerId);
 private:
-	std::map<std::string, std::map<int, cwKindleSeriesPtr>>		m_KindleSeriesMap;
-
-	void					_UpdateKindleSeries(cwMarketDataPtr pPriceData, std::map<int, cwKindleSeriesPtr> & OnBarMap);
 	///系统自用接口信息，勿动
+	//更新K线
+	void					_UpdateKindleSeries(cwMarketDataPtr pPriceData, std::map<int, cwKindleSeriesPtr> & OnBarMap);
+	bool					_GetAgentWorking(std::string instrumentid);
+	
+private:
+	///K线容器 key:instrument key: TimeScale value :Kindle Series
+	std::map<std::string, std::map<int, cwKindleSeriesPtr>>		m_KindleSeriesMap;
 
 	bool					m_bAgentWork;
 
@@ -98,7 +115,7 @@ private:
 	enum StrategyEventType
 	{
 		EventType_OnReady = 0
-		, EventType_TimerOut
+		, EventType_OnTimer
 		, EventType_PriceUpdate
 		, EventType_OnBar
 		, EventType_RtnTrade
@@ -106,6 +123,12 @@ private:
 		, EventType_OnCanceled
 		, EventType_OnRspInsert
 		, EventType_OnRspCancel
+		, AgentType_PriceUpdate
+		, AgentType_RtnTrade
+		, AgentType_RtnOrder
+		, AgentType_OnCanceled
+		, AgentType_OnRspInsert
+		, AgentType_OnRspCancel
 	};
 
 	///策略事件信息内容
@@ -124,12 +147,20 @@ private:
 	};
 	typedef std::shared_ptr<EventTypeStruct>	EventTypeStructPtr;
 
+
 	std::deque<EventTypeStructPtr>				m_EventTypeStructDeque;
 	cwMUTEX										m_EventTypeDequeMutex;
+	std::condition_variable						m_EventWorkingMutexCv;
 
 	std::thread									m_EventTypeWorkingThread;
 	volatile bool								m_bEventTypeWorkingThreadRun;
-	void										EventTypeWorkingThread();
+
+	void										_EventTypeWorkingThread();
+	void										_AddEventType(EventTypeStructPtr EventPtr);
+
+	CW_DISALLOW_COPYCTOR_AND_ASSIGNMENT(cwBasicKindleStrategy);
+
+	void *										m_pAgentManager;
 
 };
 

@@ -1,11 +1,22 @@
+//////////////////////////////////////////////////////////////////////////////////
+//*******************************************************************************
+//---
+//---	author: Wu Chang Sheng
+//---
+//--	Copyright (c) by Wu Chang Sheng. All rights reserved.
+//--    Consult your license regarding permissions and restrictions.
+//--
+//*******************************************************************************
+//////////////////////////////////////////////////////////////////////////////////
+
 #pragma once
 #include <string>
 #include <memory>
-#include <map>
+#include <unordered_map>
 #include <vector>
 #include "cwMarketTime.h"
 
-
+//品种交易时间
 
 class cwProductTradeTime
 {
@@ -16,11 +27,11 @@ public:
 
 	enum cwTradeTimeSpace
 	{
-		NoTrading = 0
-		, NightPartOne
-		, AMPartOne
-		, AMPartTwo
-		, PMPartOne
+		NoTrading = 0										//非交易时段
+		, NightPartOne										//夜盘
+		, AMPartOne											//上午第一阶段
+		, AMPartTwo											//上午第二阶段
+		, PMPartOne											//下午第一阶段
 		, TradeTimeSpaceCnt
 	};
 
@@ -40,7 +51,7 @@ public:
 	int	 GetTimeSpaceInterval(std::string productId, std::string starttime, std::string endTime);
 
 private:
-	std::map<std::string, std::vector<TradeTimePtr>> m_ProductTradeTimeMap;
+	std::unordered_map<std::string, std::vector<TradeTimePtr>> m_ProductTradeTimeMap;
 	void InitialTradeTimeMap();
 };
 
