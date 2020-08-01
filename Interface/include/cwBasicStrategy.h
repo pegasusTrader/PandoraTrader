@@ -98,6 +98,8 @@ public:
 	bool GetAllOrders(std::map<std::string, cwOrderPtr>& Orders);				///Key OrderSysID
 	//获取持仓列表，传入map用于返回信息，合约ID为Key
 	bool GetPositions(std::map<std::string, cwPositionPtr>& PositionMap);		///Key InstrumentID
+	//获取合约的净持仓，
+	int	 GetNetPosition(std::string InstrumentID);
 	//获取持仓和挂单列表
 	bool GetPositionsAndActiveOrders(std::map<std::string, cwPositionPtr>& PositionMap,
 		std::map<std::string, cwOrderPtr>& ActiveOrders);

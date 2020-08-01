@@ -1,12 +1,11 @@
 //////////////////////////////////////////////////////////////////////////////////
 //*******************************************************************************
 //---
-//---	author: Wu Chang Sheng
+//---	Create by Wu Chang Sheng on May. 20th 2020
 //---
-//---	CreateTime:	2020/05/20
-//---
-//---	VerifyTime:	2020/05/30
-//---
+//--	Copyright (c) by Wu Chang Sheng. All rights reserved.
+//--    Consult your license regarding permissions and restrictions.
+//--
 //*******************************************************************************
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -16,7 +15,7 @@
 #include "cwBasicKindleStrategy.h"
 #include "cwStrategyLog.h"
 #include "cwBasicCout.h"
-
+#include "cwPandoraAgentManager.h"
 
 class cwPandoraPairTrading :
 	public cwBasicKindleStrategy
@@ -27,7 +26,7 @@ public:
 
 
 	///MarketData SPI
-//行情更新
+	//行情更新
 	virtual void PriceUpdate(cwMarketDataPtr pPriceData);
 
 	///Trade SPI
@@ -46,8 +45,9 @@ public:
 	
 	//策略交易次主力合约
 	void		 DoManualSpread();
-	//策略根据次主力合约持仓，下单主力合约对冲。
-	//void		 LockPosition();
+
+	std::string					m_strCurrentUpdateTime;			//最新行情时间
+
 protected:
 	std::string					m_MainInstrumentID;				//主力合约
 	std::string					m_SubMainInstrumentID;			//次主力合约
@@ -70,6 +70,8 @@ protected:
 	cwStrategyLog				m_StrategyLog;					//策略日志
 	cwBasicCout					m_cwShow;						//cout
 
-	std::string					m_strCurrentUpdateTime;			//最新行情时间
+	cwPandoraAgentManager		m_PandoraAgentManager;
+
+	cwPandoraAgentManager::cwAgentDataPtr	m_pAgentData;
 };
 

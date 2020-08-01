@@ -1,5 +1,5 @@
 #include "cwPandoraPairTrading.h"
-
+#include <algorithm>
 
 
 cwPandoraPairTrading::cwPandoraPairTrading()
@@ -7,13 +7,16 @@ cwPandoraPairTrading::cwPandoraPairTrading()
 	m_MainInstrumentID = "au2012";
 	m_SubMainInstrumentID = "au2010";
 
-	m_dBuyThreadHold = -100000;
-	m_dSellThreadHold = 100000;
+	m_dBuyThreadHold = 1.6;
+	m_dSellThreadHold = 1.72;
 
 	m_dVolumeCoefficient = -1;
 
 	m_cwMainOpenCloseMode = CloseTodayThenYd;
 	m_cwSubMainOpenCloseMode = CloseTodayThenYd;
+
+	m_iPositionLimit = 1;
+	m_iOrderVolume = 1;
 }
 
 
@@ -55,10 +58,30 @@ void cwPandoraPairTrading::PriceUpdate(cwMarketDataPtr pPriceData)
 	}
 
 	DoManualSpread();
+
+	if (m_pAgentData.get() != NULL
+		&& m_pAgentData->pPositionAgent.get() != NULL)
+	{
+		m_pAgentData->pPositionAgent->SetExpectPosition(-1 * GetNetPosition(m_SubMainInstrumentID));
+	}
+	
 }
 
 void cwPandoraPairTrading::OnReady()
 {
+	SetAgentManager(dynamic_cast<cwAgentManager*>(&m_PandoraAgentManager));
+	m_pAgentData = m_PandoraAgentManager.RegisterAgent(m_MainInstrumentID, cwPandoraAgentManager::Enum_Agent_Postion);
+	if (m_pAgentData.get() != NULL
+		&& m_pAgentData->pPositionAgent.get() != NULL)
+	{
+		//设置算法参数
+		m_pAgentData->pPositionAgent->InsLargeOrderVolume = 100;
+		m_pAgentData->pPositionAgent->InsLittleOrderVolume = 5;
+		m_pAgentData->pPositionAgent->InsAskBidGap = 1;
+
+		m_pAgentData->pPositionAgent->SetExpectPosition(-1 * GetNetPosition(m_SubMainInstrumentID));
+	}
+
 	//订阅行情
 	std::vector<std::string> SubscribeInstrument;
 
@@ -72,7 +95,7 @@ void cwPandoraPairTrading::DoManualSpread()
 {
 	cwEasyStrategyLog log(m_StrategyLog, "DoManualSpread");
 
-	bool bStrategyCanOpen = false;
+	bool bStrategyCanOpen = true;
 
 	//获取主力和次主力合约的最小变动
 	double dMainTickSize = GetTickSize(m_MainInstrumentID.c_str());
@@ -89,7 +112,7 @@ void cwPandoraPairTrading::DoManualSpread()
 	//获取撤单次数
 	int iSubMainCancelCount = GetInstrumentCancelCount(m_SubMainInstrumentID);
 	//定义需要处理的double精度
-	const double dInsEQ = (double)min(dMainTickSize, dSubMainTickSize) / 10.0;
+	const double dInsEQ = (double)(std::min)(dMainTickSize, dSubMainTickSize) / 10.0;
 
 
 	//每个交易时段开收盘一小段时间不交易
