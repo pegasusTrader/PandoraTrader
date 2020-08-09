@@ -164,21 +164,24 @@ Pandora策略平台，通过回测交易接口，SimTrade API和SimMdAPI,可以�
 
 如果您在Linux下使用，请您从develop分支上获取最新内容，
 使用CMAKE，G++来编译工程
-        git clone -b develop https://github.com/pegasusTrader/PandoraTrader.git
+
+        git clone -b develop https://github.com/pegasusTrader/PandoraTrader.git    
 
 进入工程目录后：
 
 编译debug:
-        mkdir builddebug
-        cd builddebug
-        cmake -DCMAKE_BUILD_TYPE=DEBUG ..
-        make
+
+        mkdir builddebug    
+        cd builddebug    
+        cmake -DCMAKE_BUILD_TYPE=DEBUG ..    
+        make    
 
 编译Release:
-        mkdir buildrelease
-        cd buildrelease
-        cmake -DCMAKE_BUILD_TYPE=RELEASE ..
-        make
+
+        mkdir buildrelease     
+        cd buildrelease    
+        cmake -DCMAKE_BUILD_TYPE=RELEASE ..    
+        make    
 
 如果您在Windows下使用，建议您用visual studio来做工程管理和编译，按配置好的工程快速开始Pandora量化之旅。
 
