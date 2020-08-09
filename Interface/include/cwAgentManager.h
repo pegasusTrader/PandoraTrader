@@ -70,7 +70,7 @@ public:
 	double    GetTickSize(const char * szInstrumentID);
 
 
-	inline virtual bool		HasAgent(std::string instrumentid);
+	virtual bool			HasAgent(std::string instrumentid);
 
 	//将Agent 指针注册过来，如果不用了调用UnRegisterAgent；
 	//需要保证pAgent在运行期间有效，并自行管理Agent内存空间申请和释放。

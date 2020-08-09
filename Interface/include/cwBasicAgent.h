@@ -80,6 +80,6 @@ private:
 
 	//Agent ID
 	int						m_iAgentID;
-	cwAgentManager *		m_pAgentManager;
+	void *					m_pAgentManager;
 };
 

@@ -107,7 +107,7 @@ public:
 	cwMUTEX								m_MarketDataUpdateMutex;
 	cwBasicStrategy*					m_pBasicStrategy;
 protected:
-	PriceServerStatus	m_CurrentStatus;
+	PriceServerStatus					m_CurrentStatus;
 
 #ifdef _MSC_VER
 #pragma region CommenDefine
