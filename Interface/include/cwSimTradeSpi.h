@@ -23,8 +23,13 @@ public:
 
 	virtual void RegisterBasicStrategy(cwBasicStrategy * pBasicStrategy, void * pSpi = NULL);
 
-	///登录请求响应
-	virtual void OnRspQryInstrument(std::unordered_map<std::string, cwInstrumentDataPtr>& cwInstrumentDataPtr);
+	///请求响应
+	virtual void OnRspQryPosition(std::map<std::string, cwPositionPtr>& position);
+	virtual void OnRspQryOrders(std::map<std::string, cwOrderPtr>	orders);
+	virtual void OnRspQryTrade(std::map<std::string, cwTradePtr> trades);
+
+	virtual void OnRspQryInstrument(std::unordered_map<std::string, cwInstrumentDataPtr>& InstrumentData);
+
 
 	//User Trader Method
 	//行情更新

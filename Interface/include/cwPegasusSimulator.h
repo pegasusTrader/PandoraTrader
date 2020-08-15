@@ -40,8 +40,15 @@ public:
 	virtual bool		StartMarketDataServer();
 
 	//«Î«Û
+	//Md
 	virtual int			ReqUserMdLogin();
+	
+	//Trade
 	virtual int			ReqQryInstrument();
+	virtual int			ReqQryPosition();
+	virtual int			ReqQryOrders();
+	virtual int			ReqQryTrades();
+
 
 	virtual int			ReqOrderInsert(cwOrderPtr pOrder);
 	virtual int			CancelOrder(cwOrderPtr pOrder);
@@ -54,6 +61,10 @@ public:
 
 	volatile bool								m_bSimulationFinished;
 	cwSettlement								m_cwSettlement;
+
+	//Custom Data interface return Data List Size
+	int					AddCustomData(cwMarketDataPtr pData, bool bSimulationPartEnd = false, bool bSimulationFinish = false);
+
 private:
 	enum SIMTYPE:int
 	{
@@ -62,7 +73,8 @@ private:
 		type_CSV_List_file,
 		type_BIN_List_file,
 		type_DB,
-		type_REAL_Time_Quote
+		type_REAL_Time_Quote,
+		type_Custom_Quote
 	};
 
 	SIMTYPE				m_SimType;
@@ -79,6 +91,7 @@ private:
 	void				CsvMarketDataUpdate();
 	void				BinMarketDataUpdate();
 	void				RealTimeMarketDataUpdate();
+	void				CustomMarketDataUpdate();
 
 	std::map<std::string, std::string>			m_MarketDataFileMap;
 
@@ -110,24 +123,24 @@ private:
 		cwOrderPtr		pOrder;
 	};
 
-	cwProductTradeTime							m_ProductTradeTime;
+	cwProductTradeTime										m_ProductTradeTime;
 
-	std::deque<cwSimulationUserAction>			m_UndealOrderDeque;
+	std::deque<cwSimulationUserAction>						m_UndealOrderDeque;
 	
-	std::deque<cwTradePtr>						m_TradeDeque;
+	std::deque<cwTradePtr>									m_TradeDeque;
 
-	cwBasicCout									m_cwShow;
+	cwBasicCout												m_cwShow;
 
-	cwMUTEX										m_ProcessMutex;
+	cwMUTEX													m_ProcessMutex;
 
-	std::deque<cwMarketDataPtr>					m_MDCasheDeque;
-	cwMUTEX										m_MDCasheMutex;
-	volatile bool								m_bMDCasheMutexReady;
-	volatile bool								m_bSimulationPartEnd;
+	std::deque<cwMarketDataPtr>								m_MDCasheDeque;
+	cwMUTEX													m_MDCasheMutex;
+	volatile bool											m_bMDCasheMutexReady;
+	volatile bool											m_bSimulationPartEnd;
 
-	cwAccountPtr								m_pAccount;
+	cwAccountPtr											m_pAccount;
 
-	double										m_dDeposit;
+	double													m_dDeposit;
 
 	//Result 
 	bool													m_bSaveAccountResult;
@@ -137,5 +150,16 @@ private:
 	std::map<std::string, bool>								m_bSaveInsResultMap;
 	std::map<std::string, int>								m_iInsResultInterval;
 	std::map<std::string, std::map<std::string, double>>	m_dInsTimeBalanceMap;
+
+	//Custom Data
+	struct CustomDataStruct
+	{
+		cwMarketDataPtr pData;
+		bool			bSimulationPartEnd;
+		bool			bSimulationFinish;
+	};
+	typedef	std::shared_ptr<CustomDataStruct>				CustomDataPtr;
+	std::deque<CustomDataPtr>								m_CustomDataDeque;
+	cwMUTEX													m_CustomDataMutex;
 };
 

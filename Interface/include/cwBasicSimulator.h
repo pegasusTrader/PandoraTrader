@@ -25,9 +25,15 @@ public:
 	virtual void InitialSimulator(const char * pConfigFilePath);
 	std::string			m_strConfigFileFullPath;
 
-
+	//Md
 	virtual int ReqUserMdLogin() { return 0; }
+
+	//Trade
 	virtual int ReqQryInstrument() { return 0; }
+	virtual int ReqQryPosition() { return 0; }
+	virtual int ReqQryOrders() { return 0; }
+	virtual int ReqQryTrades() { return 0; }
+
 
 	virtual int ReqOrderInsert(cwOrderPtr pOrder) { return 0; }
 	virtual int CancelOrder(cwOrderPtr pOrder) { return 0; }
