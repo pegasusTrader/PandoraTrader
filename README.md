@@ -256,7 +256,8 @@ cwMarketDataReceiver存下csv文件，cwMarketDataBinaryReceiver存下的是bin�
 欢迎加入QQ群（615093081）参与讨论。
 
 ### 捐赠
-如果您喜欢这个项目，您可以在您经济允许情况下对该项目进行捐赠，以帮助和激励作者们更好地维护这项目。
+如果您喜欢这个项目，您可以在您经济允许情况下对该项目进行捐赠，以帮助和激励作者们更好地维护这项目。    
+捐赠方式：pic文件夹下有支付宝的二维码    
 ![avatar](https://github.com/pegasusTrader/PandoraTrader/blob/master/pic/Alipay.png)
 
 
