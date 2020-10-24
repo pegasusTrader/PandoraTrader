@@ -11,6 +11,7 @@
 
 #pragma once
 #include <thread>
+#include <atomic>
 
 #include "cwBasicSimulator.h"
 #include "cwTickTradeManager.h"
@@ -56,11 +57,12 @@ public:
 	cwOrderPtr			GetOrder(cwOrderPtr pOrder);
 	cwTradePtr			GetTrade(cwOrderPtr pOrder, double dTradePrice, int iTradeCnt = 1);
 
-	cwFtdcDateType								m_CurrentTradingDay;
-	cwFtdcTimeType								m_CurrentSimulationTime;
+	cwFtdcDateType								m_CurrentTradingDay;					//回测引擎 交易日
+	cwFtdcDateType								m_CurrentActionDay;						//回测引擎 自然日
+	cwFtdcTimeType								m_CurrentSimulationTime;				//回测引擎 时间
 
-	volatile bool								m_bSimulationFinished;
-	cwSettlement								m_cwSettlement;
+	volatile bool								m_bSimulationFinished;					//回测结束
+	cwSettlement								m_cwSettlement;							//回测引擎 结算模块
 
 	//Custom Data interface return Data List Size
 	int					AddCustomData(cwMarketDataPtr pData, bool bSimulationPartEnd = false, bool bSimulationFinish = false);
@@ -68,13 +70,13 @@ public:
 private:
 	enum SIMTYPE:int
 	{
-		type_CSV_file = 0,
-		type_BIN_file,
-		type_CSV_List_file,
-		type_BIN_List_file,
-		type_DB,
-		type_REAL_Time_Quote,
-		type_Custom_Quote
+		type_CSV_file = 0,				//CSV文件
+		type_BIN_file,					//bin二进制文件
+		type_CSV_List_file,				//CSV文件序列
+		type_BIN_List_file,				//bin二进制文件序列
+		type_DB,						//数据库
+		type_REAL_Time_Quote,			//实时行情
+		type_Custom_Quote				//用户自定义数据
 	};
 
 	SIMTYPE				m_SimType;
@@ -133,23 +135,29 @@ private:
 
 	cwMUTEX													m_ProcessMutex;
 
-	std::deque<cwMarketDataPtr>								m_MDCasheDeque;
-	cwMUTEX													m_MDCasheMutex;
-	volatile bool											m_bMDCasheMutexReady;
-	volatile bool											m_bSimulationPartEnd;
+	std::deque<cwMarketDataPtr>								m_MDCacheDeque;							//待撮合行情队列
+	cwMUTEX													m_MDCacheMutex;
+	volatile std::atomic<bool>								m_bMDCacheMutexReady;
+	volatile std::atomic<bool>								m_bSimulationPartEnd;
 
 	cwAccountPtr											m_pAccount;
 
 	double													m_dDeposit;
 
 	//Result 
+	//Balance Data
+	struct TimeBalanceData
+	{
+		std::string		strDateTime;
+		double			dBalance;
+	};
 	bool													m_bSaveAccountResult;
 	int														m_iAccountResultInterval;
-	std::map<std::string, double>							m_dTimeBalanceMap;
+	std::deque<TimeBalanceData>								m_dTimeBalanceDQ;
 
 	std::map<std::string, bool>								m_bSaveInsResultMap;
 	std::map<std::string, int>								m_iInsResultInterval;
-	std::map<std::string, std::map<std::string, double>>	m_dInsTimeBalanceMap;
+	std::map<std::string, std::deque<TimeBalanceData>>		m_dInsTimeBalanceDQ;
 
 	//Custom Data
 	struct CustomDataStruct

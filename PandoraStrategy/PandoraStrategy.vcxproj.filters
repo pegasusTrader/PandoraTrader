@@ -21,12 +21,36 @@
     <ClCompile Include="cwStrategyDemo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cwPandoraAgentManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cwPandoraPairTrading.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cwPandoraPositionAgent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cwMarketDataReceiver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cwEmptyStrategy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="cwStrategyDemo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cwPandoraAgentManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cwPandoraPairTrading.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cwPandoraPositionAgent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cwMarketDataReceiver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

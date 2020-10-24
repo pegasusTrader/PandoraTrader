@@ -19,6 +19,7 @@ class cwSimTradeSpi
 {
 public:
 	cwSimTradeSpi();
+	cwSimTradeSpi(const char * pLogFileName);
 	~cwSimTradeSpi();
 
 	virtual void RegisterBasicStrategy(cwBasicStrategy * pBasicStrategy, void * pSpi = NULL);

@@ -12,6 +12,7 @@
 #pragma once
 #include <deque>
 #include <thread>
+#include <atomic>
 #include <condition_variable>
 #include <float.h>
 #include <unordered_map>
@@ -20,8 +21,8 @@
 #include "cwBasicStrategy.h"
 #include "cwBasicTradeSpi.h"
 
-#define TIME_LICENCE_LIMIT
-#define TIME_LIMIT 20210931
+//#define TIME_LICENCE_LIMIT
+#define TIME_LIMIT 20221031
 
 #ifdef CWCOUTINFO
 #include "cwBasicCout.h"
@@ -101,7 +102,7 @@ public:
 	char								m_szMdInfo[128];
 	std::deque <cwMarketDataPtr>		m_DepthMarketDataDeque;
 	size_t								m_iDequeSize;
-	volatile bool						m_MdDequeDone;
+	volatile bool						m_MdDequeDone;			//dequeue data work done
 	bool								m_bNoUseBasicMdUpdate;
 
 	cwMUTEX								m_MarketDataUpdateMutex;
