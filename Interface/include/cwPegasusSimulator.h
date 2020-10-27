@@ -66,7 +66,9 @@ public:
 
 	//Custom Data interface return Data List Size
 	int					AddCustomData(cwMarketDataPtr pData, bool bSimulationPartEnd = false, bool bSimulationFinish = false);
+	int					GetCustomDataDequeSize() { return m_iCustomDataDequeSize; }
 
+	std::string									m_strSimulatorName;
 private:
 	enum SIMTYPE:int
 	{
@@ -168,6 +170,7 @@ private:
 	};
 	typedef	std::shared_ptr<CustomDataStruct>				CustomDataPtr;
 	std::deque<CustomDataPtr>								m_CustomDataDeque;
+	volatile std::atomic<int>								m_iCustomDataDequeSize;
 	cwMUTEX													m_CustomDataMutex;
 };
 
