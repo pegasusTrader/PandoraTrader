@@ -45,7 +45,10 @@ public:
 
 	//撤单
 	bool					CancelOrder(cwOrderPtr pOrder);
-
+	//暂停代理人的工作	
+	void					SetAgentWorking(bool bWork) { m_bAgentWorking = bWork; }
+	//停止代理人				
+	bool					StopAgent();
 
 	//获取最新的行情
 	cwMarketDataPtr	GetLastestMarketData(std::string InstrumentID);
@@ -66,10 +69,11 @@ public:
 	//获取合约最小变动，如果获取失败返回-1
 	double    GetTickSize(const char * szInstrumentID);
 
-
+protected:
 	//是否对该合约垄断，如果是的话， 主动下单将会被拒绝。
 	bool					m_bMonopoly;
-
+	//代理人是否在工作
+	bool					m_bAgentWorking;
 private:
 	virtual void			_PriceUpdate(cwMarketDataPtr pPriceData);
 	virtual void			_OnRtnTrade(cwTradePtr pTrade);

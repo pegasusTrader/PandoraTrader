@@ -14,6 +14,9 @@
 #include <memory>
 #include <string.h>
 #include <deque>
+#include <functional>
+#include <thread>
+#include <atomic>
 #include <fstream>
 #include <sys/stat.h>
 #ifdef _MSC_VER
@@ -50,6 +53,8 @@ public:
 	cwLog(const char * pFileName, const char * pFolder = NULL);
 	~cwLog();
 	
+	const char * GetLogFileName() { return m_LogFileName.c_str(); }
+
 	void AddTitle(const char * pData);
 	void AddLog(LogDataPtr LogPtr, bool bForceWrite = false);
 	void AddLog(int LogType, const char * pData, const char * szLogType = NULL, bool bForceWrite = false);
@@ -58,10 +63,17 @@ public:
 	void		 SetBufferLength(size_t nLength);
 	inline size_t SetBufferLength() { return m_iBufferLength; }
 private:
+	std::thread						m_LogWorkingThread;
+	volatile std::atomic<bool>		m_bLogWorkingThreadRun;
+	void							LogWorkingThread();
+
+
 	size_t						m_iBufferLength;
 	cwMUTEX						m_LogMutex;
 	std::deque<LogDataPtr>		m_LogDataDeque;
 
 	std::fstream				m_Log;
+
+	std::string					m_LogFileName;
 };
 

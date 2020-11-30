@@ -87,7 +87,7 @@ void cwEmptyStrategy::InitialStrategy(const char * pConfigFilePath)
 
 }
 
-void cwEmptyStrategy::SetStrategyReady()
+void cwEmptyStrategy::OnReady()
 {
 
 	std::vector<std::string> SubscribeInstrument;

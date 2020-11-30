@@ -17,7 +17,6 @@
 
 #ifdef _MSC_VER
 #pragma comment(lib, "cwPandoraDLL.lib")
-#pragma comment(lib, "cwStrategys.lib")
 #pragma comment(lib, "PandoraStrategy.lib")
 #pragma comment(lib, "tinyxml.lib")
 #endif // WIN32
@@ -108,8 +107,12 @@ int main()
 	while (true)
 	{
 		cwSleep(3000);
-		m_cwShow.AddLog("%s", m_Strategy.m_strCurrentUpdateTime.c_str());
-		//std::cout << m_Strategy.m_strCurrentUpdateTime.c_str() << '\n';
+		m_cwShow.AddLog("%s %s 权益:%.3f 平仓盈亏:%.3f 持仓盈亏:%.3f",
+			m_PegasusSimulator.m_CurrentTradingDay,
+			m_PegasusSimulator.m_CurrentSimulationTime,
+			m_PegasusSimulator.m_cwSettlement.m_dBalance,
+			m_PegasusSimulator.m_cwSettlement.m_dCloseProfit,
+			m_PegasusSimulator.m_cwSettlement.m_dPositionProfit);
 	}
     return 0;
 }

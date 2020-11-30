@@ -96,6 +96,8 @@ public:
 	int GetActiveOrdersShort(std::string InstrumentID);		///key OrderRef
 	//获取所有报单列表，传入map用于返回信息，交易所报单编号(sysOrderID)为Key
 	bool GetAllOrders(std::map<std::string, cwOrderPtr>& Orders);				///Key OrderSysID
+	//获取所有成交列表，传入map用于返回信息，成交编号（TradeID）为Key
+	bool GetTrades(std::map<std::string, cwTradePtr>& trades);					///Key TradeID
 	//获取持仓列表，传入map用于返回信息，合约ID为Key
 	bool GetPositions(std::map<std::string, cwPositionPtr>& PositionMap);		///Key InstrumentID
 	//获取合约的净持仓，
@@ -135,13 +137,14 @@ public:
 	int		  GetInstrumentCancelCount(std::string InstrumentID);
 	//获取合约是否是订阅
 	bool	  IsThisStrategySubScribed(std::string InstrumentID);
-	//获取当前状态是否为回测模拟情况
+	//获取当前状态是否为回测模拟情况 如果回测模式下返回true，否则false
 	inline bool GetIsSimulation() { return m_bIsSimulation; }
 
 	//设置定时器 iTimerId定时器id，在OnTimer回调依据此id判定是哪个定时器触发, iElapse 触发间隔（毫秒）
 	//目前仅支持100个定时器，定时器内回调函数请勿处理复杂逻辑，所有定时器回调共用一个线程。
 	//同个id下，触发间隔将会被覆盖
-	bool	  SetTimer(int iTimerId, int iElapse);
+	//InstrumentID 是定时器关联的合约，如果无需关联，可以填NULL
+	bool	  SetTimer(int iTimerId, int iElapse, const char * szInstrumentID);
 	void	  RemoveTimer(int iTimerId);
 
 	///系统自用接口信息，勿动
@@ -156,7 +159,7 @@ public:
 	virtual void			_OnOrderCanceled(cwOrderPtr pOrder) = 0;
 	virtual void			_OnRspOrderInsert(cwOrderPtr pOrder, cwRspInfoPtr pRspInfo) = 0;
 	virtual void			_OnRspOrderCancel(cwOrderPtr pOrder, cwRspInfoPtr pRspInfo) = 0;
-	virtual void			_OnTimer(int iTimerId) = 0;
+	virtual void			_OnTimer(int iTimerId, const char * szInstrumentID) = 0;
 protected:
 	///系统自用接口信息，勿动
 	std::set<std::string>	m_SubscribeInstrumentSet;
@@ -173,21 +176,23 @@ protected:
 
 private:	
 	///系统自用接口信息，勿动
-	bool					m_bIsSimulation;
+	bool									m_bIsSimulation;
 
-	void *					m_pTradeSpi;
-	cwTradeAPIType			m_TradeApiType;
+	void *									m_pTradeSpi;
+	cwTradeAPIType							m_TradeApiType;
 
-	void *					m_pMdSpi;
-	cwMDAPIType				m_MdApiType;
+	void *									m_pMdSpi;
+	cwMDAPIType								m_MdApiType;
 
-	cwProductTradeTime		m_ProductTradeTime;
-	cwStrategyLog			m_BasicStrategyLog;
+	cwProductTradeTime						m_ProductTradeTime;
+	cwStrategyLog							m_BasicStrategyLog;
 
 	//Timer	key:TimerID, value:Elapse in ms
-	std::map<int, int>		m_cwTimerElapseMap;
+	std::unordered_map<int, int>			m_cwTimerElapseMap;
+	//Timer Key:TimerID, value:InstrumentID
+	std::unordered_map<int, std::string>	m_cwTimerId2InstrumentMap;
 
-	std::thread				m_StrategyTimerWorkingThread;
-	volatile bool			m_bStrategyTimerWorkingThreadRun;
-	void					StrategyTimerWorkingThread();
+	std::thread								m_StrategyTimerWorkingThread;
+	volatile bool							m_bStrategyTimerWorkingThreadRun;
+	void									StrategyTimerWorkingThread();
 };

@@ -219,20 +219,6 @@ void cwMarketDataReceiver::OnReady()
 			PersonElement->SetAttribute("VolumeMultiple", itIns->second->VolumeMultiple);
 			PersonElement->SetDoubleAttribute("PriceTick", itIns->second->PriceTick);
 			PersonElement->SetDoubleAttribute("StrikePrice", itIns->second->StrikePrice);
-
-
-			////创建name元素、age元素并连接。
-			//TiXmlElement *NameElement = new TiXmlElement("name");
-			//TiXmlElement *AgeElement = new TiXmlElement("age");
-			//PersonElement->LinkEndChild(NameElement);
-			//PersonElement->LinkEndChild(AgeElement);
-			////设置name元素和age元素的内容并连接。
-			//TiXmlText *NameContent = new TiXmlText("周星星");
-			//TiXmlText *AgeContent = new TiXmlText("20");
-			//NameElement->LinkEndChild(NameContent);
-			//AgeElement->LinkEndChild(AgeContent);
-			//保存到文件
-
 		}
 		std::string strSaveFile = m_strConfigFileFullPath;
 

@@ -18,6 +18,7 @@
 #include <string.h>
 #include <stdarg.h>
 #include "cwMutex.h"
+#include <atomic>
 
 #define cw_COUT_DATAMSG_LENGTH 4096
 
@@ -46,15 +47,15 @@ public:
 
 	static void SetNoWorkRequired(bool NoWork = false);
 private:
-	static std::thread			m_CoutWorkingThread;
-	static volatile bool		m_bCoutWorkingThreadRun;
-	static void					CoutWorkingThread();
+	static std::thread						m_CoutWorkingThread;
+	static volatile std::atomic<bool>		m_bCoutWorkingThreadRun;
+	static void								CoutWorkingThread();
 
-	static int					m_iInitialCount;
+	static volatile std::atomic<int>		m_iInitialCount;
 
-	static cwMUTEX				m_DequeMutex;
+	static cwMUTEX							m_DequeMutex;
 
 	//不需要工作
-	static volatile bool		m_bNoWorkRequired;
+	static volatile bool					m_bNoWorkRequired;
 };
 
