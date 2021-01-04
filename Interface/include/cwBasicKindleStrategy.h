@@ -59,7 +59,7 @@ public:
 	virtual void			OnReady() {};
 
 
-	//订阅k线
+	//订阅k线， iTimeScale是k线周期，秒数（如5分钟为300）
 	cwKindleSeriesPtr		SubcribeKindle(const char * szInstrumentID, int iTimeScale);
 	//获取已经订阅的k线
 	cwKindleSeriesPtr		GetKindleSeries(const char * szInstrumentID, int iTimeScale);
@@ -73,6 +73,12 @@ public:
 
 	//简化报单函数， volume正表示买，负表示卖，自动开平，有持仓就平仓，没有就开仓
 	cwOrderPtr				EasyInputOrder(const char * szInstrumentID, int volume, double price,
+		cwOpenCloseMode openclosemode = cwOpenCloseMode::CloseTodayThenYd,
+		cwInsertOrderType insertordertype = cwInsertOrderType::cwInsertLimitOrder);
+
+	//简化报单函数， volume正表示买，负表示卖，自动开平，有持仓就平仓，没有就开仓
+	//该函数会对订单，根据下单模式和交易所合约信息配置，进行拆单操作。
+	std::deque<cwOrderPtr>	EasyInputMultiOrder(const char * szInstrumentID, int volume, double price,
 		cwOpenCloseMode openclosemode = cwOpenCloseMode::CloseTodayThenYd,
 		cwInsertOrderType insertordertype = cwInsertOrderType::cwInsertLimitOrder);
 

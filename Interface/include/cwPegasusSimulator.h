@@ -101,7 +101,9 @@ private:
 
 	std::unordered_map<std::string, cwInstrumentDataPtr>	m_InstrumentMap;
 
+	//系统报单编号
 	int					m_iSysOrderID;
+	//系统成交编号
 	int					m_iSysTradeID;
 
 	cwTickTradeManager	m_cwTickManager;

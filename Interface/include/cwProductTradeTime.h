@@ -17,7 +17,6 @@
 #include "cwMarketTime.h"
 
 //品种交易时间
-
 class cwProductTradeTime
 {
 
@@ -32,12 +31,25 @@ public:
 		, AMPartOne											//上午第一阶段
 		, AMPartTwo											//上午第二阶段
 		, PMPartOne											//下午第一阶段
+		, CallAuctionOrderingOpen							//集合竞价报单（开盘）
+		, CallAuctionMatchOpen								//集合竞价撮合（开盘）
+		, CallAuctionOrderingClose							//集合竞价报单（收盘）
+		, CallAuctionMatchClose								//集合竞价撮合（收盘）
 		, TradeTimeSpaceCnt
+	};
+
+	enum cwRangeOpenClose
+	{
+		cwLeftOpenRightOpen = 0,							//(a,b)
+		cwLeftOpenRightClose,								//(a,b]
+		cwLeftCloseRightOpen,								//[a,b)
+		cwLeftCloseRightClose								//[a,b]
 	};
 
 	typedef struct tagProductTradeTime
 	{
 		cwTradeTimeSpace TradeTimeSpace;
+		cwRangeOpenClose RangeOpenClose;
 
 		cwMarketTimePtr BeginTime;
 		cwMarketTimePtr EndTime;

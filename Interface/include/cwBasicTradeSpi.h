@@ -172,6 +172,7 @@ public:
 protected:
 	TradeServerStatus			m_CurrentStatus;
 	cwFtdcTimeType				m_cwTradeLoginTime;
+	cwFtdcDateType				m_cwTradeLoginTradingDay;
 
 	cwBasicStrategy	*			m_pBasicStrategy;
 
@@ -191,10 +192,13 @@ protected:
 	bool						m_bHasGetTrades;
 	bool						m_bOrderRankedUpdate;
 
-	std::map<std::string, cwOrderPtr>	m_OrdersMap;		//Key OrderSysID
-	std::map<std::string, cwOrderPtr>	m_ActiveOrdersMap;	//Key OrderRef
+	//是否含有开仓的报单(为谨慎起见，报出开仓单即认为有,但查询错单，则不被认为有） 
+	std::unordered_map<std::string, bool>					m_bHasOpenOffsetOrderMap;	//Key InstrumentID
 
-	std::map<std::string, cwTradePtr>	m_TradeMap;			//key TradeID
+	std::map<std::string, cwOrderPtr>						m_OrdersMap;				//Key OrderSysID
+	std::map<std::string, cwOrderPtr>						m_ActiveOrdersMap;			//Key OrderRef
+
+	std::map<std::string, cwTradePtr>						m_TradeMap;					//key TradeID
 
 	std::map<std::string, cwFtdcInstrumentStatusType>		m_ExchangeStatus;
 

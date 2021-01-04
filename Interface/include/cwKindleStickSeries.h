@@ -14,6 +14,7 @@
 #include <vector>
 #include <deque>
 #include "cwTradeCommonDefine.h"
+#include "cwProductTradeTime.h"
 #include "cwKindleStick.h"
 
 typedef std::shared_ptr<cwKindleStick> cwKindleStickPtr;
@@ -103,7 +104,10 @@ public:
 	
 private:
 	//K线周期，秒为单位
-	uint32_t	m_iTimeScale;
-	bool		m_bIsInitialed;
+	uint32_t								m_iTimeScale;
+	bool									m_bIsInitialed;
+
+	cwProductTradeTime						m_ProductTradeTime;
+
 };
 

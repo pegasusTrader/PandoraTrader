@@ -24,12 +24,12 @@ class cwBasicStrategy
 public:
 	enum cwOpenCloseMode :int
 	{
-		CloseTodayThenYd = 0,//先平今，再平昨,可开，用于平今免的品种
-		OpenOnly = 1,//只开
-		CloseOnly = 2,//只平
-		CloseYdThenOpen = 3,//先平昨，后开仓，不平今，用于平今很贵的品种，弊病是要等全部平完再开仓
-		CloseYdOrOpen = 4,//优先平昨，可开仓，开仓后不再平仓，用于平今很贵的品种，又不耽误开仓，弊病是有一点昨仓可能没平
-		CloseYdThenToday = 5//先平昨，再平今,可开，用于平昨便宜，平今和开仓差不多的品种
+		CloseTodayThenYd = 0,		//先平今，再平昨,可开，用于平今免（或者无所谓）的品种
+		OpenOnly = 1,				//只开
+		CloseOnly = 2,				//只平 只会报出平仓部分报单，如果报单量大于持仓数，也只报出持仓数
+		CloseYdThenOpen = 3,		//先平昨，后开仓，不平今，用于平今很贵的品种，弊病是要等全部平完再开仓,可能下的手数会小于实际报单数
+		CloseYdOrOpen = 4,			//暂不支持，优先平昨，可开仓，开仓后不再平仓，用于平今很贵的品种，又不耽误开仓，弊病是有一点昨仓可能没平
+		CloseYdThenToday = 5		//暂不支持，先平昨，再平今,可开，用于平昨便宜，平今和开仓差不多的品种
 	};
 	const char * GetOpenCloseModeString(cwOpenCloseMode openclose);
 
@@ -39,9 +39,6 @@ public:
 
 	//表示系统是否初始化完成，可以正常进行报撤单操作
 	bool	m_bStrategyReady;
-
-	//表示策略名称
-	virtual std::string  GetStrategyName() { return "BasicStrategy"; }
 
 	/*
 	PriceUpdate，OnRtnTrade，OnOrderCanceled，OnRspOrderInsert，OnRspOrderCancel这几个函数是系统回调函数，即策略的同名虚函数
@@ -70,7 +67,7 @@ public:
 
 	///Special For Simulation 
 	///These functions will NOT be called in normal mode
-	//回测部分结束（夜盘结束和日盘结束将被调用）
+	//回测部分结束（夜盘结束和日盘结束）将被调用
 	virtual void OnSimulationPartEnd() {};
 	//整个回测结束将被调用
 	virtual void OnSimulationFinished() {};
@@ -82,6 +79,9 @@ public:
 	virtual void InitalInstrumentData(const char * pInstrumentDataFilePath = NULL);
 
 	///Action  Function
+	//表示策略名称
+	virtual std::string  GetStrategyName() { return "BasicStrategy"; }
+
 	//获取最新的行情
 	cwMarketDataPtr	GetLastestMarketData(std::string InstrumentID);
 	//获取账户信息
@@ -90,9 +90,9 @@ public:
 	bool GetActiveOrders(std::map<std::string, cwOrderPtr>& ActiveOrders);		///key OrderRef
 	//获取挂单列表，传入合约，map用于返回信息，本地报单编号(OrderRef)为Key
 	bool GetActiveOrders(std::string InstrumentID, std::map<std::string, cwOrderPtr>& ActiveOrders);		///key OrderRef
-	//获取多头挂单数量，传入合约
+	//获取多头挂单数量（手数），传入合约
 	int GetActiveOrdersLong(std::string InstrumentID);		///key OrderRef
-	//获取空头挂单数量，传入合约
+	//获取空头挂单数量（手数），传入合约
 	int GetActiveOrdersShort(std::string InstrumentID);		///key OrderRef
 	//获取所有报单列表，传入map用于返回信息，交易所报单编号(sysOrderID)为Key
 	bool GetAllOrders(std::map<std::string, cwOrderPtr>& Orders);				///Key OrderSysID
@@ -140,11 +140,11 @@ public:
 	//获取当前状态是否为回测模拟情况 如果回测模式下返回true，否则false
 	inline bool GetIsSimulation() { return m_bIsSimulation; }
 
-	//设置定时器 iTimerId定时器id，在OnTimer回调依据此id判定是哪个定时器触发, iElapse 触发间隔（毫秒）
+	//设置定时器 iTimerId定时器id，在OnStrategyTimer回调依据此id判定是哪个定时器触发, iElapse 触发间隔（毫秒）
 	//目前仅支持100个定时器，定时器内回调函数请勿处理复杂逻辑，所有定时器回调共用一个线程。
 	//同个id下，触发间隔将会被覆盖
 	//InstrumentID 是定时器关联的合约，如果无需关联，可以填NULL
-	bool	  SetTimer(int iTimerId, int iElapse, const char * szInstrumentID);
+	bool	  SetTimer(int iTimerId, int iElapse, const char * szInstrumentID = nullptr);
 	void	  RemoveTimer(int iTimerId);
 
 	///系统自用接口信息，勿动
@@ -171,6 +171,11 @@ protected:
 	cwOrderPtr				_EasyInputOrder(const char * szInstrumentID, int volume, double price,
 		cwOpenCloseMode openclosemode = cwOpenCloseMode::CloseTodayThenYd,
 		cwInsertOrderType insertordertype = cwInsertOrderType::cwInsertLimitOrder);																				///简化报单函数， volume正表示买，负表示卖，自动开平，有持仓就平仓，没有就开仓
+
+	//该函数会对订单，根据下单模式和交易所合约信息配置，进行拆单操作。
+	std::deque<cwOrderPtr>	_EasyInputMultiOrder(const char * szInstrumentID, int volume, double price,
+		cwOpenCloseMode openclosemode = cwOpenCloseMode::CloseTodayThenYd,
+		cwInsertOrderType insertordertype = cwInsertOrderType::cwInsertLimitOrder);
 
 	bool					_CancelOrder(cwOrderPtr pOrder);
 
