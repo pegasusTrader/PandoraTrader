@@ -8,3 +8,4 @@ project ("PandoraTrader")
 # 包含子项目。
 add_subdirectory ("PandoraStrategy")
 add_subdirectory ("PandoraTrade")
+add_subdirectory ("PandoraSimulator")
