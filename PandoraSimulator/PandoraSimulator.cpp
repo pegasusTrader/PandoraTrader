@@ -9,8 +9,16 @@
 
 //#include "stdafx.h"
 
+//#define REALTIME_QUOTE
+
 #include "cwPegasusSimulator.h"
+
+#ifdef REALTIME_QUOTE
+#include "cwFtdMdSpi.h"
+#else
 #include "cwSimMdSpi.h"
+#endif // REALTIME_QUOTE
+
 #include "cwSimTradeSpi.h"
 #include "cwStrategyDemo.h"
 #include "cwBasicCout.h"
@@ -28,7 +36,13 @@ cwFtdcUserIDType		m_szMdUserID;
 cwFtdcPasswordType		m_szMdPassWord;
 
 cwPegasusSimulator		m_PegasusSimulator;
+
+#ifdef REALTIME_QUOTE
+cwFtdMdSpi				m_mdCollector;
+#else
 cwSimMdSpi				m_mdCollector;
+#endif // REALTIME_QUOTE
+
 cwSimTradeSpi			m_TradeChannel;
 cwStrategyDemo			m_Strategy;
 
@@ -41,14 +55,19 @@ unsigned int PriceServerThread()
 
 	m_TradeChannel.Connect(&m_PegasusSimulator);
 
-
-	//m_SubscribeInstrument.push_back("zn1904");
-	//m_SubscribeInstrument.push_back("SR909");
+#ifdef REALTIME_QUOTE
+	m_mdCollector.m_bNoUseBasicMdUpdate = true;
+#endif
 
 	m_mdCollector.SetUserLoginField(m_szMdBrokerID, m_szMdUserID, m_szMdPassWord);
 	m_mdCollector.SubscribeMarketData(m_SubscribeInstrument);
 
+#ifdef REALTIME_QUOTE
+	m_mdCollector.Connect("tcp://180.168.146.187:10131");
+	cwSleep(2000);
+#else
 	m_mdCollector.Connect(&m_PegasusSimulator);
+#endif // REALTIME_QUOTE
 
 	m_PegasusSimulator.SimulationStart();
 
@@ -90,10 +109,16 @@ int main()
 #endif // WIN32
 
 
-	m_Strategy.InitialStrategy(NULL);
+	m_Strategy.InitialStrategy(nullptr);
 
 	m_PegasusSimulator.InitialSimulator(strFullPath.c_str());
+
+#ifdef REALTIME_QUOTE
+	m_PegasusSimulator.SetMdSpi((void*)dynamic_cast<cwBasicMdSpi*>(&m_mdCollector));
+#else
 	m_PegasusSimulator.SetMdSpi((void*)(&m_mdCollector));
+#endif // REALTIME_QUOTE
+
 	m_PegasusSimulator.SetTradeSpi((void*)&m_TradeChannel);
 
 	m_TradeChannel.RegisterBasicStrategy(dynamic_cast<cwBasicStrategy*>(&m_Strategy));
@@ -102,7 +127,6 @@ int main()
 	m_mdCollector.RegisterStrategy(dynamic_cast<cwBasicStrategy*>(&m_Strategy));
 
 	std::thread m_PriceServerThread = std::thread(PriceServerThread);
-	//std::thread m_TradeServerThread = std::thread(TradeServerThread);
 
 	while (true)
 	{

@@ -112,6 +112,10 @@ void cwMarketDataReceiver::PriceUpdate(cwMarketDataPtr pPriceData)
 	m_TotalTurnOver[pPriceData->InstrumentID] = pPriceData->Turnover;
 }
 
+void cwMarketDataReceiver::OnBar(std::string InstrumentID, int iTimeScale, cwBasicKindleStrategy::cwKindleSeriesPtr pKindle)
+{
+}
+
 
 void cwMarketDataReceiver::InitialStrategy(const char * pConfigFilePath)
 {
@@ -339,7 +343,10 @@ void cwMarketDataReceiver::OnReady()
 
 	for (auto it = m_InstrumentMap.begin(); it != m_InstrumentMap.end(); it++)
 	{
-		SubscribeInstrument.push_back(it->first);
+		if (CW_FTDC_PC_Futures == it->second->ProductClass)
+		{
+			SubscribeInstrument.push_back(it->first);
+		}
 
 		if (SubscribeInstrument.size() >= 10)
 		{
