@@ -22,9 +22,9 @@ class cwMarketTime
 {
 public:
 	//UpdateTime Format: hh:mm:ss 09:10:11
-	cwMarketTime();
-	cwMarketTime(int hour, int minute, int second, int MilliSecond = 0);
-	cwMarketTime(std::string updatetime, int MilliSecond = 0);
+	cwMarketTime(int StartTime = 6);
+	cwMarketTime(int hour, int minute, int second, int MilliSecond = 0, int StartTime = 6);
+	cwMarketTime(std::string updatetime, int MilliSecond = 0, int StartTime = 6);
 	~cwMarketTime();
 
 	void		SetStartTime(int iStartTime = 6) 
@@ -41,7 +41,7 @@ public:
 	inline int64_t	GetTotalSecond() { return m_iTotalMilliSecond / 1000; }
 	inline int64_t	GetTotalMilliSecond() { return m_iTotalMilliSecond; }
 
-	inline int		GetHour() { return m_iHour; }
+	inline int		GetHour() { return (m_iHour >= 24) ? m_iHour - 24 : m_iHour; }
 	inline int		GetMinute() { return m_iMinute; }
 	inline int		GetSecond() { return m_iSecond; }
 	inline int		GetMilliSecond() { return m_iMilliSecond; }

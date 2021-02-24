@@ -21,14 +21,12 @@
 #include "cwBasicStrategy.h"
 #include "cwBasicTradeSpi.h"
 
-//#define TIME_LICENCE_LIMIT
-#define TIME_LIMIT 20221031
 
 #ifdef CWCOUTINFO
 #include "cwBasicCout.h"
 #endif
 
-//#define CV_NOTIFY
+#define CV_NOTIFY
 
 class cwBasicMdSpi
 {
@@ -170,7 +168,7 @@ ORIGIN->MEMBER = 0;\
 	}
 
 #ifdef  CV_NOTIFY
-	inline void			NotifyMDUpdateThread() { m_MDUpdateMutexCv.notify_all(); };
+	inline void			NotifyMDUpdateThread() { m_MDUpdateMutexCv.notify_one(); };
 #else
 	inline void			NotifyMDUpdateThread() { };
 #endif //  CV_NOTIFY

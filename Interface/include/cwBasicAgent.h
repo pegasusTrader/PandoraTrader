@@ -43,6 +43,12 @@ public:
 		cwBasicStrategy::cwOpenCloseMode openclosemode = cwBasicStrategy::cwOpenCloseMode::CloseTodayThenYd,
 		cwInsertOrderType insertordertype = cwInsertOrderType::cwInsertLimitOrder);
 
+	//简化报单函数， volume正表示买，负表示卖，自动开平，有持仓就平仓，没有就开仓
+	//该函数会对订单，根据下单模式和交易所合约信息配置，进行拆单操作。
+	std::deque<cwOrderPtr>	EasyInputMultiOrder(const char * szInstrumentID, int volume, double price,
+		cwBasicStrategy::cwOpenCloseMode openclosemode = cwBasicStrategy::cwOpenCloseMode::CloseTodayThenYd,
+		cwInsertOrderType insertordertype = cwInsertOrderType::cwInsertLimitOrder);
+
 	//撤单
 	bool					CancelOrder(cwOrderPtr pOrder);
 	//暂停代理人的工作	
@@ -63,11 +69,11 @@ public:
 
 
 	//获取交易时间段，距开盘多少秒和距收盘多少秒
-//参数：合约名，行情时间（102835->10:28:35),交易阶段， 距该交易时段开盘多少秒，距收盘多少秒
-	bool	  GetTradeTimeSpace(const char * szInstrumentID, const char * updatetime,
+	//参数：合约名，行情时间（102835->10:28:35),交易阶段， 距该交易时段开盘多少秒，距收盘多少秒
+	bool		GetTradeTimeSpace(const char * szInstrumentID, const char * updatetime,
 		cwProductTradeTime::cwTradeTimeSpace& iTradeIndex, int& iOpen, int& iClose);
 	//获取合约最小变动，如果获取失败返回-1
-	double    GetTickSize(const char * szInstrumentID);
+	double		GetTickSize(const char * szInstrumentID);
 
 protected:
 	//是否对该合约垄断，如果是的话， 主动下单将会被拒绝。

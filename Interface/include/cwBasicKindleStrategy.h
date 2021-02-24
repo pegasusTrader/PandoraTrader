@@ -61,6 +61,8 @@ public:
 
 	//订阅k线， iTimeScale是k线周期，秒数（如5分钟为300）
 	cwKindleSeriesPtr		SubcribeKindle(const char * szInstrumentID, int iTimeScale);
+	cwKindleSeriesPtr		SubcribeDailyKindle(const char * szInstrumentID);
+
 	//获取已经订阅的k线
 	cwKindleSeriesPtr		GetKindleSeries(const char * szInstrumentID, int iTimeScale);
 

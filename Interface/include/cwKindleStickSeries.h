@@ -22,27 +22,40 @@ typedef std::shared_ptr<cwKindleStick> cwKindleStickPtr;
 class cwKindleStickSeries
 {
 public:
+	enum cwKindleSeriesType
+	{
+		cwKindleTypeMinute = 0,							//分钟k线（允许秒k），k线周期级别按秒数来记
+		cwKindleTypeDaily,								//日线，				按交易日来记k线
+	};
 
 public:
 	cwKindleStickSeries();
 	~cwKindleStickSeries();
 
-	bool InitialKindleStickSeries(uint32_t iTimeScale = 60);
+	//初始化K线  不需根据品种交易时间进行
+	bool InitialKindleStickSeries(const char * szInstrumentID, cwKindleSeriesType type = cwKindleTypeMinute, uint32_t m_iTimeScale = 60);
+	//初始化K线  需根据品种交易时间进行
+	bool InitialKindleStickSeries(const char * szInstrumentID, const char * szProductID, cwKindleSeriesType type = cwKindleTypeMinute, uint32_t iTimeScale = 60);
+
+	//行情更新，调用后会自动形成k线
 	void PriceUpdate(cwMarketDataPtr pPriceData);
 
+	//获取k线周期
 	inline uint32_t GetTimeScale() { return m_iTimeScale; }
 
 public:
 	cwMarketDataPtr					m_PrePriceData;
 	cwKindleStickPtr				m_pCurrentKindleStick;
+	cwRangeOpenClose				m_cwRangeOCMode;
 	uint32_t						m_iCurrentKindleLeftTime;
 	std::deque<cwKindleStickPtr>	m_KindleStickDeque;
 
-	bool		m_bIsNewKindle;
+	bool							m_bIsNewKindle;
 
 public:
+	//按时间顺序获取k线，nCount为k线序列，最早的k线nCount为0
 	cwKindleStickPtr GetKindleStick(unsigned int nCount = 0);
-	
+	//按时间逆序获取k线，nCount为k线序列，最近的k线nCount为0
 	cwKindleStickPtr GetLastKindleStick(unsigned int nCount = 0);
 
 	/*函数功能：获取K线序列长度
@@ -103,10 +116,15 @@ public:
 		unsigned int nUnilateralCompareNum, std::vector<unsigned int>& nIndexVector, unsigned int& nIndexLowestTrough);
 	
 private:
+	std::string								m_strInstrumentID;
+	std::string								m_strProductID;
+
+	cwKindleSeriesType						m_cwKindleSeriesType;
 	//K线周期，秒为单位
 	uint32_t								m_iTimeScale;
 	bool									m_bIsInitialed;
 
+	bool									m_bUsingProductTradeTime;
 	cwProductTradeTime						m_ProductTradeTime;
 
 };

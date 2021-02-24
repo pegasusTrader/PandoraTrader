@@ -127,18 +127,21 @@ public:
 
 private:
 
-	CThostFtdcMdApi * m_pMarketDataUserApi;
+	CThostFtdcMdApi *				m_pMarketDataUserApi;
 
 	//User Config Data
-	CThostFtdcReqUserLoginField m_ReqUserLoginField;
-	char						m_szMDFrount[1024];
+	CThostFtdcReqUserLoginField		m_ReqUserLoginField;
+	char							m_szMDFrount[1024];
+
+	//一次订阅合约次数
+	const int						m_iSubscribeCountOnce;
 
 	//
-	int							m_iRequestId;
+	int								m_iRequestId;
 
-	std::map<std::string, bool>	m_SubscribeInstrumentMap;
+	std::map<std::string, bool>		m_SubscribeInstrumentMap;
 
-	int m_iMdAPIIndex;
+	int								m_iMdAPIIndex;
 
 	CW_DISALLOW_COPYCTOR_AND_ASSIGNMENT(cwFtdMdSpi);
 }; 

@@ -108,13 +108,17 @@ private:
 
 	cwTickTradeManager	m_cwTickManager;
 
-
+	//最新的行情数据，key:InstrumentID
 	std::map<std::string, cwMarketDataPtr>								m_LastestMarketDataMap;
 
+	//所有的订单， key:SysOrderId
 	std::map<std::string, cwOrderPtr>									m_TotalOrderMap;
+
+	//未使用
 	std::map<std::string, std::map<int64_t, std::deque<cwOrderPtr>>>	m_TotalLongOrderMap;
 	std::map<std::string, std::map<int64_t, std::deque<cwOrderPtr>>>	m_TotalShortOrderMap;
 
+	//撮合订单簿	key:InstrumentID, key:price*1000 value: OrderList
 	std::map<std::string, std::map<int64_t, std::deque<cwOrderPtr>>>	m_LongWaitOrderListMap;
 	std::map<std::string, std::map<int64_t, std::deque<cwOrderPtr>>>	m_ShortWaitOrderListMap;
 

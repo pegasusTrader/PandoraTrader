@@ -14,6 +14,7 @@
 #include <memory>
 #include <unordered_map>
 #include <unordered_set>
+#include <atomic>
 
 #include "cwCommonUtility.h"
 #include "cwBasicAgent.h"
@@ -48,6 +49,12 @@ public:
 		cwBasicStrategy::cwOpenCloseMode openclosemode = cwBasicStrategy::cwOpenCloseMode::CloseTodayThenYd,
 		cwInsertOrderType insertordertype = cwInsertOrderType::cwInsertLimitOrder);
 
+	//简化报单函数， volume正表示买，负表示卖，自动开平，有持仓就平仓，没有就开仓
+	//该函数会对订单，根据下单模式和交易所合约信息配置，进行拆单操作。
+	std::deque<cwOrderPtr>	EasyInputMultiOrder(int agentid, const char * szInstrumentID, int volume, double price,
+		cwBasicStrategy::cwOpenCloseMode openclosemode = cwBasicStrategy::cwOpenCloseMode::CloseTodayThenYd,
+		cwInsertOrderType insertordertype = cwInsertOrderType::cwInsertLimitOrder);
+
 	//撤单
 	bool					CancelOrder(int agentid, cwOrderPtr pOrder);
 
@@ -69,7 +76,7 @@ public:
 	//获取合约最小变动，如果获取失败返回-1
 	double    GetTickSize(const char * szInstrumentID);
 
-
+	//Agent 是否有代理类
 	virtual bool			HasAgent(std::string instrumentid);
 
 	//将Agent 指针注册过来，如果不用了调用UnRegisterAgent；
@@ -80,9 +87,12 @@ public:
 
 	struct cwAgentContainer
 	{
+		//独占的Agent编号
 		int					MonopolyAgentID;
+		//独占的Agent
 		cwBasicAgent *		pMonopolyAgent;
 
+		//Key: AgentID, agent
 		std::unordered_map<int, cwBasicAgent *>	pAgentMap;
 	};
 	typedef std::shared_ptr<cwAgentContainer> cwAgentContainerPtr;
@@ -98,6 +108,6 @@ protected:
 	std::unordered_map<std::string, cwAgentContainerPtr>			m_AgentContainerMap;		//key Instrument
 	std::unordered_map<std::string, int>							m_OrderRefToAgentIDMap;		//key: Order Ref, value: AgentId
 
-	volatile	int													m_iAgentID;
+	std::atomic<int>												m_iAgentID;
 };
 

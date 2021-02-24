@@ -17,8 +17,8 @@
 
 #include "cwInterfaceDefine.h"
 
-#define INTERFACENAME	" "
-//#define INTERFACENAME	"Pegasus"
+//#define INTERFACENAME	" "
+#define INTERFACENAME	"PandoraT"
 #ifndef INTERFACENAME
 #define INTERFACENAME ""
 #endif
@@ -72,6 +72,14 @@ enum CW_TE_RESUME_TYPE
 	CW_TERT_RESTART = 0,
 	CW_TERT_RESUME,
 	CW_TERT_QUICK
+};
+
+enum cwRangeOpenClose
+{
+	cwLeftOpenRightOpen = 0,							//(a,b)
+	cwLeftOpenRightClose,								//(a,b]
+	cwLeftCloseRightOpen,								//[a,b)
+	cwLeftCloseRightClose								//[a,b]
 };
 
 ///--------------------Market Data---------------------------------------------
@@ -813,17 +821,32 @@ enum cwUserCanceleStatus : uint32_t
 
 struct ActiveOrderKey
 {
-	std::string OrderSysID;
-	std::string OrderRef;
-	std::string InstrumentID;
+	///前置编号
+	cwFtdcFrontIDType					FrontID;
+	///会话编号
+	cwFtdcSessionIDType					SessionID;
 
-	double Price;
-	cwFtdcVolumeType Volume;
+	uint64_t							OrderRef;
 
-	ActiveOrderKey(const char * sysId, const char * ref, const char * ins, double price, int vol);
+	ActiveOrderKey(const char * ref, cwFtdcFrontIDType front, cwFtdcSessionIDType session);
+	ActiveOrderKey(uint64_t ref, cwFtdcFrontIDType front, cwFtdcSessionIDType session);
+
 
 	bool operator < (const ActiveOrderKey& orderkey) const;
 	bool operator == (const ActiveOrderKey& orderkey) const;
+};
+
+struct SysOrderKey
+{
+	///交易所代码
+	cwFtdcExchangeIDType				ExchangeID;
+	///报单编号
+	cwFtdcOrderSysIDType				OrderSysID;
+
+	SysOrderKey(const char * exchange, const char * sysid);
+
+	bool operator < (const SysOrderKey& orderkey) const;
+	bool operator == (const SysOrderKey& orderkey) const;
 };
 
 struct ORDERFIELD
