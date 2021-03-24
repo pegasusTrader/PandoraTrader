@@ -40,7 +40,7 @@ public:
 	virtual void SubscribeMarketData(std::vector<std::string>& SubscribeInstrument);
 	virtual void UnSubscribeMarketData(std::vector<std::string>& SubscribeInstrument);
 
-	size_t		 GetDataDequeLength() { return m_DepthMarketDataDeque.size(); }
+	//size_t		 GetDataDequeLength() { return m_DepthMarketDataDeque.size(); }
 private:
 	cwBasicSimulator *			m_pMarketDataUserApi;
 

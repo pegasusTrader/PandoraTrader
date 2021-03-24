@@ -13,7 +13,6 @@
 #include <time.h>
 #include <memory>
 #include <string.h>
-#include <deque>
 #include <functional>
 #include <thread>
 #include <atomic>
@@ -24,9 +23,15 @@
 #else
 #include <unistd.h>
 #endif // _MSC_VER
-
-
 #include "cwMutex.h"
+
+#ifdef CW_USING_TBB_LIB
+#include "oneapi/tbb/concurrent_queue.h"
+#else
+#include <deque>
+#endif
+
+
 
 #define cw_LOG_DATATYPE_LENGTH 16
 #define cw_LOG_TIME_LENGH 18
@@ -58,22 +63,30 @@ public:
 	void AddTitle(const char * pData);
 	void AddLog(LogDataPtr LogPtr, bool bForceWrite = false);
 	void AddLog(int LogType, const char * pData, const char * szLogType = NULL, bool bForceWrite = false);
+
+#ifndef CW_USING_TBB_LIB
 	void WriteLog(bool bForceWrite = false);
+#endif
 
 	void		 SetBufferLength(size_t nLength);
 	inline size_t SetBufferLength() { return m_iBufferLength; }
 private:
-	std::thread						m_LogWorkingThread;
-	volatile std::atomic<bool>		m_bLogWorkingThreadRun;
-	void							LogWorkingThread();
+	std::thread							m_LogWorkingThread;
+	volatile std::atomic<bool>			m_bLogWorkingThreadRun;
+	void								LogWorkingThread();
 
 
-	size_t						m_iBufferLength;
-	cwMUTEX						m_LogMutex;
-	std::deque<LogDataPtr>		m_LogDataDeque;
+	size_t								m_iBufferLength;
 
-	std::fstream				m_Log;
+#ifdef CW_USING_TBB_LIB
+	tbb::concurrent_queue<LogDataPtr>	m_LogDataDeque;
+#else
+	std::deque<LogDataPtr>				m_LogDataDeque;
+#endif // CW_USING_TBB_LIB
 
-	std::string					m_LogFileName;
+	cwMUTEX								m_LogMutex;
+	std::fstream						m_Log;
+
+	std::string							m_LogFileName;
 };
 

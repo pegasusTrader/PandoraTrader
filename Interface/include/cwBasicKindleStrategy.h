@@ -117,6 +117,17 @@ public:
 	virtual void			_OnRspOrderInsert(cwOrderPtr pOrder, cwRspInfoPtr pRspInfo);
 	virtual void			_OnRspOrderCancel(cwOrderPtr pOrder, cwRspInfoPtr pRspInfo);
 	virtual void			_OnTimer(int iTimerId, const char * szInstrumentID);
+
+	enum cwKINDLE_TIMESCALE:int
+	{
+		cwKINDLE_TIMESCALE_1MIN = 60,
+		cwKINDLE_TIMESCALE_3MIN = 180,
+		cwKINDLE_TIMESCALE_5MIN = 300,
+		cwKINDLE_TIMESCALE_15MIN = 900,
+		cwKINDLE_TIMESCALE_30MIN = 1800,
+		cwKINDLE_TIMESCALE_1HOUR = 3600,
+		cwKINDLE_TIMESCALE_DAILY
+	};
 private:
 	///系统自用接口信息，勿动
 	//更新K线
@@ -135,6 +146,7 @@ protected:
 private:
 	bool					m_bSynchronizeMode;					//是否同步	true:同步， false:异步
 
+	cwMUTEX																			m_cwDealKindleMutex;			//K线处理同步
 	///K线容器 key:instrument key: TimeScale value :Kindle Series
 	std::unordered_map<std::string, std::unordered_map<int, cwKindleSeriesPtr>>		m_KindleSeriesMap;
 

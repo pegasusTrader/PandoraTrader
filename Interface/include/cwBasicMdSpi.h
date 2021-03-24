@@ -21,6 +21,20 @@
 #include "cwBasicStrategy.h"
 #include "cwBasicTradeSpi.h"
 
+//#define USING_CW_MEMORY_POOL
+
+#ifdef CW_USING_TBB_LIB
+#include "atomicops.h"
+#include "spscqueue.h"
+//#include "oneapi/tbb/concurrent_queue.h"
+#include "oneapi/tbb/concurrent_unordered_map.h"
+#endif // CW_USING_TBB_LIB
+
+#ifdef USING_CW_MEMORY_POOL
+#endif
+
+//#define TIME_LICENCE_LIMIT
+#define TIME_LIMIT 20221031
 
 #ifdef CWCOUTINFO
 #include "cwBasicCout.h"
@@ -71,11 +85,13 @@ public:
 		return " UnConnect ";
 	}
 
-	inline int			GetMarketDataDequeSize() { return (int)m_iDequeSize; }
+	inline int			GetMarketDataDequeSize() { return (int)m_DepthMarketDataDeque.size(); }
 
 	inline cwMarketDataPtr	GetLastestMarketData(std::string InstrumentID)
 	{
+#ifndef CW_USING_TBB_LIB
 		cwAUTOMUTEX mt(m_MarketDataUpdateMutex, true);
+#endif // CW_USING_TBB_LIB
 		auto it = m_LastestMarketDataMap.find(InstrumentID);
 		if (it != m_LastestMarketDataMap.end()
 			&& it->second.get() != NULL)
@@ -96,17 +112,26 @@ public:
 
 	void			SetMdInfo(const char * pszInfo);
 
-	const cwMDAPIType					m_cwMdAPIType;
-	char								m_szMdInfo[128];
-	std::deque <cwMarketDataPtr>		m_DepthMarketDataDeque;
-	size_t								m_iDequeSize;
-	volatile bool						m_MdDequeDone;			//dequeue data work done
-	bool								m_bNoUseBasicMdUpdate;
+	const cwMDAPIType								m_cwMdAPIType;
+	char											m_szMdInfo[128];
+	volatile bool									m_MdDequeDone;			//dequeue data work done
+	bool											m_bNoUseBasicMdUpdate;
 
-	cwMUTEX								m_MarketDataUpdateMutex;
-	cwBasicStrategy*					m_pBasicStrategy;
+#ifdef CW_USING_TBB_LIB
+	spsc_queue<cwMarketDataPtr>						m_DepthMarketDataDeque;
+#else
+	cwMUTEX											m_MarketDataUpdateMutex;
+	std::deque <cwMarketDataPtr>					m_DepthMarketDataDeque;
+#endif // CW_USING_TBB_LIB
+
+
+	cwBasicStrategy*								m_pBasicStrategy;
+
+	cwMarketDataPtr									CreateMarketData();
+
+
 protected:
-	PriceServerStatus					m_CurrentStatus;
+	PriceServerStatus								m_CurrentStatus;
 
 #ifdef _MSC_VER
 #pragma region CommenDefine
@@ -182,12 +207,20 @@ ORIGIN->MEMBER = 0;\
 
 	cwBasicTradeSpi*	m_pTradeSpi;
 
-	std::unordered_map<std::string, cwMarketDataPtr>	m_LastestMarketDataMap;
+#ifdef CW_USING_TBB_LIB
+	tbb::concurrent_unordered_map<std::string, cwMarketDataPtr>		m_LastestMarketDataMap;
+#else
+	std::unordered_map<std::string, cwMarketDataPtr>				m_LastestMarketDataMap;
+#endif // CW_USING_TBB_LIB
 
 	static	int			m_iMdApiCount;
 
 #ifdef CWCOUTINFO
 	cwBasicCout			m_cwShow;
 #endif
+
+#ifdef USING_CW_MEMORY_POOL
+#endif // USING_CW_MEMORY_POOL
+
 };
 

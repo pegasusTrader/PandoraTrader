@@ -222,6 +222,7 @@ unsigned int PriceServerThread()
 
 unsigned int TradeServerThread()
 {
+	m_TradeChannel.SetDisConnectExit(false);
 	m_TradeChannel.SetSaveInstrumentDataToFile(true);
 	m_TradeChannel.SetUserLoginField(m_szTdBrokerID, m_szTdUserID, m_szTdPassWord, m_szTdProductInfo);
 	m_TradeChannel.SetAuthenticateInfo(m_szTdAppID, m_szTdAuthCode);

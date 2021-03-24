@@ -158,7 +158,7 @@ public:
 	std::string									m_strInstrumentDataFileName;
 	void	SetSaveInstrumentDataToFile(bool bSave) { m_bSaveInstrumentDataToFile = bSave; }
 	void	SetInstrumentDataFileName(const char * fileName);
-	void	GetInstrumentDataFromFile();
+	void	GetInstrumentDataFromFile(const char * fileName = nullptr);
 	bool	GenerateInstrumentDataToFile();
 
 	const cwTradeAPIType		m_cwTradeAPIType;

@@ -12,6 +12,7 @@
 #pragma once
 #include "cwLog.h"
 #include <stdarg.h>
+#include <deque>
 
 class cwStrategyLog
 	: public cwLog

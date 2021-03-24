@@ -14,8 +14,13 @@
 #include <memory>
 #include <string>
 #include <deque>
+#include <functional>
+#include <unordered_map>
 
 #include "cwInterfaceDefine.h"
+
+//#define		CW_TURBO_MODE
+//#define		CW_USING_TBB_LIB
 
 //#define INTERFACENAME	" "
 #define INTERFACENAME	"PandoraT"
@@ -64,14 +69,15 @@
 
 #define		CWCOUTINFO
 
-#define		InstrumentIDLength	32
+#define		InstrumentIDLength	82
 #define		MARKET_PRICE_DEPTH	5
 
 enum CW_TE_RESUME_TYPE
 {
 	CW_TERT_RESTART = 0,
 	CW_TERT_RESUME,
-	CW_TERT_QUICK
+	CW_TERT_QUICK,
+	CW_TERT_NONE
 };
 
 enum cwRangeOpenClose
@@ -92,7 +98,7 @@ typedef char		cwFtdcDateType[9];
 ///cwFtdcInstrumentIDType是一个合约代码类型
 typedef char		cwFtdcInstrumentIDType[InstrumentIDLength];
 ///cwFtdcProductIDType是一个合约代码类型
-typedef char		cwFtdcProductIDType[31];
+typedef char		cwFtdcProductIDType[InstrumentIDLength];
 ///cwFtdcExchangeIDType是一个交易所代码类型
 typedef char		cwFtdcExchangeIDType[11];
 ///cwFtdcTimeType是一个时间类型
@@ -158,7 +164,7 @@ typedef char		cwFtdcErrorMsgType[87];
 ///cwFtdcCurrencyIDType是一个币种代码类型
 typedef char		cwFtdcCurrencyIDType[4];
 ///cwFtdcIPAddressType是一个IP地址类型
-typedef char		cwFtdcIPAddressType[16];
+typedef char		cwFtdcIPAddressType[33];
 ///cwFtdcMacAddressType是一个Mac地址类型
 typedef char		cwFtdcMacAddressType[21];
 ///cwFtdcTradeIDType是一个成交编号类型
@@ -179,6 +185,8 @@ typedef int			cwFtdcErrorIDType;
 /////////////////////////////////////////////////////////////////////////
 ///cwFtdcProductClassType是一个产品类型类型
 /////////////////////////////////////////////////////////////////////////
+///未知
+#define CW_FTDC_PC_UnKnow 'u'
 ///期货
 #define CW_FTDC_PC_Futures '1'
 ///期货期权
@@ -188,15 +196,19 @@ typedef int			cwFtdcErrorIDType;
 ///即期
 #define CW_FTDC_PC_Spot '4'
 ///期转现
-#define CWT_FTDC_PC_EFP '5'
+#define CW_FTDC_PC_EFP '5'
 ///现货期权
 #define CW_FTDC_PC_SpotOption '6'
-///证券
-#define CW_FTDC_PC_Stocks '7'
+///TAS合约
+#define CW_FTDC_PC_TAS '7'
+///金属指数
+#define CW_FTDC_PC_MI 'I'
 ///股票期权
 #define CW_FTDC_PC_StockOptions '8'
 ///金交所现货
 #define CW_FTDC_PC_SGE_SPOT '9'
+///证券
+#define CW_FTDC_PC_Stocks '0'
 ///金交所递延
 #define CW_FTDC_PC_SGE_DEFER 'a'
 ///金交所远期
@@ -523,6 +535,16 @@ typedef char cwFtdcOffsetFlagType;
 typedef char cwFtdcTradeTypeType;
 
 /////////////////////////////////////////////////////////////////////////
+///cwFtdcSpecPosiTypeType是一个特殊持仓明细标识类型
+/////////////////////////////////////////////////////////////////////////
+///普通持仓明细
+#define CW_FTDC_SPOST_Common '#'
+///TAS合约成交产生的标的合约持仓明细
+#define CW_FTDC_SPOST_Tas '0'
+
+typedef char cwFtdcSpecPosiTypeType;
+
+/////////////////////////////////////////////////////////////////////////
 ///cwFtdcPriceSourceType是一个成交价来源类型
 /////////////////////////////////////////////////////////////////////////
 ///前成交价
@@ -598,7 +620,7 @@ struct OneLevelQuote
 };
 
 //是否使用内存池
-#define USING_CW_MEMORY_POOL
+//#define USING_CW_MEMORY_POOL
 
 ///深度行情
 struct cwFtdcDepthMarketDataField
@@ -695,13 +717,7 @@ struct cwFtdcDepthMarketDataField
 	///今虚实度
 	cwFtdcPriceType		CurrDelta;
 	///当日均价
-	//cwFtdcPriceType		AveragePrice;
-
-#ifdef USING_CW_MEMORY_POOL
-
-
-#endif // USING_CW_MEMORY_POOL
-
+	cwFtdcPriceType		AveragePrice;
 };
 typedef std::shared_ptr<cwFtdcDepthMarketDataField> cwMarketDataPtr;
 
@@ -812,6 +828,9 @@ enum  cwOpenClose
 	, cwCloseToday
 };
 
+const char * GetcwOpenCloseString(cwOpenClose openclose);
+
+
 enum cwUserCanceleStatus : uint32_t
 {
 	cwUserCancel_NoCancel = 0
@@ -836,6 +855,18 @@ struct ActiveOrderKey
 	bool operator == (const ActiveOrderKey& orderkey) const;
 };
 
+struct ActiveOrderKey_HashFun
+{
+	std::size_t operator() (const ActiveOrderKey &key) const
+	{
+		return (std::hash<uint32_t>()(static_cast<uint32_t>(key.FrontID))
+			^ std::hash<uint32_t>()(static_cast<uint32_t>(key.SessionID))
+			^ std::hash<uint64_t>()(static_cast<uint64_t>(key.OrderRef)));
+	}
+};
+size_t ActuveOrderKeyHash(ActiveOrderKey & key);
+
+
 struct SysOrderKey
 {
 	///交易所代码
@@ -847,6 +878,15 @@ struct SysOrderKey
 
 	bool operator < (const SysOrderKey& orderkey) const;
 	bool operator == (const SysOrderKey& orderkey) const;
+};
+
+struct SysOrderKey_HashFun
+{
+	std::size_t operator() (const SysOrderKey &key) const
+	{
+		return (std::hash<std::string>()(key.ExchangeID)
+			^ std::hash<std::string>()(key.OrderSysID));
+	}
 };
 
 struct ORDERFIELD
