@@ -162,7 +162,7 @@ public:
 	virtual void			_OnTimer(int iTimerId, const char * szInstrumentID) = 0;
 protected:
 	///系统自用接口信息，勿动
-	std::set<std::string>	m_SubscribeInstrumentSet;
+	std::set<std::string>	m_SubscribedInstrumentSet;
 
 	cwOrderPtr				_InputLimitOrder(const char * szInstrumentID, cwFtdcDirectionType direction, cwOpenClose openclose, int volume, double price);		///报单函数--限价单
 	cwOrderPtr				_InputFAKOrder(const char * szInstrumentID, cwFtdcDirectionType direction, cwOpenClose openclose, int volume, double price);		///报单函数--FAK单（Filled And Kill 立即成交剩余自动撤销指令）

@@ -63,6 +63,11 @@ public:
 	cwKindleSeriesPtr		SubcribeKindle(const char * szInstrumentID, int iTimeScale);
 	cwKindleSeriesPtr		SubcribeDailyKindle(const char * szInstrumentID);
 
+	//从tick数据构建历史数据
+	bool					InitialHisKindleFromTickFile(const char * szTickFile);
+	bool					InitialHisKindleFromIndexFile(const char * szTickFile);
+
+
 	//获取已经订阅的k线
 	cwKindleSeriesPtr		GetKindleSeries(const char * szInstrumentID, int iTimeScale);
 

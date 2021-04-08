@@ -88,5 +88,12 @@ private:
 	std::fstream						m_Log;
 
 	std::string							m_LogFileName;
+
+	void SetNoWorkRequired(bool NoWork = false);
+
+private:
+	//不需要工作
+	volatile bool						m_bNoWorkRequired;
+
 };
 

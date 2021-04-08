@@ -123,6 +123,7 @@ private:
 	//K线周期，秒为单位
 	uint32_t								m_iTimeScale;
 	bool									m_bIsInitialed;
+	std::uint64_t							m_LastestUpdateTime;
 
 	bool									m_bUsingProductTradeTime;
 	cwProductTradeTime						m_ProductTradeTime;
