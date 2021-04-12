@@ -45,7 +45,7 @@
 #endif
 
 //#define CW_USING_DYNAMIC_LOADING_DLL
-//#define CW_API_6_5_1
+#define CW_API_6_5_1
 
 #ifndef CW_USING_DYNAMIC_LOADING_DLL
 #ifdef _MSC_VER
