@@ -67,7 +67,7 @@ public:
 	bool					InitialHisKindleFromTickFile(const char * szTickFile);
 	bool					InitialHisKindleFromIndexFile(const char * szTickFile);
 
-	bool					InitialHisKindleFromDB(const char * szDb);
+	bool					InitialHisKindleFromDB(int iCount);
 
 	//获取已经订阅的k线
 	cwKindleSeriesPtr		GetKindleSeries(const char * szInstrumentID, int iTimeScale);
