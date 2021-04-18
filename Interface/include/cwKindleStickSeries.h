@@ -40,6 +40,10 @@ public:
 	//行情更新，调用后会自动形成k线
 	void PriceUpdate(cwMarketDataPtr pPriceData);
 
+	//利用k线来更新K线序列。主要利用利用k线来合并数据,要求k线序列需要按顺序进行更新
+	void UpdateKindle(cwKindleStickPtr pKindle);
+	//替换现有k线序列
+	void ReplaceKindle(cwKindleStickPtr pKindle);
 	//获取k线周期
 	inline uint32_t GetTimeScale() { return m_iTimeScale; }
 

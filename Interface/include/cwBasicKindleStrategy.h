@@ -18,9 +18,9 @@
 #include <condition_variable>
 #include <atomic>
 
-
 #define		CW_CORRECT_TRADINGDAY
-#define		CW_USING_AGENT
+//#define		CW_USING_MYSQL_LIB
+
 
 class cwBasicKindleStrategy :
 	public cwBasicStrategy
@@ -60,14 +60,17 @@ public:
 
 
 	//订阅k线， iTimeScale是k线周期，秒数（如5分钟为300）
-	cwKindleSeriesPtr		SubcribeKindle(const char * szInstrumentID, int iTimeScale);
+	cwKindleSeriesPtr		SubcribeKindle(const char * szInstrumentID, int iTimeScale, int HisKindleCount = 0);
 	cwKindleSeriesPtr		SubcribeDailyKindle(const char * szInstrumentID);
 
 	//从tick数据构建历史数据
 	bool					InitialHisKindleFromTickFile(const char * szTickFile);
 	bool					InitialHisKindleFromIndexFile(const char * szTickFile);
 
-	bool					InitialHisKindleFromDB(int iCount);
+	//
+	void					GetKindleFromPublicBus();
+
+	bool					InitialHisKindleFromDB();
 
 	//获取已经订阅的k线
 	cwKindleSeriesPtr		GetKindleSeries(const char * szInstrumentID, int iTimeScale);
@@ -127,11 +130,11 @@ public:
 	enum cwKINDLE_TIMESCALE:int
 	{
 		cwKINDLE_TIMESCALE_1MIN = 60,
-		cwKINDLE_TIMESCALE_3MIN = 180,
-		cwKINDLE_TIMESCALE_5MIN = 300,
-		cwKINDLE_TIMESCALE_15MIN = 900,
-		cwKINDLE_TIMESCALE_30MIN = 1800,
-		cwKINDLE_TIMESCALE_1HOUR = 3600,
+		cwKINDLE_TIMESCALE_3MIN = cwKINDLE_TIMESCALE_1MIN * 3,
+		cwKINDLE_TIMESCALE_5MIN = cwKINDLE_TIMESCALE_1MIN * 5,
+		cwKINDLE_TIMESCALE_15MIN = cwKINDLE_TIMESCALE_1MIN * 15,
+		cwKINDLE_TIMESCALE_30MIN = cwKINDLE_TIMESCALE_1MIN * 30,
+		cwKINDLE_TIMESCALE_1HOUR = cwKINDLE_TIMESCALE_1MIN * 60,
 		cwKINDLE_TIMESCALE_DAILY
 	};
 private:
@@ -155,6 +158,8 @@ private:
 	cwMUTEX																			m_cwDealKindleMutex;			//K线处理同步
 	///K线容器 key:instrument key: TimeScale value :Kindle Series
 	std::unordered_map<std::string, std::unordered_map<int, cwKindleSeriesPtr>>		m_KindleSeriesMap;
+	///历史k线容器 Key:Instrument key: TimeScale value:HisKindle Count
+	std::unordered_map<std::string, std::unordered_map<int, int>>					m_HisKindleCountMap;
 
 	///Updating Thread 
 	///策略事件类型

@@ -18,6 +18,7 @@
 #include "cwProductTradeTime.h"
 #include "cwTradeCommonDefine.h"
 #include "cwStrategyLog.h"
+#include "cwBasicCout.h"
 
 class cwBasicStrategy
 {
@@ -161,6 +162,11 @@ public:
 	virtual void			_OnRspOrderCancel(cwOrderPtr pOrder, cwRspInfoPtr pRspInfo) = 0;
 	virtual void			_OnTimer(int iTimerId, const char * szInstrumentID) = 0;
 protected:
+	///输出显示
+	cwBasicCout				m_cwShow;						
+
+
+
 	///系统自用接口信息，勿动
 	std::set<std::string>	m_SubscribedInstrumentSet;
 
