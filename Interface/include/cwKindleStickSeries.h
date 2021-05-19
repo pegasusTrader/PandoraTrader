@@ -82,6 +82,18 @@ public:
 	int GetKindleStickHighest(unsigned int nBegin, unsigned int nEnd);
 	int GetKindleStickHighest(unsigned int nCount);
 
+	/*函数功能：获取K线最高的k线的最大值
+	* 参数描述：
+	*     [in] nBegin	- K线范围开始编号；
+	*     [in] nEnd		- K线范围结束编号；
+	*	  [in,out] High - K线最大值
+	* 返回值：
+	*     true，High值有效，否则High值无效。
+	*/
+	bool GetHighest(double &High);
+	bool GetHighest(unsigned int nBegin, unsigned int nEnd, double &High);
+	bool GetHighest(unsigned int nCount, double &High);
+
 	/*函数功能：获取K线最低的k线，如果有多个一样低的，返回最近的一根
 	* 参数描述：
 	*     [in] nBegin	- K线范围开始编号；
@@ -93,6 +105,19 @@ public:
 	int GetKindleStickLowest(unsigned int nBegin, unsigned int nEnd);
 	int GetKindleStickLowest(unsigned int nCount);
 	
+	/*函数功能：获取K线最高的k线的最小值
+	* 参数描述：
+	*     [in] nBegin	- K线范围开始编号；
+	*     [in] nEnd		- K线范围结束编号；
+	*	  [in,out] Low  - K线最小值
+	* 返回值：
+	*     true，Low值有效，否则Low值无效。
+	*/
+	bool GetLowest(double &Low);
+	bool GetLowest(unsigned int nBegin, unsigned int nEnd, double &Low);
+	bool GetLowest(unsigned int nCount, double &Low);
+
+
 	/*函数功能：获取指定范围K线的波峰位置
 	* 参数描述：
 	*     [in] nBegin	- K线范围开始编号；

@@ -22,6 +22,7 @@
 #include "cwSimTradeSpi.h"
 #include "cwStrategyDemo.h"
 #include "cwBasicCout.h"
+#include "cwVersion.h"
 
 #ifdef _MSC_VER
 #pragma comment(lib, "cwPandoraDLL.lib")

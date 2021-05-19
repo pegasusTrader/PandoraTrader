@@ -22,6 +22,7 @@
 #endif
 #include "tinyxml.h"
 #include "cwBasicCout.h"
+#include "cwVersion.h"
 
 #ifdef _MSC_VER
 #pragma comment(lib, "cwPandoraDLL.lib")
@@ -294,7 +295,7 @@ int main()
 #endif // WIN32
 
 	std::cout << "Welcome To Pandora Trader !!" << std::endl;
-
+	std::cout << GetPandoraTraderVersion() << std::endl;
 	std::cout << "Init Config From File!" << std::endl;
 	if (!ReadXmlConfigFile())
 	{

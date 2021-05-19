@@ -115,7 +115,10 @@ public:
 
 
 	//订阅合约
+	//同时订阅多个合约
 	void	   SubScribePrice(std::vector<std::string>& SubscribeInstrument);
+	//一次只需订阅一个合约
+	void	   SubScribePrice(const char * pInstrumentID);
 	//取消订阅合约
 	void	   UnSubScribePrice(std::vector<std::string>& UnSubscribeInstrument);
 

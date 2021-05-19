@@ -21,6 +21,7 @@ public:
 	~cwOrderReference();
 
 	void			UpdateOrderRef(const char * pOrderRef);
+	void			UpdateOrderRef(uint64_t iOrderRef);
 
 	uint64_t		GetOrderRef();
 private:
