@@ -1,3 +1,14 @@
+//////////////////////////////////////////////////////////////////////////////////
+//*******************************************************************************
+//---
+//---	author: Wu Chang Sheng
+//---
+//--	Copyright (c) by Wu Chang Sheng. All rights reserved.
+//--    Consult your license regarding permissions and restrictions.
+//--
+//*******************************************************************************
+//////////////////////////////////////////////////////////////////////////////////
+
 #pragma once
 #include <stdint.h>
 
@@ -10,7 +21,7 @@ public:
 	~cwOrderReference();
 
 	void			UpdateOrderRef(const char * pOrderRef);
-	void			UpdateOrderRef(char * pOrderRef);
+	void			UpdateOrderRef(uint64_t iOrderRef);
 
 	uint64_t		GetOrderRef();
 private:

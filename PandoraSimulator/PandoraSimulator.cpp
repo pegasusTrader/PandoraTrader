@@ -1,4 +1,10 @@
-// RDPlatform.cpp : Defines the entry point for the console application.
+// cwPegasusSimulator.cpp : Defines the entry point for the  Pandora Simulator console application.
+//
+//For more information, please visit https://github.com/pegasusTrader/PandoraTrader
+//
+//Please use the platform with legal and regulatory permission.
+//This software is released into the public domain.You are free to use it in any way you like, except that you may not sell this source code.
+//This software is provided "as is" with no expressed or implied warranty.I accept no liability for any damage or loss of business that this software may cause.
 //
 
 //#include "stdafx.h"
@@ -6,12 +12,12 @@
 #include "cwPegasusSimulator.h"
 #include "cwSimMdSpi.h"
 #include "cwSimTradeSpi.h"
-#include "cwStrategyDemo.h"
+#include "cwEmptyStrategy.h"
+#include "tinyxml.h"
 #include "cwBasicCout.h"
 
 #ifdef _MSC_VER
-#pragma comment(lib, "cwCTPDLL.lib")
-#pragma comment(lib, "cwStrategys.lib")
+#pragma comment(lib, "cwPandoraDLL.lib")
 #pragma comment(lib, "PandoraStrategy.lib")
 #pragma comment(lib, "tinyxml.lib")
 #endif // WIN32
@@ -25,7 +31,7 @@ cwFtdcPasswordType		m_szMdPassWord;
 cwPegasusSimulator		m_PegasusSimulator;
 cwSimMdSpi				m_mdCollector;
 cwSimTradeSpi			m_TradeChannel;
-cwStrategyDemo			m_Strategy;
+cwEmptyStrategy			m_Strategy;
 
 std::vector<std::string> m_SubscribeInstrument;
 
@@ -54,6 +60,7 @@ unsigned int PriceServerThread()
 
 int main()
 {
+
 	char exeFullPath[MAX_PATH];
 	memset(exeFullPath, 0, MAX_PATH);
 	std::string strFullPath;
@@ -84,7 +91,6 @@ int main()
 	strFullPath.append("/PandoraSimulatorConfig.xml");
 #endif // WIN32
 
-
 	m_Strategy.InitialStrategy(NULL);
 
 	m_PegasusSimulator.InitialSimulator(strFullPath.c_str());
@@ -102,8 +108,12 @@ int main()
 	while (true)
 	{
 		cwSleep(3000);
-		m_cwShow.AddLog("%s", m_Strategy.m_strCurrentUpdateTime.c_str());
-		//std::cout << m_Strategy.m_strCurrentUpdateTime.c_str() << '\n';
+		m_cwShow.AddLog("%s %s 权益:%.3f 平仓盈亏:%.3f 持仓盈亏:%.3f",
+			m_PegasusSimulator.m_CurrentTradingDay,
+			m_PegasusSimulator.m_CurrentSimulationTime,
+			m_PegasusSimulator.m_cwSettlement.m_dBalance,
+			m_PegasusSimulator.m_cwSettlement.m_dCloseProfit,
+			m_PegasusSimulator.m_cwSettlement.m_dPositionProfit);
 	}
     return 0;
 }

@@ -1,3 +1,14 @@
+//////////////////////////////////////////////////////////////////////////////////
+//*******************************************************************************
+//---
+//---	author: Wu Chang Sheng
+//---
+//--	Copyright (c) by Wu Chang Sheng. All rights reserved.
+//--    Consult your license regarding permissions and restrictions.
+//--
+//*******************************************************************************
+//////////////////////////////////////////////////////////////////////////////////
+
 #pragma once
 #include "cwBasicMdSpi.h"
 #include "cwBasicSimulator.h"
@@ -18,18 +29,18 @@ public:
 
 	virtual void RegisterStrategy(cwBasicStrategy * pBasicStrategy);
 
-	void Connect(char * pszFrontAddress);
+	void Connect(const char * pszFrontAddress);
 	void Connect(cwBasicSimulator * pBaiscSimulator);
 	void DisConnect();
 
 	void WaitForFinish();
 
-	void SetUserLoginField(char * szBrokerID, char * szUserID, char * szPassword);
+	void SetUserLoginField(const char * szBrokerID, const char * szUserID, const char * szPassword);
 
 	virtual void SubscribeMarketData(std::vector<std::string>& SubscribeInstrument);
 	virtual void UnSubscribeMarketData(std::vector<std::string>& SubscribeInstrument);
 
-	size_t		 GetDataDequeLength() { return m_DepthMarketDataDeque.size(); }
+	//size_t		 GetDataDequeLength() { return m_DepthMarketDataDeque.size(); }
 private:
 	cwBasicSimulator *			m_pMarketDataUserApi;
 

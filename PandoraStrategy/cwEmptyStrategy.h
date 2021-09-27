@@ -1,10 +1,10 @@
 #pragma once
 #include <fstream>
-#include "cwBasicStrategy.h"
+#include "cwBasicKindleStrategy.h"
 #include <iostream>
 
 class cwEmptyStrategy :
-	public cwBasicStrategy
+	public cwBasicKindleStrategy
 {
 public:
 	cwEmptyStrategy();
@@ -24,7 +24,7 @@ public:
 	///³·µ¥³É¹¦
 	virtual void OnOrderCanceled(cwOrderPtr pOrder) {};
 
-	virtual void SetStrategyReady();
+	virtual void OnReady();
 
 	std::string	m_strCurrentUpdateTime;	
 

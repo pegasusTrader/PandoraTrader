@@ -1,8 +1,20 @@
+//////////////////////////////////////////////////////////////////////////////////
+//*******************************************************************************
+//---
+//---	author: Wu Chang Sheng
+//---
+//--	Copyright (c) by Wu Chang Sheng. All rights reserved.
+//--    Consult your license regarding permissions and restrictions.
+//--
+//*******************************************************************************
+//////////////////////////////////////////////////////////////////////////////////
+
 #pragma once
 #include <string>
 #include <map>
 #include <thread>
 
+#include "cwCommonUtility.h"
 #include "cwBasicStrategy.h"
 #include "cwBasicTradeSpi.h"
 #include "cwBasicCout.h"
@@ -32,16 +44,12 @@
 // POSIX
 #endif
 
-#define CW_USING_AUTHCODE
 //#define CW_USING_DYNAMIC_LOADING_DLL
+//#define CW_API_6_5_1
 
 #ifndef CW_USING_DYNAMIC_LOADING_DLL
 #ifdef _MSC_VER
-#ifdef CW_USING_AUTHCODE
 #pragma comment(lib, "thosttraderapi_se.lib")
-#else
-#pragma comment(lib, "thosttraderapi.lib")
-#endif // CW_USING_AUTHCODE
 #endif // _MSC_VER
 #else
 #ifdef _MSC_VER
@@ -67,6 +75,7 @@ public:
 		, cwReqQryInvestor
 		, cwReqSettlementInfoConfirm
 		, cwReqQryInstrument
+		, cwReqQryClassifiedInstrument
 		, cwReqQryTradingAccount
 		, cwRspQryInvestorPosition
 		, cwRspQryInvestorPositionDetail
@@ -126,7 +135,7 @@ public:
 	virtual void OnRspOrderAction(CThostFtdcInputOrderActionField *pInputOrderAction, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
 
 	///查询最大报单数量响应
-	virtual void OnRspQueryMaxOrderVolume(CThostFtdcQueryMaxOrderVolumeField *pQueryMaxOrderVolume, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
+	//virtual void OnRspQueryMaxOrderVolume(CThostFtdcQueryMaxOrderVolumeField *pQueryMaxOrderVolume, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
 
 	///投资者结算结果确认响应
 	virtual void OnRspSettlementInfoConfirm(CThostFtdcSettlementInfoConfirmField *pSettlementInfoConfirm, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
@@ -419,6 +428,13 @@ public:
 	///银行发起变更银行账号通知
 	virtual void OnRtnChangeAccountByBank(CThostFtdcChangeAccountField *pChangeAccount);
 
+#ifdef 	CW_API_6_5_1
+	///请求查询分类合约响应
+	virtual void OnRspQryClassifiedInstrument(CThostFtdcInstrumentField *pInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
+
+	///请求组合优惠比例响应
+	virtual void OnRspQryCombPromotionParam(CThostFtdcCombPromotionParamField *pCombPromotionParam, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) {};
+#endif
 
 public:
 	//User Setting Method
@@ -429,14 +445,14 @@ public:
 
 	virtual void RegisterBasicStrategy(cwBasicStrategy * pBasicStrategy, void * pSpi = NULL);
 
-	void Connect(char * pszFrontAddress, char * pszDllPath = NULL);
+	void Connect(const char * pszFrontAddress, const char * pszDllPath = NULL);
 	void DisConnect();
 
 	void WaitForFinish();
 
-	void SetUserLoginField(char * szBrokerID, char * szUserID, char * szPassword, char * szUserProductInfo = INTERFACENAME);
+	void SetUserLoginField(const char * szBrokerID, const char * szUserID, const char * szPassword, const char * szUserProductInfo = INTERFACENAME);
 	void SetUserLoginField(CThostFtdcReqUserLoginField& reqUserLoginField);
-	void SetAuthenticateInfo(char * szAppID, char * szAuthCode);
+	void SetAuthenticateInfo(const char * szAppID, const char * szAuthCode);
 
 	//User Trader Method
 	//行情更新
@@ -455,11 +471,8 @@ public:
 		cwOpenClose openclose, int volume, double price);
 	virtual cwOrderPtr InputFOKOrder(const char * szInstrumentID, cwFtdcDirectionType direction,
 		cwOpenClose openclose, int volume, double price);
-#if 0
-	virtual void InputOrder(cwOrderPtr pOrder);
-#endif
 
-	virtual void CancelOrder(char * szLocalOrderID);
+	virtual void CancelOrder(const char * szLocalOrderID);
 	virtual void CancelOrder(cwOrderPtr pOrder);
 protected:
 	bool		MyReqFunction(cwReqType nType, void * pData);
@@ -469,12 +482,13 @@ protected:
 #ifdef _MSC_VER
 #pragma region CTPDefine2CWDefine
 #endif // _MSC_VER
+	cwFtdcProductClassType		GetCtp2CwProductClassType(TThostFtdcProductClassType productclassType);
 	cwFtdcDirectionType			GetCtp2CwDirectionType(TThostFtdcDirectionType direction, bool bPosition = false);
 	cwFtdcHedgeFlagType			GetCtp2CwHedgeFlagType(TThostFtdcHedgeFlagType hedge);
 	cwFtdcOffsetFlagType		GetCtp2CwOffsetFlagType(TThostFtdcOffsetFlagType Offset);
 	cwFtdcOrderPriceType		GetCtp2CwOrderPriceType(TThostFtdcOrderPriceTypeType orderpricetype);
 	cwFtdcTimeConditionType		GetCtp2CwTimeConditionType(TThostFtdcTimeConditionType timeconditiontype);
-	cwFtdcVolumeConditionType	GetCtd2CwVolumeConditionType(TThostFtdcVolumeConditionType volumeconditiontype);
+	cwFtdcVolumeConditionType	GetCtp2CwVolumeConditionType(TThostFtdcVolumeConditionType volumeconditiontype);
 	cwFtdcForceCloseReasonType	GetCtd2CwForceCloseReasonType(TThostFtdcForceCloseReasonType forceclosereasontype);
 	cwFtdcOrderSourceType		GetCtp2CwOrderSourceType(TThostFtdcOrderSourceType ordersource);
 	cwFtdcOrderStatusType		GetCtp2CwOrderStatusType(TThostFtdcOrderStatusType orderstatustype);
@@ -518,17 +532,18 @@ protected:
 	//Investor Data
 	CThostFtdcReqUserLoginField m_ReqUserLoginField;
 	std::string					m_strInvestorID;
+	std::string					m_strInvestorName;
 
 	TThostFtdcSessionIDType		m_SessionID;
 	TThostFtdcFrontIDType		m_FrontID;
 
-#ifdef CW_USING_AUTHCODE
 	TThostFtdcAuthCodeType		m_AuthCode;	///认证码
 	TThostFtdcAppIDType			m_AppID;	///App代码
-#endif // CW_USING_AUTHCODE
+
+	char								m_szTradeFrount[1024];
 
 #ifdef NoCancelTooMuchPerTick
-	uint32_t					m_iLatestUpdateTime;
+	uint32_t							m_iLatestUpdateTime;
 #endif // NoCancelTooMuchPerTick
 
 	std::deque<CThostFtdcOrderField>	m_UndealedOrdersDeque;
@@ -537,9 +552,11 @@ protected:
 	int m_iTradeAPIIndex;
 
 #ifdef CWCOUTINFO
-	cwBasicCout					m_cwShow;
+	cwBasicCout							m_cwShow;
 #endif
 
-	THOST_TE_RESUME_TYPE		m_iResumeType;
+	THOST_TE_RESUME_TYPE				m_iResumeType;
+
+	CW_DISALLOW_COPYCTOR_AND_ASSIGNMENT(cwFtdTradeSpi);
 };
 

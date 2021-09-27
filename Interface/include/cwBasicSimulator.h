@@ -1,12 +1,11 @@
 //////////////////////////////////////////////////////////////////////////////////
 //*******************************************************************************
 //---
-//---	author: Wu Chang Sheng
+//---	Created by Wu Chang Sheng on Dec.12th, 2018
 //---
-//---	CreateTime:	2018/12/12
-//---
-//---	VerifyTime:	2018/12/12
-//---
+//--	Copyright (c) by Wu Chang Sheng. All rights reserved.
+//--    Consult your license regarding permissions and restrictions.
+//--
 //*******************************************************************************
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -26,9 +25,15 @@ public:
 	virtual void InitialSimulator(const char * pConfigFilePath);
 	std::string			m_strConfigFileFullPath;
 
-
+	//Md
 	virtual int ReqUserMdLogin() { return 0; }
+
+	//Trade
 	virtual int ReqQryInstrument() { return 0; }
+	virtual int ReqQryPosition() { return 0; }
+	virtual int ReqQryOrders() { return 0; }
+	virtual int ReqQryTrades() { return 0; }
+
 
 	virtual int ReqOrderInsert(cwOrderPtr pOrder) { return 0; }
 	virtual int CancelOrder(cwOrderPtr pOrder) { return 0; }
@@ -39,7 +44,7 @@ public:
 	//取消订阅合约
 	void		UnSubScribePrice(std::vector<std::string>& UnSubscribeInstrument);
 
-	bool		GetIsSubscribedInstrument(char * Ins);
+	bool		GetIsSubscribedInstrument(const char * Ins);
 	size_t		GetSubscribedInstrumentCount() { return m_SubscribeInstrumentMap.size(); };
 	///Trade
 

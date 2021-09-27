@@ -1,3 +1,14 @@
+//////////////////////////////////////////////////////////////////////////////////
+//*******************************************************************************
+//---
+//---	author: Wu Chang Sheng
+//---
+//--	Copyright (c) by Wu Chang Sheng. All rights reserved.
+//--    Consult your license regarding permissions and restrictions.
+//--
+//*******************************************************************************
+//////////////////////////////////////////////////////////////////////////////////
+
 #pragma once
 #include <cstdint>
 
@@ -70,9 +81,6 @@ public:
 	cwTimeStamp operator +=(std::uint64_t offset);
 	cwTimeStamp operator -=(std::uint64_t offset);
 
-	void SetSystemTime(SYSTEMTIME const* pSysTime);
-	void GetSystemTime(SYSTEMTIME * pSysTime) const;
-
 	static inline bool IsLeapYear(std::uint32_t year)
 	{
 		return (year % 4 == 0) && (year % 100 != 0 || year % 400 == 0);
@@ -80,6 +88,9 @@ public:
 
 	static const std::uint32_t s_MonthLengths[2][12];
 private:
+	void SetSystemTime(SYSTEMTIME const* pSysTime);
+	void GetSystemTime(SYSTEMTIME * pSysTime) const;
+
 	//may the same with Windows' FileTime
 	//Contains a 64 - bit value representing the number of 100 - nanosecond intervals since January 1, 1601 (UTC).
 	std::uint64_t	m_100nanosecond;

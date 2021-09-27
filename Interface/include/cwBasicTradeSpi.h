@@ -1,12 +1,11 @@
 //////////////////////////////////////////////////////////////////////////////////
 //*******************************************************************************
 //---
-//---	author: Wu Chang Sheng
+//---	Created by Wu Chang Sheng on Dec.8th, 2016
 //---
-//---	CreateTime:	2016/12/12
-//---
-//---	VerifyTime:	2016/12/12
-//---
+//--	Copyright (c) by Wu Chang Sheng. All rights reserved.
+//--    Consult your license regarding permissions and restrictions.
+//--
 //*******************************************************************************
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -138,10 +137,7 @@ public:
 	bool		GetPositionAndActiveOrders(std::string InstrumentID, cwFtdcDirectionType direction,
 		int& TotalPositon, int& TodayPosition, int& FrozenTdPosition, int& FrozenYdPosition);
 
-	//CWRISK
-#ifdef CWRISK
 	int			GetOrderCancelCount(std::string InstrumentID);
-#endif
 
 	//User Trader Method
 	//行情更新
@@ -152,17 +148,17 @@ public:
 		cwOpenClose openclose, int volume, double price) = 0;
 	virtual cwOrderPtr InputFOKOrder(const char * szInstrumentID, cwFtdcDirectionType direction,
 		cwOpenClose openclose, int volume, double price) = 0;
-	virtual void CancelOrder(char * szLocalOrderID) = 0;
+	virtual void CancelOrder(const char * szLocalOrderID) = 0;
 	virtual void CancelOrder(cwOrderPtr pOrder) = 0;
 
 	void	SetDisConnectExit(bool bDisConnectExit = true) { m_bDisConnectExit = bDisConnectExit; }
 
-	std::map<std::string, cwInstrumentDataPtr>	m_InstrumentMap;
+	std::unordered_map<std::string, cwInstrumentDataPtr>	m_InstrumentMap;
 
 	std::string									m_strInstrumentDataFileName;
 	void	SetSaveInstrumentDataToFile(bool bSave) { m_bSaveInstrumentDataToFile = bSave; }
 	void	SetInstrumentDataFileName(const char * fileName);
-	void	GetInstrumentDataFromFile();
+	void	GetInstrumentDataFromFile(const char * fileName = nullptr);
 	bool	GenerateInstrumentDataToFile();
 
 	const cwTradeAPIType		m_cwTradeAPIType;
@@ -176,6 +172,7 @@ public:
 protected:
 	TradeServerStatus			m_CurrentStatus;
 	cwFtdcTimeType				m_cwTradeLoginTime;
+	cwFtdcDateType				m_cwTradeLoginTradingDay;
 
 	cwBasicStrategy	*			m_pBasicStrategy;
 
@@ -195,10 +192,13 @@ protected:
 	bool						m_bHasGetTrades;
 	bool						m_bOrderRankedUpdate;
 
-	std::map<std::string, cwOrderPtr>	m_OrdersMap;		//Key OrderSysID
-	std::map<std::string, cwOrderPtr>	m_ActiveOrdersMap;	//Key OrderRef
+	//是否含有开仓的报单(为谨慎起见，报出开仓单即认为有,但查询错单，则不被认为有） 
+	std::unordered_map<std::string, bool>					m_bHasOpenOffsetOrderMap;	//Key InstrumentID
 
-	std::map<std::string, cwTradePtr>	m_TradeMap;			//key TradeID
+	std::map<std::string, cwOrderPtr>						m_OrdersMap;				//Key OrderSysID
+	std::map<std::string, cwOrderPtr>						m_ActiveOrdersMap;			//Key OrderRef
+
+	std::map<std::string, cwTradePtr>						m_TradeMap;					//key TradeID
 
 	std::map<std::string, cwFtdcInstrumentStatusType>		m_ExchangeStatus;
 
@@ -216,16 +216,17 @@ protected:
 
 	//CWRISK
 #ifdef CWRISK
-	const int					m_iMaxCancelLimitNum;			//最大撤单次数
-	std::map<std::string, int>	m_iCancelLimitMap;				//撤单次数统计，key:InstrumentID
+	const int													m_iMaxCancelLimitNum;			//最大撤单次数
+	std::unordered_map<std::string, int>						m_iCancelLimitMap;				//撤单次数统计，key:InstrumentID
+
 	//本地报单 Ref登记， 遇到错单，减回撤单次数，便于准确统计
 	//key Isntrument, value : OrderRefSet;
-	std::map<std::string, std::set<std::string>>	m_MayCancelOrderRefSetMap;		
+	std::unordered_map<std::string, std::set<std::string>>		m_MayCancelOrderRefSetMap;
 #endif // CWRISK
 
-	bool						m_bDisConnectExit;
+	bool														m_bDisConnectExit;
 
-	static	int					m_iTradeApiCount;
-	bool						m_bSaveInstrumentDataToFile;
+	static	int													m_iTradeApiCount;
+	bool														m_bSaveInstrumentDataToFile;
 };
 

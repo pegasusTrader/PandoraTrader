@@ -1,7 +1,13 @@
-// ArbitrageStrategyTrader.cpp : Defines the entry point for the console application.
+// PandoraDemoStrategyTrader.cpp : Defines the entry point for the Pandora Trader console application.
+//
+//For more information, please visit https://github.com/pegasusTrader/PandoraTrader
+//
+//Please use the platform with legal and regulatory permission.
+//This software is released into the public domain.You are free to use it in any way you like, except that you may not sell this source code.
+//This software is provided "as is" with no expressed or implied warranty.I accept no liability for any damage or loss of business that this software may cause.
 //
 
-//#define EMPTYSTRATEGY
+#define EMPTYSTRATEGY
 
 #include <thread>
 #include <iostream>
@@ -18,7 +24,7 @@
 #include "cwBasicCout.h"
 
 #ifdef _MSC_VER
-#pragma comment(lib, "cwCTPDLL.lib")
+#pragma comment(lib, "cwPandoraDLL.lib")
 #pragma comment(lib, "tinyxml.lib")
 #pragma comment(lib, "PandoraStrategy.lib")
 #endif // WIN32

@@ -1,6 +1,18 @@
+//////////////////////////////////////////////////////////////////////////////////
+//*******************************************************************************
+//---
+//---	author: Wu Chang Sheng
+//---
+//--	Copyright (c) by Wu Chang Sheng. All rights reserved.
+//--    Consult your license regarding permissions and restrictions.
+//--
+//*******************************************************************************
+//////////////////////////////////////////////////////////////////////////////////
+
 #pragma once
 #include "cwLog.h"
 #include <stdarg.h>
+#include <deque>
 
 class cwStrategyLog
 	: public cwLog

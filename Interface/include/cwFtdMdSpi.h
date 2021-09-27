@@ -1,8 +1,20 @@
+//////////////////////////////////////////////////////////////////////////////////
+//*******************************************************************************
+//---
+//---	author: Wu Chang Sheng
+//---
+//--	Copyright (c) by Wu Chang Sheng. All rights reserved.
+//--    Consult your license regarding permissions and restrictions.
+//--
+//*******************************************************************************
+//////////////////////////////////////////////////////////////////////////////////
+
 #pragma once
 #include <map>
 #include <vector>
 #include <string>
 
+#include "cwCommonUtility.h"
 #include "cwBasicMdSpi.h"
 
 #ifdef _WIN64
@@ -30,15 +42,8 @@
 // POSIX
 #endif
 
-#define CW_USING_AUTHCODE
-
-
 #ifdef WIN32
-#ifdef CW_USING_AUTHCODE
 #pragma comment(lib, "thostmduserapi_se.lib")
-#else
-#pragma comment(lib, "thostmduserapi.lib")
-#endif
 #endif
 
 class cwFtdMdSpi
@@ -102,12 +107,12 @@ public:
 
 	virtual void RegisterStrategy(cwBasicStrategy * pBasicStrategy);
 
-	void Connect(char * pszFrontAddress, char * pszLocalAddr = NULL);
+	void Connect(const char * pszFrontAddress, const char * pszLocalAddr = NULL);
 	void DisConnect();
 
 	void WaitForFinish();
 
-	void SetUserLoginField(char * szBrokerID, char * szUserID, char * szPassword);
+	void SetUserLoginField(const char * szBrokerID, const char * szUserID, const char * szPassword);
 	void SetUserLoginField(CThostFtdcReqUserLoginField& reqUserLoginField);
 
 	virtual void SubscribeMarketData(std::vector<std::string>& SubscribeInstrument);
@@ -115,18 +120,22 @@ public:
 
 private:
 
-	CThostFtdcMdApi * m_pMarketDataUserApi;
+	CThostFtdcMdApi *				m_pMarketDataUserApi;
 
 	//User Config Data
-	CThostFtdcReqUserLoginField m_ReqUserLoginField;
-	char						m_szMDFrount[1024];
+	CThostFtdcReqUserLoginField		m_ReqUserLoginField;
+	char							m_szMDFrount[1024];
+
+	//一次订阅合约次数
+	const int						m_iSubscribeCountOnce;
 
 	//
-	int							m_iRequestId;
+	int								m_iRequestId;
 
-	std::map<std::string, bool>	m_SubscribeInstrumentMap;
+	std::map<std::string, bool>		m_SubscribeInstrumentMap;
 
-	int m_iMdAPIIndex;
+	int								m_iMdAPIIndex;
 
+	CW_DISALLOW_COPYCTOR_AND_ASSIGNMENT(cwFtdMdSpi);
 }; 
 
