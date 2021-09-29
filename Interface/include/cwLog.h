@@ -75,7 +75,7 @@ public:
 
 private:
 	std::thread							m_LogWorkingThread;
-	std::atomic<bool>					m_bLogWorkingThreadRun;
+	volatile std::atomic<bool>			m_bLogWorkingThreadRun;
 	void								LogWorkingThread();
 
 
@@ -94,7 +94,7 @@ private:
 
 private:
 	//不需要工作
-	bool						m_bNoWorkRequired;
+	volatile bool						m_bNoWorkRequired;
 
 };
 
