@@ -14,6 +14,7 @@
 #include "cwMutex.h"
 #include "cwBasicStrategy.h"
 #include "cwOrderReference.h"
+#include "cwDate.h"
 
 #define CWRISK
 #define TRADELOG
@@ -123,6 +124,9 @@ public:
 		}
 		return m_TradeMap;
 	}
+
+	inline cwPandoraTrader::cwDate GetTradingDay() { return m_cwCurrentTradingDay; }
+
 	bool		IsWaitOrder(cwOrderPtr pOrder);
 	bool		IsIOCTypeOrder(cwOrderPtr pOrder);
 
@@ -139,6 +143,9 @@ public:
 
 	int			GetOrderCancelCount(std::string InstrumentID);
 
+	//查询保证金率
+	virtual double		GetMarginRate(std::string InstrumentID) = 0;
+
 	//User Trader Method
 	//行情更新
 	virtual void PriceUpdate(cwMarketDataPtr pPriceData) = 0;
@@ -153,7 +160,9 @@ public:
 
 	void	SetDisConnectExit(bool bDisConnectExit = true) { m_bDisConnectExit = bDisConnectExit; }
 
+	///Data region
 	std::unordered_map<std::string, cwInstrumentDataPtr>	m_InstrumentMap;
+	std::unordered_map<std::string, double>					m_MarginRateMap;
 
 	std::string									m_strInstrumentDataFileName;
 	void	SetSaveInstrumentDataToFile(bool bSave) { m_bSaveInstrumentDataToFile = bSave; }
@@ -173,6 +182,8 @@ protected:
 	TradeServerStatus			m_CurrentStatus;
 	cwFtdcTimeType				m_cwTradeLoginTime;
 	cwFtdcDateType				m_cwTradeLoginTradingDay;
+
+	cwPandoraTrader::cwDate		m_cwCurrentTradingDay;
 
 	cwBasicStrategy	*			m_pBasicStrategy;
 

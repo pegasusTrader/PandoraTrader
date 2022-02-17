@@ -103,10 +103,8 @@ public:
 	}
 
 	//User Setting Method
-	inline void		RegisterTradeSPI(cwBasicTradeSpi * pTradeSpi)
-	{
-		m_pTradeSpi = pTradeSpi;
-	}
+	void		RegisterTradeSPI(cwBasicTradeSpi * pTradeSpi);
+	
 
 	virtual void	RegisterStrategy(cwBasicStrategy * pBasicStrategy) = 0;
 
@@ -129,7 +127,7 @@ public:
 
 	cwMarketDataPtr									CreateMarketData();
 
-
+	cwMarketDataPtr									m_cwLastestMarketData;
 protected:
 	PriceServerStatus								m_CurrentStatus;
 

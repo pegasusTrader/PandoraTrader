@@ -68,8 +68,11 @@ public:
 	void WriteLog(bool bForceWrite = false);
 #endif
 
-	void		 SetBufferLength(size_t nLength);
-	inline size_t SetBufferLength() { return m_iBufferLength; }
+	void			SetBufferLength(size_t nLength);
+	inline size_t	SetBufferLength() { return m_iBufferLength; }
+
+	void			SetNoWorkRequired(bool NoWork = false);
+
 private:
 	std::thread							m_LogWorkingThread;
 	volatile std::atomic<bool>			m_bLogWorkingThreadRun;
@@ -88,8 +91,6 @@ private:
 	std::fstream						m_Log;
 
 	std::string							m_LogFileName;
-
-	void SetNoWorkRequired(bool NoWork = false);
 
 private:
 	//不需要工作

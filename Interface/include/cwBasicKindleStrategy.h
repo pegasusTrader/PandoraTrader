@@ -33,10 +33,10 @@ public:
 	virtual ~cwBasicKindleStrategy();
 
 	///MarketData SPI
-	//行情更新（PriceUpdate回调会先于OnBar， 在PriceUpdate已经可以获取更新好的K线）
+	//行情更新（OnBar会先于PriceUpdate回调， 在PriceUpdate已经可以获取更新好的K线）
 	virtual void			PriceUpdate(cwMarketDataPtr pPriceData) {};
 	//当生成一根新K线的时候，会调用该回调
-	virtual void			OnBar(std::string InstrumentID, int iTimeScale, cwBasicKindleStrategy::cwKindleSeriesPtr pKindle) {};
+	virtual void			OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKindleStrategy::cwKindleSeriesPtr pKindle) {};
 
 	///Trade SPI
 	//成交回报
@@ -210,6 +210,7 @@ private:
 		std::deque<EventTypeStructPtr>							EventTypeStructDeque;			//工作区事件信息队列
 		cwMUTEX													EventTypeDequeMutex;			//事件信息队列同步
 		std::condition_variable									EventWorkingMutexCv;			//添加条件变量通知工作区工作线程
+		std::atomic<bool>										bEventFinished;
 
 		std::thread												EventTypeWorkingThread;			//工作区工作线程
 		volatile std::atomic<bool>								bEventTypeWorkingThreadRun;		//工作区线程运行状态

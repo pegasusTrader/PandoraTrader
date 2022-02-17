@@ -54,6 +54,8 @@ public:
 	virtual int			ReqOrderInsert(cwOrderPtr pOrder);
 	virtual int			CancelOrder(cwOrderPtr pOrder);
 
+	virtual cwPandoraTrader::cwDate GetTradingDay();
+
 	cwOrderPtr			GetOrder(cwOrderPtr pOrder);
 	cwTradePtr			GetTrade(cwOrderPtr pOrder, double dTradePrice, int iTradeCnt = 1);
 

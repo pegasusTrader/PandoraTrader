@@ -29,7 +29,7 @@ public:
 	///行情更新
 	virtual void PriceUpdate(cwMarketDataPtr pPriceData);
 	//当生成一根新K线的时候，会调用该回调
-	virtual void			OnBar(std::string InstrumentID, int iTimeScale, cwBasicKindleStrategy::cwKindleSeriesPtr pKindle);
+	virtual void			OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKindleStrategy::cwKindleSeriesPtr pKindle);
 
 	//Trade SPI
 	///成交回报

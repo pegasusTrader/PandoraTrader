@@ -112,7 +112,7 @@ void cwMarketDataReceiver::PriceUpdate(cwMarketDataPtr pPriceData)
 	m_TotalTurnOver[pPriceData->InstrumentID] = pPriceData->Turnover;
 }
 
-void cwMarketDataReceiver::OnBar(std::string InstrumentID, int iTimeScale, cwBasicKindleStrategy::cwKindleSeriesPtr pKindle)
+void cwMarketDataReceiver::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKindleStrategy::cwKindleSeriesPtr pKindle)
 {
 }
 

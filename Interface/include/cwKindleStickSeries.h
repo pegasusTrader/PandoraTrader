@@ -17,6 +17,13 @@
 #include "cwProductTradeTime.h"
 #include "cwKindleStick.h"
 
+#define KINDLE_MULTI_THREAD
+
+#ifdef KINDLE_MULTI_THREAD
+#include "cwMutex.h"
+#endif // KINDLE_MULTI_THREAD
+
+
 typedef std::shared_ptr<cwKindleStick> cwKindleStickPtr;
 
 class cwKindleStickSeries
@@ -46,17 +53,20 @@ public:
 	void ReplaceKindle(cwKindleStickPtr pKindle);
 	//获取k线周期
 	inline uint32_t GetTimeScale() { return m_iTimeScale; }
-
+	//设置K线行情处理的数据精度，默认值为0.00001
+	void SetPrecision(double precision);
 public:
 	cwMarketDataPtr					m_PrePriceData;
 	cwKindleStickPtr				m_pCurrentKindleStick;
 	cwRangeOpenClose				m_cwRangeOCMode;
 	uint32_t						m_iCurrentKindleLeftTime;
-	std::deque<cwKindleStickPtr>	m_KindleStickDeque;
 
 	bool							m_bIsNewKindle;
 
 public:
+	//获取K线序列
+	bool			 GetKindleSerise(std::deque<cwKindleStickPtr> &	KindleStickDeque);
+
 	//按时间顺序获取k线，nCount为k线序列，最早的k线nCount为0
 	cwKindleStickPtr GetKindleStick(unsigned int nCount = 0);
 	//按时间逆序获取k线，nCount为k线序列，最近的k线nCount为0
@@ -94,6 +104,16 @@ public:
 	bool GetHighest(unsigned int nBegin, unsigned int nEnd, double &High);
 	bool GetHighest(unsigned int nCount, double &High);
 
+	/*函数功能：获取下一个（最近一个,包括nBegin）比指定值更高的K线
+	* 参数描述：
+	*     [in] nBegin	- K线范围开始编号；
+	*     [in] nEnd		- K线范围结束编号；
+	* 返回值：
+	*     满足要求的K线编号，如果-1，则查无此k线。
+	*/
+	int GetKindleStickNextHigher(double High, unsigned int nBegin);
+	int GetKindleStickNextHigher(double High, unsigned int nBegin, unsigned int nEnd);
+
 	/*函数功能：获取K线最低的k线，如果有多个一样低的，返回最近的一根
 	* 参数描述：
 	*     [in] nBegin	- K线范围开始编号；
@@ -117,13 +137,22 @@ public:
 	bool GetLowest(unsigned int nBegin, unsigned int nEnd, double &Low);
 	bool GetLowest(unsigned int nCount, double &Low);
 
+	/*函数功能：获取下一个（最近一个,包括nBegin）比指定值更低的K线
+* 参数描述：
+*     [in] nBegin	- K线范围开始编号；
+*     [in] nEnd		- K线范围结束编号；
+* 返回值：
+*     满足要求的K线编号，如果-1，则查无此k线。
+*/
+	int GetKindleStickNextLower(double Low, unsigned int nBegin);
+	int GetKindleStickNextLower(double Low, unsigned int nBegin, unsigned int nEnd);
 
 	/*函数功能：获取指定范围K线的波峰位置
 	* 参数描述：
 	*     [in] nBegin	- K线范围开始编号；
 	*     [in] nEnd		- K线范围结束编号；
 	*	  [in] nUnilateralCompareNum - 单边比较数量，如2，则表示比左起2根K线都高，且比右起两根K线都高为波峰，如果为零，将输出所有K线
-	*     [in, out] nIndexVector - 符合要求的K线编号
+	*     [in, out] nIndexVector - 符合要求的K线编号(按时间顺序列出）
 	*	  [in, out] nIndexHighestPeak - 最高波峰的位置
 	* 返回值：
 	*     true 找到符合要求的K线，false 未找到符合要求的K线
@@ -136,7 +165,7 @@ public:
 	*     [in] nBegin	- K线范围开始编号；
 	*     [in] nEnd		- K线范围结束编号；
 	*	  [in] nUnilateralCompareNum - 单边比较数量，如2，则表示比左起2根K线都低，且比右起两根K线都低为波谷，如果为零，将输出所有K线
-	*     [in, out] nIndexVector - 符合要求的K线编号
+	*     [in, out] nIndexVector - 符合要求的K线编号(按时间顺序列出）
 	*	  [in, out] nIndexLowestTrough - 最低波谷的位置
 	* 返回值：
 	*     true 找到符合要求的K线，false 未找到符合要求的K线
@@ -157,5 +186,11 @@ private:
 	bool									m_bUsingProductTradeTime;
 	cwProductTradeTime						m_ProductTradeTime;
 
+#ifdef KINDLE_MULTI_THREAD
+	cwMUTEX									m_TradeSpiMutex;
+#endif // KINDLE_MULTI_THREAD
+	std::deque<cwKindleStickPtr>			m_KindleStickDeque;
+
+	double									m_dInsEQ;
 };
 

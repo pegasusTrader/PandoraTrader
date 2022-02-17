@@ -16,6 +16,7 @@
 #include <unordered_map>
 #include <thread>
 #include "cwProductTradeTime.h"
+#include "cwChinaTradingCalendar.h"
 #include "cwTradeCommonDefine.h"
 #include "cwStrategyLog.h"
 #include "cwBasicCout.h"
@@ -33,6 +34,15 @@ public:
 		CloseYdThenToday = 5		//暂不支持，先平昨，再平今,可开，用于平昨便宜，平今和开仓差不多的品种
 	};
 	const char * GetOpenCloseModeString(cwOpenCloseMode openclose);
+
+	enum cwInstrumentTradeDateSpace:int
+	{
+		cwFinishDeliver = 0,				//完成交割
+		cwDeliverMonth = 1,					//交割月
+		cwFirstMonthBeforeDeliverMonth,		//交割月前第一个月
+		cwSecondMonthBeforeDeliverMonth,	//交割月前第二个月
+		cwRegularTradingDateSpace				//普通交易日期时间段
+	};
 
 public:
 	cwBasicStrategy();
@@ -128,14 +138,29 @@ public:
 	double    GetTickSize(const char * szInstrumentID);
 	//获取合约乘数，如果获取失败返回-1
 	double	  GetMultiplier(const char * szInstrumentID);
+	//获取保证金率，会从柜台中查询，在未查询到之前默认返回1，即百分百保证金占用
+	double	  GetMarginRate(const char * szInstrumentID);
 	//获取产品ID 
 	char *    GetProductID(const char * szInstrumentID);
+
 	//获取交易时间段，距开盘多少秒和距收盘多少秒
 	//参数：合约名，行情时间（102835->10:28:35),交易阶段， 距该交易时段开盘多少秒，距收盘多少秒
 	bool	  GetTradeTimeSpace(const char * szInstrumentID, const char * updatetime,
 		cwProductTradeTime::cwTradeTimeSpace& iTradeIndex, int& iOpen, int& iClose);
 	//获取前一个交易时段到当前交易时段开盘时间间隔
 	int		  GetPreTimeSpaceInterval(const char * szInstrumentID, cwProductTradeTime::cwTradeTimeSpace iTradeIndex);
+	//获取指定交易时段
+	cwProductTradeTime::TradeTimePtr GetTradeTime(const char * szInstrumentID, cwProductTradeTime::cwTradeTimeSpace iTradeIndex);
+
+	//获取当前交易日
+	cwPandoraTrader::cwDate	  GetTradingDay();
+
+	bool					  GetInstrumentDateSpace(const char* szInstrumentID, cwPandoraTrader::cwDate date,
+		cwInstrumentTradeDateSpace& iTradeDateSpace, int &iRemain);
+
+	bool						  GetBuisnessDayRemain(const char* szInstrumentID,
+		cwInstrumentTradeDateSpace& iTradeDateSpace, int& iRemain);
+
 
 	//获取合约当前撤单次数
 	int		  GetInstrumentCancelCount(std::string InstrumentID);
@@ -200,6 +225,7 @@ private:
 
 	cwProductTradeTime						m_ProductTradeTime;
 	cwStrategyLog							m_BasicStrategyLog;
+	cwPandoraTrader::cwChinaTradingCalendar	m_TradingCalendar;
 
 	//Timer	key:TimerID, value:Elapse in ms
 	std::unordered_map<int, int>			m_cwTimerElapseMap;
