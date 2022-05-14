@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="XmlConfig">
+      <UniqueIdentifier>{389cd399-7bc6-4f96-8608-2f23995c611e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cwEmptyStrategy.cpp">
@@ -31,6 +34,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="cwMarketDataReceiver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cwChasingRisingStrategy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -53,5 +59,13 @@
     <ClInclude Include="cwMarketDataReceiver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="cwChasingRisingStrategy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="cwChasingRisingStrategy.xml">
+      <Filter>XmlConfig</Filter>
+    </Xml>
   </ItemGroup>
 </Project>
