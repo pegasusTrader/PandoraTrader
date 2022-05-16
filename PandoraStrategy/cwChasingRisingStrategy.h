@@ -20,6 +20,7 @@
 class cwChasingRisingStrategy :
     public cwBasicKindleStrategy
 {
+public:
 	//获取策略版本号
 	virtual std::string  GetStrategyVersion();
 	//表示策略名称
@@ -65,6 +66,8 @@ class cwChasingRisingStrategy :
 		int			TotalPositionLimit;				//总持仓限制
 		int			OrderVolume;					//报单量
 
+		double		dStep;							//步长
+
 		//Instrument
 		std::string Instrument;				//次主力合约
 		cwOpenCloseMode OpenCloseMode;		//开平模式
@@ -76,8 +79,9 @@ class cwChasingRisingStrategy :
 			, Portfolio(0)
 
 			, TotalPositionLimit(0)
-
 			, OrderVolume(1)
+
+			, dStep(0.005)
 
 			, OpenCloseMode(cwOpenCloseMode::CloseTodayThenYd)
 			, OpenCancelLimit(350)
@@ -91,7 +95,23 @@ class cwChasingRisingStrategy :
 	//Strategy Info Update By Strategy
 	struct RunningParameter
 	{
+		cwMarketDataPtr LastMarketData;
+
+		int64_t			baseTime;
+		int64_t			oldTime;
+		double			basePrice;
+		double			dHighPx;
+		double			dLowPx;
+		std::string		strBaseTime;
+		bool			bFirst;
+
 		RunningParameter()
+			: baseTime(0)
+			, oldTime(0)
+			, basePrice(0.0)
+			, dHighPx(0.0)
+			, dLowPx(0.0)
+			, bFirst(true)
 		{
 		}
 
@@ -111,10 +131,20 @@ class cwChasingRisingStrategy :
 	bool				m_bFirstGetConfig;
 	time_t				m_tLastestGetConfigTime;
 
+
+	bool GetParameter(const char* szInstrumentID);
+
+	void ChasingRising();
+
+	int64_t TimeToint64(cwMarketDataPtr pData);
+
 private:
 
 	cwStrategyLog			m_StrategyLog;
 	cwBasicCout				m_cwShow;
+
+	int						m_iDoChasingRisingCount;
+
 
 };
 
