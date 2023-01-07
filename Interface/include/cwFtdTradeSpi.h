@@ -45,7 +45,7 @@
 #endif
 
 //#define CW_USING_DYNAMIC_LOADING_DLL
-//#define CW_API_6_5_1
+#define CW_API_6_5_1
 
 #ifndef CW_USING_DYNAMIC_LOADING_DLL
 #ifdef _MSC_VER
@@ -82,6 +82,7 @@ public:
 		, cwReqQryOrder
 		, cwReqQryTrade
 		, cwReqSettlementInfo
+		, cwReqMarginRate
 	};
 
 public:
@@ -474,11 +475,14 @@ public:
 
 	virtual void CancelOrder(const char * szLocalOrderID);
 	virtual void CancelOrder(cwOrderPtr pOrder);
+
+	//查询保证金率
+	virtual double		GetMarginRate(std::string InstrumentID);
+
 protected:
 	bool		MyReqFunction(cwReqType nType, void * pData);
 
-	bool		AddMyReqToList(cwReqType nType);
-
+	bool		AddMyReqToList(cwReqType nType, void * pData = nullptr);
 #ifdef _MSC_VER
 #pragma region CTPDefine2CWDefine
 #endif // _MSC_VER
@@ -524,9 +528,15 @@ private:
 
 	void						LoopReqQryThread();
 protected:
+	struct cwReqData
+	{
+		cwReqType	 nReqType;
+		void*		 pData;
+	};
+
 	std::thread					m_MyReqQryThread;
 	volatile bool				m_bReqQryThreadRun;
-	std::deque<cwReqType>		m_PrioritizedReqList;
+	std::deque<cwReqData>		m_PrioritizedReqList;
 	cwMUTEX						m_PrioritizedReqListMutex;
 
 	//Investor Data

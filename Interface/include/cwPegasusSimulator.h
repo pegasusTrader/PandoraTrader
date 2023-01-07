@@ -54,6 +54,8 @@ public:
 	virtual int			ReqOrderInsert(cwOrderPtr pOrder);
 	virtual int			CancelOrder(cwOrderPtr pOrder);
 
+	virtual cwPandoraTrader::cwDate GetTradingDay();
+
 	cwOrderPtr			GetOrder(cwOrderPtr pOrder);
 	cwTradePtr			GetTrade(cwOrderPtr pOrder, double dTradePrice, int iTradeCnt = 1);
 
@@ -151,6 +153,16 @@ private:
 	cwAccountPtr											m_pAccount;
 
 	double													m_dDeposit;
+
+	//CacheFile
+	// 
+	bool													m_bNeedCacheFile;
+	std::string												m_strCacheFilePath;
+
+	cwMUTEX													m_CacheWorkingMutex;
+	std::deque<std::string>									m_CacheWorkingList;
+
+	std::map<std::string, std::string>						m_MarketDataCacheFileMap;
 
 	//Result 
 	//Balance Data

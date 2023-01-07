@@ -14,7 +14,8 @@ enum THOST_TE_RESUME_TYPE
 {
 	THOST_TERT_RESTART = 0,
 	THOST_TERT_RESUME,
-	THOST_TERT_QUICK
+	THOST_TERT_QUICK,
+	THOST_TERT_NONE
 };
 
 /////////////////////////////////////////////////////////////////////////
@@ -43,9 +44,14 @@ typedef char TThostFtdcBrokerAbbrType[9];
 typedef char TThostFtdcBrokerNameType[81];
 
 /////////////////////////////////////////////////////////////////////////
+///TFtdcOldExchangeInstIDType是一个合约在交易所的代码类型
+/////////////////////////////////////////////////////////////////////////
+typedef char TThostFtdcOldExchangeInstIDType[31];
+
+/////////////////////////////////////////////////////////////////////////
 ///TFtdcExchangeInstIDType是一个合约在交易所的代码类型
 /////////////////////////////////////////////////////////////////////////
-typedef char TThostFtdcExchangeInstIDType[31];
+typedef char TThostFtdcExchangeInstIDType[81];
 
 /////////////////////////////////////////////////////////////////////////
 ///TFtdcOrderRefType是一个报单引用类型
@@ -75,7 +81,12 @@ typedef char TThostFtdcClientIDType[11];
 /////////////////////////////////////////////////////////////////////////
 ///TFtdcInstrumentIDType是一个合约代码类型
 /////////////////////////////////////////////////////////////////////////
-typedef char TThostFtdcInstrumentIDType[31];
+typedef char TThostFtdcInstrumentIDType[81];
+
+/////////////////////////////////////////////////////////////////////////
+///TFtdcOldInstrumentIDType是一个合约代码类型
+/////////////////////////////////////////////////////////////////////////
+typedef char TThostFtdcOldInstrumentIDType[31];
 
 /////////////////////////////////////////////////////////////////////////
 ///TFtdcInstrumentCodeType是一个合约标识码类型
@@ -173,9 +184,14 @@ typedef char TThostFtdcTradeIDType[21];
 typedef char TThostFtdcCommandTypeType[65];
 
 /////////////////////////////////////////////////////////////////////////
+///TFtdcOldIPAddressType是一个IP地址类型
+/////////////////////////////////////////////////////////////////////////
+typedef char TThostFtdcOldIPAddressType[16];
+
+/////////////////////////////////////////////////////////////////////////
 ///TFtdcIPAddressType是一个IP地址类型
 /////////////////////////////////////////////////////////////////////////
-typedef char TThostFtdcIPAddressType[16];
+typedef char TThostFtdcIPAddressType[33];
 
 /////////////////////////////////////////////////////////////////////////
 ///TFtdcIPPortType是一个IP端口类型
@@ -252,6 +268,10 @@ typedef char TThostFtdcIdentifiedCardNoType[51];
 #define THOST_FTDC_ICT_FrgPrmtRdCard 'K'
 ///资管产品备案函
 #define THOST_FTDC_ICT_CptMngPrdLetter 'L'
+///统一社会信用代码
+#define THOST_FTDC_ICT_UniformSocialCreditCode 'N'
+///机构成立证明文件
+#define THOST_FTDC_ICT_CorporationCertNo 'O'
 ///其他证件
 #define THOST_FTDC_ICT_OtherCard 'x'
 
@@ -624,8 +644,34 @@ typedef char TThostFtdcTradingRoleType;
 #define THOST_FTDC_PC_EFP '5'
 ///现货期权
 #define THOST_FTDC_PC_SpotOption '6'
+///TAS合约
+#define THOST_FTDC_PC_TAS '7'
+///金属指数
+#define THOST_FTDC_PC_MI 'I'
 
 typedef char TThostFtdcProductClassType;
+
+/////////////////////////////////////////////////////////////////////////
+///TFtdcAPIProductClassType是一个产品类型类型
+/////////////////////////////////////////////////////////////////////////
+///期货单一合约
+#define THOST_FTDC_APC_FutureSingle '1'
+///期权单一合约
+#define THOST_FTDC_APC_OptionSingle '2'
+///可交易期货(含期货组合和期货单一合约)
+#define THOST_FTDC_APC_Futures '3'
+///可交易期权(含期权组合和期权单一合约)
+#define THOST_FTDC_APC_Options '4'
+///可下单组合（目前包含DCE和ZCE的期货组合）
+#define THOST_FTDC_APC_TradingComb '5'
+///可申请的组合（dce可以申请的组合合约 包含dce可以交易的合约）
+#define THOST_FTDC_APC_UnTradingComb '6'
+///所有可以交易合约
+#define THOST_FTDC_APC_AllTrading '7'
+///所有合约（包含不能交易合约 慎用）
+#define THOST_FTDC_APC_All '8'
+
+typedef char TThostFtdcAPIProductClassType;
 
 /////////////////////////////////////////////////////////////////////////
 ///TFtdcInstLifePhaseType是一个合约生命周期状态类型
@@ -966,6 +1012,16 @@ typedef char TThostFtdcOrderSourceType;
 typedef char TThostFtdcTradeTypeType;
 
 /////////////////////////////////////////////////////////////////////////
+///TFtdcSpecPosiTypeType是一个特殊持仓明细标识类型
+/////////////////////////////////////////////////////////////////////////
+///普通持仓明细
+#define THOST_FTDC_SPOST_Common '#'
+///TAS合约成交产生的标的合约持仓明细
+#define THOST_FTDC_SPOST_Tas '0'
+
+typedef char TThostFtdcSpecPosiTypeType;
+
+/////////////////////////////////////////////////////////////////////////
 ///TFtdcPriceSourceType是一个成交价来源类型
 /////////////////////////////////////////////////////////////////////////
 ///前成交价
@@ -1065,6 +1121,11 @@ typedef int TThostFtdcCommandNoType;
 ///TFtdcMillisecType是一个时间（毫秒）类型
 /////////////////////////////////////////////////////////////////////////
 typedef int TThostFtdcMillisecType;
+
+/////////////////////////////////////////////////////////////////////////
+///TFtdcSecType是一个时间（秒）类型
+/////////////////////////////////////////////////////////////////////////
+typedef int TThostFtdcSecType;
 
 /////////////////////////////////////////////////////////////////////////
 ///TFtdcVolumeMultipleType是一个合约数量乘数类型
@@ -2510,6 +2571,10 @@ typedef char TThostFtdcClearbarchIDType[6];
 #define THOST_FTDC_UET_UpdatePassword '5'
 ///客户端认证
 #define THOST_FTDC_UET_Authenticate '6'
+///终端信息上报
+#define THOST_FTDC_UET_SubmitSysInfo '7'
+///转账
+#define THOST_FTDC_UET_Transfer '8'
 ///其他
 #define THOST_FTDC_UET_Other '9'
 
@@ -2710,11 +2775,6 @@ typedef char TThostFtdcAMLTradeDirectType[3];
 ///TFtdcAMLTradeModelType是一个资金进出方式类型
 /////////////////////////////////////////////////////////////////////////
 typedef char TThostFtdcAMLTradeModelType[3];
-
-/////////////////////////////////////////////////////////////////////////
-///TFtdcAMLParamIDType是一个参数代码类型
-/////////////////////////////////////////////////////////////////////////
-typedef char TThostFtdcAMLParamIDType[21];
 
 /////////////////////////////////////////////////////////////////////////
 ///TFtdcAMLOpParamValueType是一个业务参数代码值类型
@@ -6191,7 +6251,15 @@ typedef char TThostFtdcStrikeTimeType[13];
 ///备兑组合
 #define THOST_FTDC_COMBT_PRT '5'
 ///时间价差组合
-#define THOST_FTDC_COMBT_CLD '6'
+#define THOST_FTDC_COMBT_CAS '6'
+///期权对锁组合
+#define THOST_FTDC_COMBT_OPL '7'
+///买备兑组合
+#define THOST_FTDC_COMBT_BFO '8'
+///买入期权垂直价差组合
+#define THOST_FTDC_COMBT_BLS '9'
+///卖出期权垂直价差组合
+#define THOST_FTDC_COMBT_BES 'a'
 
 typedef char TThostFtdcCombinationTypeType;
 
@@ -6386,6 +6454,8 @@ typedef char TThostFtdcCFFEXUploadFileNameType;
 #define THOST_FTDC_CMDR_Comb '0'
 ///申请拆分
 #define THOST_FTDC_CMDR_UnComb '1'
+///操作员删组合单
+#define THOST_FTDC_CMDR_DelComb '2'
 
 typedef char TThostFtdcCombDirectionType;
 
@@ -6659,5 +6729,46 @@ typedef double TThostFtdcRiskValueType;
 ///TFtdcIDBNameType是一个握手数据内容类型
 /////////////////////////////////////////////////////////////////////////
 typedef char TThostFtdcIDBNameType[100];
+
+/////////////////////////////////////////////////////////////////////////
+///TFtdcDiscountRatioType是一个折扣率类型
+/////////////////////////////////////////////////////////////////////////
+typedef double TThostFtdcDiscountRatioType;
+
+/////////////////////////////////////////////////////////////////////////
+///TFtdcAuthTypeType是一个用户终端认证方式类型
+/////////////////////////////////////////////////////////////////////////
+///白名单校验
+#define THOST_FTDC_AU_WHITE '0'
+///黑名单校验
+#define THOST_FTDC_AU_BLACK '1'
+
+typedef char TThostFtdcAuthTypeType;
+
+/////////////////////////////////////////////////////////////////////////
+///TFtdcClassTypeType是一个合约分类方式类型
+/////////////////////////////////////////////////////////////////////////
+///所有合约
+#define THOST_FTDC_INS_ALL '0'
+///期货、即期、期转现、Tas、金属指数合约
+#define THOST_FTDC_INS_FUTURE '1'
+///期货、现货期权合约
+#define THOST_FTDC_INS_OPTION '2'
+///组合合约
+#define THOST_FTDC_INS_COMB '3'
+
+typedef char TThostFtdcClassTypeType;
+
+/////////////////////////////////////////////////////////////////////////
+///TFtdcTradingTypeType是一个合约交易状态分类方式类型
+/////////////////////////////////////////////////////////////////////////
+///所有状态
+#define THOST_FTDC_TD_ALL '0'
+///交易
+#define THOST_FTDC_TD_TRADE '1'
+///非交易
+#define THOST_FTDC_TD_UNTRADE '2'
+
+typedef char TThostFtdcTradingTypeType;
 
 #endif

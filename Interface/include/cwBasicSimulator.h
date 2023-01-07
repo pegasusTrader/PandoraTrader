@@ -15,6 +15,7 @@
 #include <map>
 
 #include "cwTradeCommonDefine.h"
+#include "cwDate.h"
 
 class cwBasicSimulator
 {
@@ -24,7 +25,7 @@ public:
 
 	virtual void InitialSimulator(const char * pConfigFilePath);
 	std::string			m_strConfigFileFullPath;
-
+	std::string			m_strExeFullPath;
 	//Md
 	virtual int ReqUserMdLogin() { return 0; }
 
@@ -37,6 +38,8 @@ public:
 
 	virtual int ReqOrderInsert(cwOrderPtr pOrder) { return 0; }
 	virtual int CancelOrder(cwOrderPtr pOrder) { return 0; }
+
+	virtual cwPandoraTrader::cwDate GetTradingDay() = 0;
 
 	/// MD
 	//¶©ÔÄºÏÔ¼

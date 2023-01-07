@@ -7,7 +7,7 @@
 //This software is provided "as is" with no expressed or implied warranty.I accept no liability for any damage or loss of business that this software may cause.
 //
 
-#define EMPTYSTRATEGY
+//#define EMPTYSTRATEGY
 
 #include <thread>
 #include <iostream>
@@ -22,6 +22,7 @@
 #endif
 #include "tinyxml.h"
 #include "cwBasicCout.h"
+#include "cwVersion.h"
 
 #ifdef _MSC_VER
 #pragma comment(lib, "cwPandoraDLL.lib")
@@ -222,6 +223,7 @@ unsigned int PriceServerThread()
 
 unsigned int TradeServerThread()
 {
+	m_TradeChannel.SetDisConnectExit(false);
 	m_TradeChannel.SetSaveInstrumentDataToFile(true);
 	m_TradeChannel.SetUserLoginField(m_szTdBrokerID, m_szTdUserID, m_szTdPassWord, m_szTdProductInfo);
 	m_TradeChannel.SetAuthenticateInfo(m_szTdAppID, m_szTdAuthCode);
@@ -293,7 +295,7 @@ int main()
 #endif // WIN32
 
 	std::cout << "Welcome To Pandora Trader !!" << std::endl;
-
+	std::cout << GetPandoraTraderVersion() << std::endl;
 	std::cout << "Init Config From File!" << std::endl;
 	if (!ReadXmlConfigFile())
 	{

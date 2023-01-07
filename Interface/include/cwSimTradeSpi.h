@@ -54,6 +54,8 @@ public:
 	virtual void OnSimulationPartEnd();
 	virtual void OnSimulationFinished();
 
+	void UpdateTradingDay(const char * szTradingDay);
+
 	virtual	cwOrderPtr InputLimitOrder(const char * szInstrumentID, cwFtdcDirectionType direction,
 		cwOpenClose openclose, int volume, double price);
 	virtual cwOrderPtr InputFAKOrder(const char * szInstrumentID, cwFtdcDirectionType direction,
@@ -62,6 +64,9 @@ public:
 		cwOpenClose openclose, int volume, double price);
 	virtual void CancelOrder(const char * szLocalOrderID);
 	virtual void CancelOrder(cwOrderPtr pOrder);
+
+	//查询保证金率
+	virtual double		GetMarginRate(std::string InstrumentID);
 
 	cwOrderPtr GetcwOrderPtr(const char * szExchangeID, const char * szInstrumentID, cwFtdcDirectionType direction,
 		cwOpenClose openclose, int volume, double price, cwInsertOrderType insertordertype = cwInsertOrderType::cwInsertLimitOrder);
@@ -73,6 +78,8 @@ public:
 	void WaitForFinish();
 
 	void SetUserLoginField(const char * szBrokerID, const char * szUserID, const char * szPassword, const char * szUserProductInfo = INTERFACENAME);
+
+	cwPandoraTrader::cwDate GetTradingDay();
 
 private:
 	cwBasicSimulator *			m_pMarketDataUserApi;

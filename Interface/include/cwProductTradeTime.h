@@ -42,10 +42,10 @@ public:
 
 	enum cwRangeOpenClose
 	{
-		cwLeftOpenRightOpen = 0,							//(a,b)
-		cwLeftOpenRightClose,								//(a,b]
-		cwLeftCloseRightOpen,								//[a,b)
-		cwLeftCloseRightClose								//[a,b]
+		cwLeftOpenRightOpen = 0,							//(a,b)： 左开右开区间
+		cwLeftOpenRightClose,								//(a,b]： 左开右闭区间
+		cwLeftCloseRightOpen,								//[a,b)： 左闭右开区间
+		cwLeftCloseRightClose								//[a,b]： 左闭右闭区间
 	};
 
 	typedef struct tagProductTradeTime

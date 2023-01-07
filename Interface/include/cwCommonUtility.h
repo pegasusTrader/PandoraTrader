@@ -10,6 +10,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 #pragma once
+#include <string>
 namespace cwCommonUtility
 {
 
@@ -19,6 +20,8 @@ namespace cwCommonUtility
 	double cwfloor(double dValue, double dTickSize = 1);
 
 	// TOOLs
+
+
 	#define CW_DISALLOW_COPYCTOR_AND_ASSIGNMENT(TypeName) \
 	private:\
 		TypeName(const TypeName&); \

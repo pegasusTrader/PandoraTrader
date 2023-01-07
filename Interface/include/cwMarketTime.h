@@ -37,6 +37,7 @@ public:
 
 	inline bool Reset(int hour, int minute, int second, int MilliSecond = 0);
 	bool Reset(std::string updatetime, int MilliSecond = 0);
+	bool Reset(int64_t iTotalMilliSecond);
 	
 	inline int64_t	GetTotalSecond() { return m_iTotalMilliSecond / 1000; }
 	inline int64_t	GetTotalMilliSecond() { return m_iTotalMilliSecond; }

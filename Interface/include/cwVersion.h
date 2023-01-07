@@ -1,2 +1,2 @@
 #pragma once
-char * GetPandoraTraderVersion() { return "6.5.1_20210517"; }
+const char * GetPandoraTraderVersion() { return "6.5.1_20220309"; }

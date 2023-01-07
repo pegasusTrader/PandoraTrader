@@ -14,11 +14,15 @@
 #include "cwMutex.h"
 #include "cwBasicStrategy.h"
 #include "cwOrderReference.h"
+#include "cwDate.h"
 
-#define CWRISK
-#define TRADELOG
-//#define UPDATE_ORDERRANKED
-#define	NoCancelTooMuchPerTick
+
+#define CWCANCELRISK				//撤单次数风控管理
+#define CWDeclarationFeeRISK		//针对申报费的风控管理
+
+#define TRADELOG					//交易日志
+//#define UPDATE_ORDERRANKED		//更新管理订单排队位置
+#define	NoCancelTooMuchPerTick		//在极短时间内不得多次撤单以减少错单
 
 #ifdef UPDATE_ORDERRANKED
 #define NO_TRADEINFO_LOG
@@ -97,7 +101,8 @@ public:
 		cwAUTOMUTEX mt(m_TradeSpiMutex, true);
 		return m_PositionMap;
 	}
-	inline std::map<std::string, cwOrderPtr> GetOrders(bool ClearChangedFlag = true)
+
+	inline std::map<cwSysOrderKey, cwOrderPtr> GetOrders(bool ClearChangedFlag = true)
 	{
 		if (ClearChangedFlag)
 		{
@@ -106,7 +111,7 @@ public:
 		cwAUTOMUTEX mt(m_TradeSpiMutex, true);
 		return m_OrdersMap;
 	}
-	inline std::map<std::string, cwOrderPtr> GetActiveOrders(bool ClearChangedFlag = true)
+	inline std::map<cwActiveOrderKey, cwOrderPtr> GetActiveOrders(bool ClearChangedFlag = true)
 	{
 		if (ClearChangedFlag)
 		{
@@ -115,6 +120,7 @@ public:
 		cwAUTOMUTEX mt(m_TradeSpiMutex, true);
 		return m_ActiveOrdersMap;
 	}
+
 	inline std::map<std::string, cwTradePtr> GetTrades(bool ClearChangedFlag = true)
 	{
 		if (ClearChangedFlag)
@@ -123,6 +129,10 @@ public:
 		}
 		return m_TradeMap;
 	}
+
+	inline cwPandoraTrader::cwDate GetTradingDay() { return m_cwCurrentTradingDay; }
+	inline const char *		   GetTradingDayStr() { return m_cwTradeLoginTradingDay; }
+
 	bool		IsWaitOrder(cwOrderPtr pOrder);
 	bool		IsIOCTypeOrder(cwOrderPtr pOrder);
 
@@ -139,6 +149,9 @@ public:
 
 	int			GetOrderCancelCount(std::string InstrumentID);
 
+	//查询保证金率
+	virtual double		GetMarginRate(std::string InstrumentID) = 0;
+
 	//User Trader Method
 	//行情更新
 	virtual void PriceUpdate(cwMarketDataPtr pPriceData) = 0;
@@ -153,7 +166,9 @@ public:
 
 	void	SetDisConnectExit(bool bDisConnectExit = true) { m_bDisConnectExit = bDisConnectExit; }
 
+	///Data region
 	std::unordered_map<std::string, cwInstrumentDataPtr>	m_InstrumentMap;
+	std::unordered_map<std::string, double>					m_MarginRateMap;
 
 	std::string									m_strInstrumentDataFileName;
 	void	SetSaveInstrumentDataToFile(bool bSave) { m_bSaveInstrumentDataToFile = bSave; }
@@ -174,6 +189,8 @@ protected:
 	cwFtdcTimeType				m_cwTradeLoginTime;
 	cwFtdcDateType				m_cwTradeLoginTradingDay;
 
+	cwPandoraTrader::cwDate		m_cwCurrentTradingDay;
+
 	cwBasicStrategy	*			m_pBasicStrategy;
 
 	//Trade info
@@ -193,10 +210,11 @@ protected:
 	bool						m_bOrderRankedUpdate;
 
 	//是否含有开仓的报单(为谨慎起见，报出开仓单即认为有,但查询错单，则不被认为有） 
-	std::unordered_map<std::string, bool>					m_bHasOpenOffsetOrderMap;	//Key InstrumentID
+	std::unordered_map<std::string, bool>					m_bHasLongOpenOffsetOrderMap;	//Key InstrumentID
+	std::unordered_map<std::string, bool>					m_bHasShortOpenOffsetOrderMap;	//Key InstrumentID
 
-	std::map<std::string, cwOrderPtr>						m_OrdersMap;				//Key OrderSysID
-	std::map<std::string, cwOrderPtr>						m_ActiveOrdersMap;			//Key OrderRef
+	std::map<cwSysOrderKey, cwOrderPtr>						m_OrdersMap;				//Key OrderSysID
+	std::map<cwActiveOrderKey, cwOrderPtr>					m_ActiveOrdersMap;			//Key OrderRef
 
 	std::map<std::string, cwTradePtr>						m_TradeMap;					//key TradeID
 
@@ -215,15 +233,26 @@ protected:
 #endif // TRADELOG
 
 	//CWRISK
-#ifdef CWRISK
-	const int													m_iMaxCancelLimitNum;			//最大撤单次数
-	std::unordered_map<std::string, int>						m_iCancelLimitMap;				//撤单次数统计，key:InstrumentID
+#ifdef CWCANCELRISK
+	const int													m_iMaxCancelLimitNum;					//最大撤单次数
+	std::unordered_map<std::string, int>						m_iCancelCountMap;						//撤单次数统计，key:InstrumentID
 
 	//本地报单 Ref登记， 遇到错单，减回撤单次数，便于准确统计
 	//key Isntrument, value : OrderRefSet;
 	std::unordered_map<std::string, std::set<std::string>>		m_MayCancelOrderRefSetMap;
 #endif // CWRISK
 
+	//CWDeclarationFeeRISK
+#ifdef CWDeclarationFeeRISK
+	const int													m_iMaxDeclarationMsgLimitNum;			//最大撤单次数
+	std::unordered_map<std::string, int>						m_iDeclarationMsgCountMap;				//申报信息量统计，key:InstrumentID
+
+#ifndef CWCANCELRISK
+	//本地报单 Ref登记， 遇到错单，减回撤单次数，便于准确统计
+	//key Isntrument, value : OrderRefSet;
+	std::unordered_map<std::string, std::set<std::string>>		m_MayCancelOrderRefSetMap;
+#endif // !CWRISK
+#endif //CWDeclarationFeeRISK
 	bool														m_bDisConnectExit;
 
 	static	int													m_iTradeApiCount;
