@@ -39,6 +39,15 @@
     <ClCompile Include="cwChasingRisingStrategy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cwCTAPlatform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cwDualTrust.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cwBasicCTAStrategy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cwEmptyStrategy.h">
@@ -60,6 +69,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="cwChasingRisingStrategy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cwCTAPlatform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cwDualTrust.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cwBasicCTAStrategy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

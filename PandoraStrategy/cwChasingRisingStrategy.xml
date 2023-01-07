@@ -10,14 +10,5 @@
     <OrderVolume value="1"/>
 
   </ChasingRisingStrategy>
-  <ChasingRisingStrategy Manual="0" Portfolio="0">
-    <!--合约信息配置
-    ID为交易合约-->
-    <Instrument ID="IF2206" OpenClose="0"  OpenCancelLimit="400"  CloseCancelLimit="480"/>
 
-
-    <TotalPositionLimit value="8"/>
-    <OrderVolume value="1"/>
-
-  </ChasingRisingStrategy>
 </Config>

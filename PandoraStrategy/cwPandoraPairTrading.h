@@ -70,8 +70,9 @@ protected:
 	cwStrategyLog				m_StrategyLog;					//策略日志
 	cwBasicCout					m_cwShow;						//cout
 
-	cwPandoraAgentManager		m_PandoraAgentManager;
 
-	cwPandoraAgentManager::cwAgentDataPtr	m_pAgentData;
+	cwPandoraAgentManager					m_PandoraAgentManager;		//代理人管理者，可通过他创建代理人
+
+	cwPandoraAgentManager::cwAgentDataPtr	m_pPositionAgent;			//仓位管理代理人，要指定合约
 };
 

@@ -21,9 +21,8 @@ void cwStrategyDemo::PriceUpdate(cwMarketDataPtr pPriceData)
 	//定义map，用于保存持仓信息 
 	std::map<std::string, cwPositionPtr> CurrentPosMap;
 
-	std::map<std::string, cwOrderPtr>::iterator WaitOrderIt;
 	//定义map，用于保存挂单信息 
-	std::map<std::string, cwOrderPtr> WaitOrderList;
+	std::map<cwActiveOrderKey, cwOrderPtr> WaitOrderList;
 	//获取挂单信  当前持仓信息
 	GetPositionsAndActiveOrders(CurrentPosMap, WaitOrderList);
 
@@ -38,7 +37,7 @@ void cwStrategyDemo::PriceUpdate(cwMarketDataPtr pPriceData)
 			//有多仓
 			bool bHasWaitOrder = false;
 			//检查所有挂单
-			for (WaitOrderIt = WaitOrderList.begin();
+			for (auto WaitOrderIt = WaitOrderList.begin();
 			WaitOrderIt != WaitOrderList.end(); WaitOrderIt++)
 			{
 				//确定这个挂单是这个合约的
@@ -73,14 +72,13 @@ void cwStrategyDemo::PriceUpdate(cwMarketDataPtr pPriceData)
 		if (iPos > 0)
 		{
 			//有空仓
-			std::map<std::string, cwOrderPtr>::iterator WaitOrderIt;
 			//定义map，用于保存挂单信息 
-			std::map<std::string, cwOrderPtr> WaitOrderList;
+			std::map<cwActiveOrderKey, cwOrderPtr> WaitOrderList;
 			//获取挂单信息
 			GetActiveOrders(WaitOrderList);
 
 			bool bHasWaitOrder = false;
-			for (WaitOrderIt = WaitOrderList.begin();
+			for (auto WaitOrderIt = WaitOrderList.begin();
 			WaitOrderIt != WaitOrderList.end(); WaitOrderIt++)
 			{
 				if ((std::string)pPriceData->InstrumentID == (std::string)WaitOrderIt->second->InstrumentID)
@@ -111,16 +109,14 @@ void cwStrategyDemo::PriceUpdate(cwMarketDataPtr pPriceData)
 		}
 		if (PosIt->second->GetLongTotalPosition() + PosIt->second->GetShortTotalPosition() == 0)
 		{
-			
-			std::map<std::string, cwOrderPtr>::iterator WaitOrderIt;
 			//定义map，用于保存挂单信息 
-			std::map<std::string, cwOrderPtr> WaitOrderList;
+			std::map<cwActiveOrderKey, cwOrderPtr> WaitOrderList;
 			//获取挂单信息
 			GetActiveOrders(WaitOrderList);
 
 			//看看有没有挂单
 			bool bHasWaitOrder = false;
-			for (WaitOrderIt = WaitOrderList.begin();
+			for (auto WaitOrderIt = WaitOrderList.begin();
 			WaitOrderIt != WaitOrderList.end(); WaitOrderIt++)
 			{
 				if ((std::string)pPriceData->InstrumentID == (std::string)WaitOrderIt->second->InstrumentID)
@@ -146,16 +142,14 @@ void cwStrategyDemo::PriceUpdate(cwMarketDataPtr pPriceData)
 	else
 	{
 		//没找到持仓信息
-
-		std::map<std::string, cwOrderPtr>::iterator WaitOrderIt;
 		//定义map，用于保存挂单信息 
-		std::map<std::string, cwOrderPtr> WaitOrderList;
+		std::map<cwActiveOrderKey, cwOrderPtr> WaitOrderList;
 		//获取挂单信息
 		GetActiveOrders(WaitOrderList);
 
 		//看看有没有挂单
 		bool bHasWaitOrder = false;
-		for (WaitOrderIt = WaitOrderList.begin();
+		for (auto WaitOrderIt = WaitOrderList.begin();
 		WaitOrderIt != WaitOrderList.end(); WaitOrderIt++)
 		{
 			if ((std::string)pPriceData->InstrumentID == (std::string)WaitOrderIt->second->InstrumentID

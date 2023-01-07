@@ -45,6 +45,30 @@ void cwChasingRisingStrategy::PriceUpdate(cwMarketDataPtr pPriceData)
 	ChasingRising();
 }
 
+void cwChasingRisingStrategy::OnRtnTrade(cwTradePtr pTrade)
+{
+	m_cwShow.AddLog("\n %s OnRtnTrade:%s %.3f %d",
+		pTrade->TradeTime,
+		pTrade->InstrumentID,
+		pTrade->Price,
+		(pTrade->Direction == CW_FTDC_D_Buy ? pTrade->Volume : pTrade->Volume * -1));
+
+	cwEasyStrategyLog log(m_StrategyLog, "OnRtnTrade", NULL);
+
+	log.AddLog(cwStrategyLog::enIMMS, " %s OnRtnTrade:%s %.3f %d",
+		pTrade->TradeTime,
+		pTrade->InstrumentID,
+		pTrade->Price,
+		(pTrade->Direction == CW_FTDC_D_Buy ? pTrade->Volume : pTrade->Volume * -1));
+
+	if (!GetParameter(pTrade->InstrumentID))
+	{
+		return;
+	}
+
+	m_cwRunningParaPtr->iTradeCnt++;
+}
+
 void cwChasingRisingStrategy::OnReady()
 {
 	m_iDoChasingRisingCount = 0;
@@ -112,6 +136,36 @@ void cwChasingRisingStrategy::InitialStrategy(const char* pConfigFilePath)
 
 	ReadXmlConfigFile(m_strConfigFileFullPath.c_str());
 
+}
+
+bool cwChasingRisingStrategy::IsNearDeliverDateWarning(const char* szInstrumentID)
+{
+	int iDaysWarning = GetTradingDayRemainWarning(szInstrumentID);
+
+	int iRemain = 0;
+	cwInstrumentTradeDateSpace DateSpace;
+
+	if (GetBuisnessDayRemain(szInstrumentID, DateSpace, iRemain))
+	{
+		if (iRemain <= iDaysWarning)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	else
+	{
+		return true;
+	}
+}
+
+int cwChasingRisingStrategy::GetTradingDayRemainWarning(const char* szInstrumentID)
+{
+	auto pProductID = GetProductID(szInstrumentID);
+	return true;
 }
 
 bool cwChasingRisingStrategy::ReadXmlConfigFile(const char* pConfigFilePath, bool bNeedDisPlay)
@@ -464,11 +518,10 @@ void cwChasingRisingStrategy::ChasingRising()
 	if (m_cwStrategyParameter.Manual)
 	{
 		//手动干预
-		std::map<std::string, cwOrderPtr>::iterator WaitOrderIt;
-		std::map<std::string, cwOrderPtr> WaitOrderList;
+		std::map<cwActiveOrderKey, cwOrderPtr> WaitOrderList;
 		GetActiveOrders(WaitOrderList);
 
-		for (WaitOrderIt = WaitOrderList.begin();
+		for (auto WaitOrderIt = WaitOrderList.begin();
 			WaitOrderIt != WaitOrderList.end(); WaitOrderIt++)
 		{
 			if (m_cwStrategyParameter.Instrument == (std::string)WaitOrderIt->second->InstrumentID
@@ -502,8 +555,7 @@ void cwChasingRisingStrategy::ChasingRising()
 	const double dInsEQ = dTickSize / 10;
 
 	std::map<std::string, cwPositionPtr> CurrentPosMap;
-	std::map<std::string, cwOrderPtr>::iterator WaitOrderIt;
-	std::map<std::string, cwOrderPtr> WaitOrderList;
+	std::map<cwActiveOrderKey, cwOrderPtr> WaitOrderList;
 	GetPositionsAndActiveOrders(CurrentPosMap, WaitOrderList);
 
 	int iMaintain = 0, iOrderCount = 0;
@@ -630,7 +682,7 @@ void cwChasingRisingStrategy::ChasingRising()
 
 			//先检查挂单
 			int iSubMainWaitLongOrder = 0;
-			for (WaitOrderIt = WaitOrderList.begin();
+			for (auto WaitOrderIt = WaitOrderList.begin();
 				WaitOrderIt != WaitOrderList.end(); WaitOrderIt++)
 			{
 				bNeedCancel = true;
@@ -673,7 +725,8 @@ void cwChasingRisingStrategy::ChasingRising()
 					cwOrderPtr orderptr = *it;
 					if (orderptr.get() != NULL)
 					{
-						WaitOrderList.insert(std::pair<std::string, cwOrderPtr>(orderptr->OrderRef, orderptr));
+						cwActiveOrderKey ActiveKey(orderptr->OrderRef, orderptr->InstrumentID);
+						WaitOrderList.insert(std::pair<cwActiveOrderKey, cwOrderPtr>(ActiveKey, orderptr));
 
 						log.AddLog(cwStrategyLog::enIO, "%s, Ref:%s, P:%.2f, V:%d, %s, Close", orderptr->InstrumentID, orderptr->OrderRef,
 							orderptr->LimitPrice, orderptr->VolumeTotal, orderptr->Direction == CW_FTDC_D_Buy ? "B" : "S");
@@ -693,7 +746,7 @@ void cwChasingRisingStrategy::ChasingRising()
 
 			//先检查挂单
 			int iSubMainWaitLongOrder = 0;
-			for (WaitOrderIt = WaitOrderList.begin();
+			for (auto WaitOrderIt = WaitOrderList.begin();
 				WaitOrderIt != WaitOrderList.end(); WaitOrderIt++)
 			{
 				bNeedCancel = true;
@@ -711,7 +764,8 @@ void cwChasingRisingStrategy::ChasingRising()
 				}
 			}
 
-			if (m_cwRunningParaPtr->LastMarketData->LastPrice > upPrice - dInsEQ)
+			if (m_cwRunningParaPtr->iTradeCnt < 2
+				&& m_cwRunningParaPtr->LastMarketData->LastPrice > upPrice - dInsEQ)
 			{
 				dbOrderPrice = m_cwRunningParaPtr->LastMarketData->AskPrice1;
 				bCanOpen = true;
@@ -788,7 +842,7 @@ void cwChasingRisingStrategy::ChasingRising()
 
 			//先检查挂单
 			int iSubMainWaitShortOrder = 0;
-			for (WaitOrderIt = WaitOrderList.begin();
+			for (auto WaitOrderIt = WaitOrderList.begin();
 				WaitOrderIt != WaitOrderList.end(); WaitOrderIt++)
 			{
 				bNeedCancel = true;
@@ -832,7 +886,9 @@ void cwChasingRisingStrategy::ChasingRising()
 					cwOrderPtr orderptr = *it;
 					if (orderptr.get() != NULL)
 					{
-						WaitOrderList.insert(std::pair<std::string, cwOrderPtr>(orderptr->OrderRef, orderptr));
+						cwActiveOrderKey ActiveKey(orderptr->OrderRef, orderptr->InstrumentID);
+
+						WaitOrderList.insert(std::pair<cwActiveOrderKey, cwOrderPtr>(ActiveKey, orderptr));
 
 						log.AddLog(cwStrategyLog::enIO, "%s, Ref:%s, P:%.2f, V:%d, %s, Close", orderptr->InstrumentID, orderptr->OrderRef,
 							orderptr->LimitPrice, orderptr->VolumeTotal, orderptr->Direction == CW_FTDC_D_Buy ? "B" : "S");
@@ -851,7 +907,7 @@ void cwChasingRisingStrategy::ChasingRising()
 
 			//先检查挂单
 			int iSubMainWaitShortOrder = 0;
-			for (WaitOrderIt = WaitOrderList.begin();
+			for (auto WaitOrderIt = WaitOrderList.begin();
 				WaitOrderIt != WaitOrderList.end(); WaitOrderIt++)
 			{
 				bNeedCancel = true;
@@ -869,7 +925,8 @@ void cwChasingRisingStrategy::ChasingRising()
 				}
 			}
 
-			if (m_cwRunningParaPtr->LastMarketData->LastPrice < downPrice + dInsEQ)
+			if (m_cwRunningParaPtr->iTradeCnt < 2
+				&& m_cwRunningParaPtr->LastMarketData->LastPrice < downPrice + dInsEQ)
 			{
 				dbOrderPrice = m_cwRunningParaPtr->LastMarketData->BidPrice1;
 				bCanOpen = true;

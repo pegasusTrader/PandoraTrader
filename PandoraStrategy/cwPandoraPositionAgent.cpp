@@ -4,12 +4,14 @@
 
 cwPandoraPositionAgent::cwPandoraPositionAgent()
 {
+	m_bAgentWorking = true;
+
 	m_iExpectPosition = 0;
 
 	OpenCloseMode = cwBasicStrategy::cwOpenCloseMode::CloseTodayThenYd;
 
 	InsLargeOrderVolume = 200;
-	InsLittleOrderVolume = 10;
+	InsLittleOrderVolume = 5;
 
 	InsAskBidGap = 1;
 }
@@ -21,17 +23,121 @@ cwPandoraPositionAgent::~cwPandoraPositionAgent()
 
 void cwPandoraPositionAgent::PriceUpdate(cwMarketDataPtr pPriceData)
 {
-	DealExpectedPosition(m_strInstrumentID, m_iExpectPosition);
+	m_strCurrentUpdateTime = pPriceData->UpdateTime;
+
+	if (m_bAgentWorking)
+	{
+		cwProductTradeTime::cwTradeTimeSpace TradeTimeSpace = cwProductTradeTime::NoTrading;
+		int iOpen = 0, iClose = 0;
+		bool bDeal = false;
+		bool bRet = GetTradeTimeSpace(pPriceData->InstrumentID, m_strCurrentUpdateTime.c_str(),
+			TradeTimeSpace, iOpen, iClose);
+		if (!bRet
+			|| TradeTimeSpace == cwProductTradeTime::NoTrading
+			|| TradeTimeSpace == cwProductTradeTime::AMCallAuctionMatchOpen
+			|| TradeTimeSpace == cwProductTradeTime::AMCallAuctionOrderingOpen
+			|| TradeTimeSpace == cwProductTradeTime::NightCallAuctionMatchOpen
+			|| TradeTimeSpace == cwProductTradeTime::NightCallAuctionOrderingOpen
+			|| TradeTimeSpace == cwProductTradeTime::CallAuctionMatchClose
+			|| TradeTimeSpace == cwProductTradeTime::CallAuctionOrderingClose)
+		{
+			return;
+		}
+		else
+		{
+			if (iClose > 2)
+			{
+				bDeal = true;
+			}
+			else
+			{
+				return;
+			}
+		}
+
+		if (bDeal)
+		{
+			DealExpectedPosition(m_strInstrumentID, m_iExpectPosition);
+		}
+	}
 }
 
 void cwPandoraPositionAgent::OnRtnTrade(cwTradePtr pTrade)
 {
-	DealExpectedPosition(m_strInstrumentID, m_iExpectPosition);
+	if (m_bAgentWorking)
+	{
+		cwProductTradeTime::cwTradeTimeSpace TradeTimeSpace = cwProductTradeTime::NoTrading;
+		int iOpen = 0, iClose = 0;
+		bool bDeal = false;
+		bool bRet = GetTradeTimeSpace(m_strInstrumentID.c_str(), m_strCurrentUpdateTime.c_str(),
+			TradeTimeSpace, iOpen, iClose);
+		if (!bRet
+			|| TradeTimeSpace == cwProductTradeTime::NoTrading
+			|| TradeTimeSpace == cwProductTradeTime::AMCallAuctionMatchOpen
+			|| TradeTimeSpace == cwProductTradeTime::AMCallAuctionOrderingOpen
+			|| TradeTimeSpace == cwProductTradeTime::NightCallAuctionMatchOpen
+			|| TradeTimeSpace == cwProductTradeTime::NightCallAuctionOrderingOpen
+			|| TradeTimeSpace == cwProductTradeTime::CallAuctionMatchClose
+			|| TradeTimeSpace == cwProductTradeTime::CallAuctionOrderingClose)
+		{
+			return;
+		}
+		else
+		{
+			if (iClose > 2)
+			{
+				bDeal = true;
+			}
+			else
+			{
+				return;
+			}
+		}
+
+		if (bDeal)
+		{
+			DealExpectedPosition(m_strInstrumentID, m_iExpectPosition);
+		}
+	}
 }
 
 void cwPandoraPositionAgent::OnRtnOrder(cwOrderPtr pOrder, cwOrderPtr pOriginOrder)
 {
-	DealExpectedPosition(m_strInstrumentID, m_iExpectPosition);
+	if (m_bAgentWorking)
+	{
+		cwProductTradeTime::cwTradeTimeSpace TradeTimeSpace = cwProductTradeTime::NoTrading;
+		int iOpen = 0, iClose = 0;
+		bool bDeal = false;
+		bool bRet = GetTradeTimeSpace(m_strInstrumentID.c_str(), m_strCurrentUpdateTime.c_str(),
+			TradeTimeSpace, iOpen, iClose);
+		if (!bRet
+			|| TradeTimeSpace == cwProductTradeTime::NoTrading
+			|| TradeTimeSpace == cwProductTradeTime::AMCallAuctionMatchOpen
+			|| TradeTimeSpace == cwProductTradeTime::AMCallAuctionOrderingOpen
+			|| TradeTimeSpace == cwProductTradeTime::NightCallAuctionMatchOpen
+			|| TradeTimeSpace == cwProductTradeTime::NightCallAuctionOrderingOpen
+			|| TradeTimeSpace == cwProductTradeTime::CallAuctionMatchClose
+			|| TradeTimeSpace == cwProductTradeTime::CallAuctionOrderingClose)
+		{
+			return;
+		}
+		else
+		{
+			if (iClose > 2)
+			{
+				bDeal = true;
+			}
+			else
+			{
+				return;
+			}
+		}
+
+		if (bDeal)
+		{
+			DealExpectedPosition(m_strInstrumentID, m_iExpectPosition);
+		}
+	}
 }
 
 void cwPandoraPositionAgent::OnOrderCanceled(cwOrderPtr pOrder)
@@ -48,7 +154,15 @@ void cwPandoraPositionAgent::OnRspOrderCancel(cwOrderPtr pOrder, cwRspInfoPtr pR
 
 void cwPandoraPositionAgent::SetExpectPosition(int iExpPos)
 {
-	m_iExpectPosition = iExpPos;
+	if (iExpPos != m_iExpectPosition)
+	{
+		m_iExpectPosition = iExpPos;
+
+		//if (m_bAgentWorking)
+		//{
+		//	DealExpectedPosition(m_strInstrumentID, m_iExpectPosition);
+		//}
+	}
 }
 
 void cwPandoraPositionAgent::DealExpectedPosition(std::string InstrumentID, int iExpectedMaintain/*= 0*/, const char * szCallMsg /*= NULL*/)
@@ -68,8 +182,7 @@ void cwPandoraPositionAgent::DealExpectedPosition(std::string InstrumentID, int 
 	}
 
 	std::map<std::string, cwPositionPtr> CurrentPosMap;
-	std::map<std::string, cwOrderPtr>::iterator WaitOrderIt;
-	std::map<std::string, cwOrderPtr> WaitOrderList;
+	std::map<cwActiveOrderKey, cwOrderPtr> WaitOrderList;
 	GetPositionsAndActiveOrders(CurrentPosMap, WaitOrderList);
 
 	int iMaintain = 0, iWaitOrder = 0;
@@ -86,7 +199,7 @@ void cwPandoraPositionAgent::DealExpectedPosition(std::string InstrumentID, int 
 		iMaintain = 0;
 	}
 
-	for (WaitOrderIt = WaitOrderList.begin();
+	for (auto WaitOrderIt = WaitOrderList.begin();
 		WaitOrderIt != WaitOrderList.end(); WaitOrderIt++)
 	{
 		if (InstrumentID == (std::string)WaitOrderIt->second->InstrumentID)
@@ -107,7 +220,7 @@ void cwPandoraPositionAgent::DealExpectedPosition(std::string InstrumentID, int 
 
 	if (iPosiImbalance == 0)
 	{
-		for (WaitOrderIt = WaitOrderList.begin();
+		for (auto WaitOrderIt = WaitOrderList.begin();
 			WaitOrderIt != WaitOrderList.end(); WaitOrderIt++)
 		{
 			if (InstrumentID == (std::string)WaitOrderIt->second->InstrumentID)
@@ -123,7 +236,7 @@ void cwPandoraPositionAgent::DealExpectedPosition(std::string InstrumentID, int 
 		//Cancel Orders 
 		if (iImbalance > 0)
 		{
-			for (WaitOrderIt = WaitOrderList.begin();
+			for (auto WaitOrderIt = WaitOrderList.begin();
 				WaitOrderIt != WaitOrderList.end(); WaitOrderIt++)
 			{
 				if (iImbalance == 0)
@@ -148,7 +261,7 @@ void cwPandoraPositionAgent::DealExpectedPosition(std::string InstrumentID, int 
 		}
 		else
 		{
-			for (WaitOrderIt = WaitOrderList.begin();
+			for (auto WaitOrderIt = WaitOrderList.begin();
 				WaitOrderIt != WaitOrderList.end(); WaitOrderIt++)
 			{
 				if (iImbalance == 0)
@@ -374,7 +487,7 @@ void cwPandoraPositionAgent::DealExpectedPosition(std::string InstrumentID, int 
 		}
 	}
 
-	for (WaitOrderIt = WaitOrderList.begin();
+	for (auto WaitOrderIt = WaitOrderList.begin();
 		WaitOrderIt != WaitOrderList.end(); WaitOrderIt++)
 	{
 		if (InstrumentID == (std::string)WaitOrderIt->second->InstrumentID)

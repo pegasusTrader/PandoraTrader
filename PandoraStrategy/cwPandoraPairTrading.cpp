@@ -59,10 +59,10 @@ void cwPandoraPairTrading::PriceUpdate(cwMarketDataPtr pPriceData)
 
 	DoManualSpread();
 
-	if (m_pAgentData.get() != NULL
-		&& m_pAgentData->pPositionAgent.get() != NULL)
+	if (m_pPositionAgent.get() != NULL
+		&& m_pPositionAgent->pPositionAgent.get() != NULL)
 	{
-		m_pAgentData->pPositionAgent->SetExpectPosition(-1 * GetNetPosition(m_SubMainInstrumentID));
+		m_pPositionAgent->pPositionAgent->SetExpectPosition(-1 * GetNetPosition(m_SubMainInstrumentID));
 	}
 	
 }
@@ -70,16 +70,16 @@ void cwPandoraPairTrading::PriceUpdate(cwMarketDataPtr pPriceData)
 void cwPandoraPairTrading::OnReady()
 {
 	SetAgentManager(dynamic_cast<cwAgentManager*>(&m_PandoraAgentManager));
-	m_pAgentData = m_PandoraAgentManager.RegisterAgent(m_MainInstrumentID, cwPandoraAgentManager::Enum_Agent_Postion);
-	if (m_pAgentData.get() != NULL
-		&& m_pAgentData->pPositionAgent.get() != NULL)
+	m_pPositionAgent = m_PandoraAgentManager.RegisterAgent(m_MainInstrumentID, cwPandoraAgentManager::Enum_Agent_Postion);
+	if (m_pPositionAgent.get() != NULL
+		&& m_pPositionAgent->pPositionAgent.get() != NULL)
 	{
 		//设置算法参数
-		m_pAgentData->pPositionAgent->InsLargeOrderVolume = 100;
-		m_pAgentData->pPositionAgent->InsLittleOrderVolume = 5;
-		m_pAgentData->pPositionAgent->InsAskBidGap = 1;
+		m_pPositionAgent->pPositionAgent->InsLargeOrderVolume = 100;
+		m_pPositionAgent->pPositionAgent->InsLittleOrderVolume = 5;
+		m_pPositionAgent->pPositionAgent->InsAskBidGap = 1;
 
-		m_pAgentData->pPositionAgent->SetExpectPosition(-1 * GetNetPosition(m_SubMainInstrumentID));
+		m_pPositionAgent->pPositionAgent->SetExpectPosition(-1 * GetNetPosition(m_SubMainInstrumentID));
 	}
 
 	//订阅行情
@@ -171,11 +171,10 @@ void cwPandoraPairTrading::DoManualSpread()
 
 	if (!bStrategyCanOpen)
 	{
-		std::map<std::string, cwOrderPtr>::iterator WaitOrderIt;
-		std::map<std::string, cwOrderPtr> WaitOrderList;
+		std::map<cwActiveOrderKey, cwOrderPtr> WaitOrderList;
 		GetActiveOrders(WaitOrderList);
 
-		for (WaitOrderIt = WaitOrderList.begin();
+		for (auto WaitOrderIt = WaitOrderList.begin();
 			WaitOrderIt != WaitOrderList.end(); WaitOrderIt++)
 		{
 			if (m_SubMainInstrumentID == (std::string)WaitOrderIt->second->InstrumentID)
@@ -187,7 +186,7 @@ void cwPandoraPairTrading::DoManualSpread()
 	}
 
 	std::map<std::string, cwPositionPtr> CurrentPosMap;
-	std::map<std::string, cwOrderPtr> WaitOrderList;
+	std::map<cwActiveOrderKey, cwOrderPtr> WaitOrderList;
 	GetPositionsAndActiveOrders(CurrentPosMap, WaitOrderList);
 
 	int iMainPosition = 0, iSubMainPosition = 0;

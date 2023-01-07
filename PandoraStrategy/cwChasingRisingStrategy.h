@@ -30,12 +30,12 @@ public:
 	///行情更新
 	virtual void			PriceUpdate(cwMarketDataPtr pPriceData);
 	//当生成一根新K线的时候，会调用该回调
-	virtual void			OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKindleStrategy::cwKindleSeriesPtr pKindle) {};
+	virtual void			OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKindleStrategy::cwKindleSeriesPtr pKindleSeries) {};
 
 
 	//Trade SPI
 	///成交回报
-	virtual void OnRtnTrade(cwTradePtr pTrade) {};
+	virtual void OnRtnTrade(cwTradePtr pTrade);
 	///报单回报
 	virtual void OnRtnOrder(cwOrderPtr pOrder, cwOrderPtr pOriginOrder = cwOrderPtr()) {};
 	///撤单成功
@@ -45,6 +45,8 @@ public:
 	virtual void OnReady();
 
 	virtual  void InitialStrategy(const char* pConfigFilePath);
+	bool		IsNearDeliverDateWarning(const char* szInstrumentID);
+	int			GetTradingDayRemainWarning(const char* szInstrumentID);
 
 
 
@@ -53,6 +55,8 @@ public:
 	std::string m_strStrategyName;
 	//策略是否运行, can be modified by config file
 	bool		m_bStrategyRun;
+	//显示持仓，can be modified by config file
+	bool		m_bShowPosition;
 
 	std::string	m_strCurrentUpdateTime;
 	std::string	m_strExeFolderPath;
@@ -105,6 +109,8 @@ public:
 		std::string		strBaseTime;
 		bool			bFirst;
 
+		int				iTradeCnt;
+
 		RunningParameter()
 			: baseTime(0)
 			, oldTime(0)
@@ -112,6 +118,7 @@ public:
 			, dHighPx(0.0)
 			, dLowPx(0.0)
 			, bFirst(true)
+			, iTradeCnt(0)
 		{
 		}
 

@@ -123,7 +123,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="cwBasicCTAStrategy.cpp" />
     <ClCompile Include="cwChasingRisingStrategy.cpp" />
+    <ClCompile Include="cwCTAPlatform.cpp" />
+    <ClCompile Include="cwDualTrust.cpp" />
     <ClCompile Include="cwEmptyStrategy.cpp" />
     <ClCompile Include="cwMarketDataReceiver.cpp" />
     <ClCompile Include="cwPandoraAgentManager.cpp" />
@@ -132,7 +135,10 @@
     <ClCompile Include="cwStrategyDemo.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="cwBasicCTAStrategy.h" />
     <ClInclude Include="cwChasingRisingStrategy.h" />
+    <ClInclude Include="cwCTAPlatform.h" />
+    <ClInclude Include="cwDualTrust.h" />
     <ClInclude Include="cwEmptyStrategy.h" />
     <ClInclude Include="cwMarketDataReceiver.h" />
     <ClInclude Include="cwPandoraAgentManager.h" />
