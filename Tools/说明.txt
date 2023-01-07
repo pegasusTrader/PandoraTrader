@@ -1,0 +1,5 @@
+工具目录是Windows x86的程序：
+
+一、行情存储程序（MarketDataReceiver.exe）
+需如下文件：MarketDataReceiver.exe；PandoraTraderConfig.xml；thostmduserapi_se.dll；thosttraderapi_se.dll
+需配置文件：PandoraTraderConfig.xml

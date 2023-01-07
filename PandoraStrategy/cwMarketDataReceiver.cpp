@@ -112,7 +112,7 @@ void cwMarketDataReceiver::PriceUpdate(cwMarketDataPtr pPriceData)
 	m_TotalTurnOver[pPriceData->InstrumentID] = pPriceData->Turnover;
 }
 
-void cwMarketDataReceiver::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKindleStrategy::cwKindleSeriesPtr pKindle)
+void cwMarketDataReceiver::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKindleStrategy::cwKindleSeriesPtr pKindleSeries)
 {
 }
 
@@ -223,6 +223,7 @@ void cwMarketDataReceiver::OnReady()
 			PersonElement->SetAttribute("VolumeMultiple", itIns->second->VolumeMultiple);
 			PersonElement->SetDoubleAttribute("PriceTick", itIns->second->PriceTick);
 			PersonElement->SetDoubleAttribute("StrikePrice", itIns->second->StrikePrice);
+
 		}
 		std::string strSaveFile = m_strConfigFileFullPath;
 
@@ -343,7 +344,9 @@ void cwMarketDataReceiver::OnReady()
 
 	for (auto it = m_InstrumentMap.begin(); it != m_InstrumentMap.end(); it++)
 	{
-		if (CW_FTDC_PC_Futures == it->second->ProductClass)
+		if (CW_FTDC_PC_Futures == it->second->ProductClass
+			|| CW_FTDC_PC_Options == it->second->ProductClass
+			)
 		{
 			SubscribeInstrument.push_back(it->first);
 		}

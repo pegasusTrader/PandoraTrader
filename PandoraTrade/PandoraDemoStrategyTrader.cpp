@@ -2,6 +2,8 @@
 //
 //For more information, please visit https://github.com/pegasusTrader/PandoraTrader
 //
+//除对外销售，免费提供，欢迎合规使用
+//
 //Please use the platform with legal and regulatory permission.
 //This software is released into the public domain.You are free to use it in any way you like, except that you may not sell this source code.
 //This software is provided "as is" with no expressed or implied warranty.I accept no liability for any damage or loss of business that this software may cause.
@@ -293,9 +295,10 @@ int main()
 		return 0;
 	}
 #endif // WIN32
+	std::string strStrategyName = m_cwStategy.GetStrategyName();
 
 	std::cout << "Welcome To Pandora Trader !!" << std::endl;
-	std::cout << GetPandoraTraderVersion() << std::endl;
+	std::cout << strStrategyName.c_str() << " " << GetPandoraTraderVersion() << std::endl;
 	std::cout << "Init Config From File!" << std::endl;
 	if (!ReadXmlConfigFile())
 	{
@@ -358,8 +361,6 @@ int main()
 
 	delete [] TAppMutexName;
 #endif
-
-	std::string strStrategyName = m_cwStategy.GetStrategyName();
 
 	m_TradeChannel.RegisterBasicStrategy(dynamic_cast<cwBasicStrategy*>(&m_cwStategy));
 
