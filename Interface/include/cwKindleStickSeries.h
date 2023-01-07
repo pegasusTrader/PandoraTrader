@@ -62,6 +62,7 @@ public:
 	uint32_t						m_iCurrentKindleLeftTime;
 
 	bool							m_bIsNewKindle;
+	bool							m_bThisFinished;
 
 public:
 	//获取K线序列
@@ -91,6 +92,17 @@ public:
 	int GetKindleStickHighest();
 	int GetKindleStickHighest(unsigned int nBegin, unsigned int nEnd);
 	int GetKindleStickHighest(unsigned int nCount);
+
+	/*函数功能：获取K线最高的k线，如果有多个一样高的，返回最先（早）的一根
+	* 参数描述：
+	*     [in] nBegin	- K线范围开始编号；
+	*     [in] nEnd		- K线范围结束编号；
+	* 返回值：
+	*     最高K线的编号，如果-1.则失败，参数有误
+	*/
+	int GetKindleStickHighestFirstOne();
+	int GetKindleStickHighestFirstOne(unsigned int nBegin, unsigned int nEnd);
+	int GetKindleStickHighestFirstOne(unsigned int nCount);
 
 	/*函数功能：获取K线最高的k线的最大值
 	* 参数描述：
@@ -124,7 +136,18 @@ public:
 	int GetKindleStickLowest();
 	int GetKindleStickLowest(unsigned int nBegin, unsigned int nEnd);
 	int GetKindleStickLowest(unsigned int nCount);
-	
+
+	/*函数功能：获取K线最低的k线，如果有多个一样低的，返回最先（早）的一根
+	* 参数描述：
+	*     [in] nBegin	- K线范围开始编号；
+	*     [in] nEnd		- K线范围结束编号；
+	* 返回值：
+	*     最低K线的编号，如果-1.则失败，参数有误
+	*/
+	int GetKindleStickLowestFirstOne();
+	int GetKindleStickLowestFirstOne(unsigned int nBegin, unsigned int nEnd);
+	int GetKindleStickLowestFirstOne(unsigned int nCount);
+
 	/*函数功能：获取K线最高的k线的最小值
 	* 参数描述：
 	*     [in] nBegin	- K线范围开始编号；
@@ -172,7 +195,8 @@ public:
 	*/
 	bool GetKindleStickTrough(unsigned int nBegin, unsigned int nEnd,
 		unsigned int nUnilateralCompareNum, std::vector<unsigned int>& nIndexVector, unsigned int& nIndexLowestTrough);
-	
+
+	const char* GetInstrumentID() { return m_strInstrumentID.c_str(); }
 private:
 	std::string								m_strInstrumentID;
 	std::string								m_strProductID;
@@ -187,7 +211,7 @@ private:
 	cwProductTradeTime						m_ProductTradeTime;
 
 #ifdef KINDLE_MULTI_THREAD
-	cwMUTEX									m_TradeSpiMutex;
+	cwMUTEX									m_KindleQueueMutex;
 #endif // KINDLE_MULTI_THREAD
 	std::deque<cwKindleStickPtr>			m_KindleStickDeque;
 

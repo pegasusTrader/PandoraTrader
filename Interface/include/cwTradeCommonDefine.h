@@ -69,6 +69,17 @@
 
 #define		CWCOUTINFO
 
+//#define		CW_ACTIVEORDERKEY_AS_STRING
+
+#ifdef CW_ACTIVEORDERKEY_AS_STRING
+#define		cwActiveOrderKey	std::string
+#else
+#define		cwActiveOrderKey	ActiveEasyKey
+#endif // CW_ACTIVEORDERKEY_AS_STRING
+
+
+#define		cwSysOrderKey		std::string
+
 #define		InstrumentIDLength	82
 #define		MARKET_PRICE_DEPTH	5
 
@@ -864,7 +875,33 @@ struct ActiveOrderKey_HashFun
 			^ std::hash<uint64_t>()(static_cast<uint64_t>(key.OrderRef)));
 	}
 };
-size_t ActuveOrderKeyHash(ActiveOrderKey & key);
+size_t ActiveOrderKeyHash(ActiveOrderKey & key);
+
+struct ActiveEasyKey
+{
+	///合约
+	std::string						InstrumentID;
+
+	//本地报单编号
+	uint64_t						OrderRef;
+
+	ActiveEasyKey(const char* ref, const char * szInstrumentID);
+	ActiveEasyKey(uint64_t ref, const char * szInstrumentID);
+
+
+	bool operator < (const ActiveEasyKey& orderkey) const;
+	bool operator == (const ActiveEasyKey& orderkey) const;
+};
+
+struct ActiveEasyKey_HashFun
+{
+	std::size_t operator() (const ActiveEasyKey& key) const
+	{
+		return (std::hash<std::string>()(key.InstrumentID)
+			^ std::hash<uint64_t>()(static_cast<uint64_t>(key.OrderRef)));
+	}
+};
+size_t ActiveEasyKeyHash(ActiveEasyKey& key);
 
 
 struct SysOrderKey
@@ -1156,3 +1193,6 @@ struct cwFtdcRspInfoField
 	cwFtdcErrorMsgType	ErrorMsg;
 };
 typedef std::shared_ptr<cwFtdcRspInfoField> cwRspInfoPtr;
+
+
+cwActiveOrderKey GenerateActiveKey(cwOrderPtr pOrder);

@@ -51,21 +51,23 @@ public:
 
 	//撤单
 	bool					CancelOrder(cwOrderPtr pOrder);
-	//暂停代理人的工作	
+	//设置代理人的工作状态	
 	void					SetAgentWorking(bool bWork) { m_bAgentWorking = bWork; }
+	//获取代理人的工作状态
+	bool					GetAgentWorking() { return m_bAgentWorking; }
 	//停止代理人				
-	bool					StopAgent();
+	//bool					StopAgent();
 
 	//获取最新的行情
 	cwMarketDataPtr	GetLastestMarketData(std::string InstrumentID);
 
 	//获取持仓和挂单列表
 	bool GetPositionsAndActiveOrders(std::map<std::string, cwPositionPtr>& PositionMap,
-		std::map<std::string, cwOrderPtr>& ActiveOrders);
+		std::map<cwActiveOrderKey, cwOrderPtr>& ActiveOrders);
 	//获取指定合约持仓和挂单列表
-	bool GetPositionsAndActiveOrders(std::string InstrumentID, cwPositionPtr& pPosition, std::map<std::string, cwOrderPtr>& ActiveOrders);
+	bool GetPositionsAndActiveOrders(std::string InstrumentID, cwPositionPtr& pPosition, std::map<cwActiveOrderKey, cwOrderPtr>& ActiveOrders);
 	//获取指定合约净持仓和挂单列表
-	bool GetNetPositionAndActiveOrders(std::string InstrumentID, int & iPosition, std::map<std::string, cwOrderPtr> & ActiveOrders);
+	bool GetNetPositionAndActiveOrders(std::string InstrumentID, int & iPosition, std::map<cwActiveOrderKey, cwOrderPtr> & ActiveOrders);
 
 
 	//获取交易时间段，距开盘多少秒和距收盘多少秒

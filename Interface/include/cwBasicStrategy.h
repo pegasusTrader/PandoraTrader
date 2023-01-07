@@ -87,26 +87,28 @@ public:
 	std::string			m_strConfigFileFullPath;
 
 	//在Trade SPI准备就绪前，策略需要用到合约信息，可以利用该函数先从文件中获取合约信息，参数为NULL时，默认和程序在同一路径
-	virtual void InitalInstrumentData(const char * pInstrumentDataFilePath = NULL);
+	virtual bool InitalInstrumentData(const char * pInstrumentDataFilePath = NULL);
 
 	///Action  Function
 	//表示策略名称
 	virtual std::string  GetStrategyName() { return "BasicStrategy"; }
+	//获取策略版本号
+	virtual std::string  GetStrategyVersion() { return "V1.0.0_20220820"; }
 
 	//获取最新的行情
 	cwMarketDataPtr	GetLastestMarketData(std::string InstrumentID);
 	//获取账户信息
 	cwAccountPtr GetAccount();
 	//获取挂单列表，传入map用于返回信息，本地报单编号(OrderRef)为Key
-	bool GetActiveOrders(std::map<std::string, cwOrderPtr>& ActiveOrders);		///key OrderRef
+	bool GetActiveOrders(std::map<cwActiveOrderKey, cwOrderPtr>& ActiveOrders);		///key OrderRef
 	//获取挂单列表，传入合约，map用于返回信息，本地报单编号(OrderRef)为Key
-	bool GetActiveOrders(std::string InstrumentID, std::map<std::string, cwOrderPtr>& ActiveOrders);		///key OrderRef
+	bool GetActiveOrders(std::string InstrumentID, std::map<cwActiveOrderKey, cwOrderPtr>& ActiveOrders);		///key OrderRef
 	//获取多头挂单数量（手数），传入合约
 	int GetActiveOrdersLong(std::string InstrumentID);		///key OrderRef
 	//获取空头挂单数量（手数），传入合约
 	int GetActiveOrdersShort(std::string InstrumentID);		///key OrderRef
 	//获取所有报单列表，传入map用于返回信息，交易所报单编号(sysOrderID)为Key
-	bool GetAllOrders(std::map<std::string, cwOrderPtr>& Orders);				///Key OrderSysID
+	bool GetAllOrders(std::map<cwSysOrderKey, cwOrderPtr>& Orders);				///Key OrderSysID
 	//获取所有成交列表，传入map用于返回信息，成交编号（TradeID）为Key
 	bool GetTrades(std::map<std::string, cwTradePtr>& trades);					///Key TradeID
 	//获取持仓列表，传入map用于返回信息，合约ID为Key
@@ -115,11 +117,11 @@ public:
 	int	 GetNetPosition(std::string InstrumentID);
 	//获取持仓和挂单列表
 	bool GetPositionsAndActiveOrders(std::map<std::string, cwPositionPtr>& PositionMap,
-		std::map<std::string, cwOrderPtr>& ActiveOrders);
+		std::map<cwActiveOrderKey, cwOrderPtr>& ActiveOrders);
 	//获取指定合约持仓和挂单列表
-	bool GetPositionsAndActiveOrders(std::string InstrumentID, cwPositionPtr& pPosition, std::map<std::string, cwOrderPtr>& ActiveOrders);
+	bool GetPositionsAndActiveOrders(std::string InstrumentID, cwPositionPtr& pPosition, std::map<cwActiveOrderKey, cwOrderPtr>& ActiveOrders);
 	//获取指定合约净持仓和挂单列表
-	bool GetNetPositionAndActiveOrders(std::string InstrumentID, int & iPosition, std::map<std::string, cwOrderPtr> & ActiveOrders);
+	bool GetNetPositionAndActiveOrders(std::string InstrumentID, int & iPosition, std::map<cwActiveOrderKey, cwOrderPtr> & ActiveOrders);
 	//获取合约信息
 	cwInstrumentDataPtr GetInstrumentData(std::string InstrumentID);
 
@@ -154,13 +156,13 @@ public:
 
 	//获取当前交易日
 	cwPandoraTrader::cwDate	  GetTradingDay();
+	const char *		      GetTradingDayStr();
 
 	bool					  GetInstrumentDateSpace(const char* szInstrumentID, cwPandoraTrader::cwDate date,
 		cwInstrumentTradeDateSpace& iTradeDateSpace, int &iRemain);
 
-	bool						  GetBuisnessDayRemain(const char* szInstrumentID,
+	bool					  GetBuisnessDayRemain(const char* szInstrumentID,
 		cwInstrumentTradeDateSpace& iTradeDateSpace, int& iRemain);
-
 
 	//获取合约当前撤单次数
 	int		  GetInstrumentCancelCount(std::string InstrumentID);

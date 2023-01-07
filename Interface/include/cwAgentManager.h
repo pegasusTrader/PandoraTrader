@@ -63,11 +63,11 @@ public:
 
 	//获取持仓和挂单列表
 	bool GetPositionsAndActiveOrders(std::map<std::string, cwPositionPtr>& PositionMap,
-		std::map<std::string, cwOrderPtr>& ActiveOrders);
+		std::map<cwActiveOrderKey, cwOrderPtr>& ActiveOrders);
 	//获取指定合约持仓和挂单列表
-	bool GetPositionsAndActiveOrders(std::string InstrumentID, cwPositionPtr& pPosition, std::map<std::string, cwOrderPtr>& ActiveOrders);
+	bool GetPositionsAndActiveOrders(std::string InstrumentID, cwPositionPtr& pPosition, std::map<cwActiveOrderKey, cwOrderPtr>& ActiveOrders);
 	//获取指定合约净持仓和挂单列表
-	bool GetNetPositionAndActiveOrders(std::string InstrumentID, int & iPosition, std::map<std::string, cwOrderPtr> & ActiveOrders);
+	bool GetNetPositionAndActiveOrders(std::string InstrumentID, int & iPosition, std::map<cwActiveOrderKey, cwOrderPtr> & ActiveOrders);
 
 	//获取交易时间段，距开盘多少秒和距收盘多少秒
 	//参数：合约名，行情时间（102835->10:28:35),交易阶段， 距该交易时段开盘多少秒，距收盘多少秒

@@ -36,7 +36,7 @@ public:
 	//行情更新（OnBar会先于PriceUpdate回调， 在PriceUpdate已经可以获取更新好的K线）
 	virtual void			PriceUpdate(cwMarketDataPtr pPriceData) {};
 	//当生成一根新K线的时候，会调用该回调
-	virtual void			OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKindleStrategy::cwKindleSeriesPtr pKindle) {};
+	virtual void			OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKindleStrategy::cwKindleSeriesPtr pKindleSeries) {};
 
 	///Trade SPI
 	//成交回报
@@ -62,11 +62,16 @@ public:
 	//订阅k线， iTimeScale是k线周期，秒数（如5分钟为300）
 	cwKindleSeriesPtr		SubcribeKindle(const char * szInstrumentID, int iTimeScale, int HisKindleCount = 0);
 	cwKindleSeriesPtr		SubcribeDailyKindle(const char * szInstrumentID);
+	//需要合约信息支持
+	cwKindleSeriesPtr		SubcribeIndexKindle(const char* szProductId, int iTimeScale, int HisKindleCount = 0);
+
+	std::string				GetIndexName(const char* szProductId);
 
 	//从tick数据构建历史数据
-	bool					InitialHisKindleFromTickFile(const char * szTickFile);
+	bool					InitialHisKindleFromKinldeFile(const char * szFilePath);
 	bool					InitialHisKindleFromIndexFile(const char * szTickFile);
 
+	bool					InitialHisKindleFromHisKindleFolder(const char* szHisFolder);
 	//
 	void					GetKindleFromPublicBus();
 
@@ -117,6 +122,7 @@ public:
 	//建议在回测的时候，使用同步模式
 	void					SetSynchronizeMode(bool bSynchronous);
 
+	void					SetWriteIndexInfoCacheToFile(bool bNeedWriteToFile) { m_bNeedWriteCacheToFile = bNeedWriteToFile; };
 	///系统自用接口信息，勿动
 	virtual void			_SetReady();
 	virtual void			_PriceUpdate(cwMarketDataPtr pPriceData);
@@ -248,5 +254,20 @@ private:
 
 	void *										m_pAgentManager;
 
+
+	///Index Price and Kindle Update;
+	std::string									m_strHisDataPath;
+	bool										m_bNeedIndexKindle = false;
+
+	std::unordered_map<std::string, cwMarketDataPtr>									m_FileLastMDCacheMap;
+	//key Product, key InstrumentID
+	std::unordered_map <std::string, std::unordered_map<std::string, cwMarketDataPtr>>	m_IndexCalcuteDataCache;
+
+	//指数计算工作线程
+	cwMUTEX										m_UpdateIndexPriceDequeMutex;
+	bool										m_bUpdateIndexPriceThreadRun = false;
+	bool										m_bNeedWriteCacheToFile = false;
+	void										_UpdateIndexPriceWorkingThread();
+	std::thread									m_UpdateIndexPriceWorkingThread;
 };
 

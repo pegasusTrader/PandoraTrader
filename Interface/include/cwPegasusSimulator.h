@@ -154,6 +154,16 @@ private:
 
 	double													m_dDeposit;
 
+	//CacheFile
+	// 
+	bool													m_bNeedCacheFile;
+	std::string												m_strCacheFilePath;
+
+	cwMUTEX													m_CacheWorkingMutex;
+	std::deque<std::string>									m_CacheWorkingList;
+
+	std::map<std::string, std::string>						m_MarketDataCacheFileMap;
+
 	//Result 
 	//Balance Data
 	struct TimeBalanceData

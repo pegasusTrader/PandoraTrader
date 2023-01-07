@@ -25,7 +25,7 @@ public:
 
 	virtual void InitialSimulator(const char * pConfigFilePath);
 	std::string			m_strConfigFileFullPath;
-
+	std::string			m_strExeFullPath;
 	//Md
 	virtual int ReqUserMdLogin() { return 0; }
 

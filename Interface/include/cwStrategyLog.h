@@ -11,6 +11,7 @@
 
 #pragma once
 #include "cwLog.h"
+#include "cwMutex.h"
 #include <stdarg.h>
 #include <deque>
 
@@ -40,6 +41,8 @@ public:
 	void AddLog(int LogType, int bForceWrite, const char * lpParam, ...);
 
 	void AddLog(LogDataPtr LogPtr);
+
+	cwMUTEX			m_EasyLogMutex;
 };
 
 class cwEasyStrategyLog
