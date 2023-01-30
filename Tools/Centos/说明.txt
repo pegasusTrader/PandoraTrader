@@ -1,0 +1,6 @@
+工具目录是Centos的程序：
+
+一、行情存储程序（MarketDataReceiver.out）
+需如下文件：MarketDataReceiver.out；PandoraTraderConfig.xml；thostmduserapi_se.so；thosttraderapi_se.so
+需配置文件：PandoraTraderConfig.xml
+注意：thostmduserapi_se.so；thosttraderapi_se.so应对拷贝一份到目录：/lib64/
