@@ -9,10 +9,12 @@
 	<Instrument ID="SR909"/>
 	<Instrument ID="cu1909"/>
     </Subscription>
-    
+      <HisDataFolder>
+    /home/Data
+  </HisDataFolder>
 
     <StrategyConfigFile>
-.\StrategyDemo.xml
+./StrategyDemo.xml
     </StrategyConfigFile>
 
 </Config>
