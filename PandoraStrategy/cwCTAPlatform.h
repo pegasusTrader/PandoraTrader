@@ -12,8 +12,6 @@ public:
 	enum cwStrategyEnum:int
 	{
 		cw_DualTrust_Strategy = 0
-		, cwJackC_Strategy
-		, cwJackA_Strategy
 		, cwStrategyCount
 	};
 
