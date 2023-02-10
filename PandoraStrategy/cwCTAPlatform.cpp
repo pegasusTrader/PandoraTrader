@@ -28,6 +28,11 @@ void cwCTAPlatform::PriceUpdate(cwMarketDataPtr pPriceData)
 {
 	m_strCurrentUpdateTime = pPriceData->UpdateTime;
 
+	if (!GetParameter(pPriceData->InstrumentID))
+	{
+		return;
+	}
+
 	auto Insit = m_InsCTAStrategyList.find(pPriceData->InstrumentID);
 	if (Insit != m_InsCTAStrategyList.end())
 	{
@@ -47,12 +52,8 @@ void cwCTAPlatform::PriceUpdate(cwMarketDataPtr pPriceData)
 		}
 	}
 
-	MergeStrategyPosition(pPriceData->InstrumentID);
+	MergeStrategyPosition(m_cwTradeParameter.SignalInstrumentID);
 
-	if (!GetParameter(pPriceData->InstrumentID))
-	{
-		return;
-	}
 
 	int iExpecetedPosition = GetExpectedPosition(pPriceData->InstrumentID);
 	if (m_pAgentData->pPositionAgent->m_iExpectPosition != iExpecetedPosition)
@@ -108,13 +109,14 @@ void cwCTAPlatform::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKin
 		}
 	}
 
-	MergeStrategyPosition(pKindleSeries->GetInstrumentID());
-
 	if (!GetParameter(pPriceData->InstrumentID)
 		|| m_strCurrentUpdateTime.size() <= 0)
 	{
 		return;
 	}
+
+	MergeStrategyPosition(m_cwTradeParameter.SignalInstrumentID);
+
 
 	int iExpecetedPosition = GetExpectedPosition(pPriceData->InstrumentID);
 	if (m_pAgentData->pPositionAgent->m_iExpectPosition != iExpecetedPosition)
@@ -125,8 +127,11 @@ void cwCTAPlatform::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKin
 
 void cwCTAPlatform::OnReady()
 {
+	cwEasyStrategyLog log(m_StrategyLog, "OnReady");
+
 	int iunFixPositionCnt = 0;
 	m_cwShow.AddLog(" Unfix Position: ");
+	log.AddLog(cwStrategyLog::enMsg, " Unfix Position : ");
 
 	SetAgentManager(dynamic_cast<cwAgentManager*>(&m_PandoraAgentManager));
 	unsigned int folioId = 0;
@@ -146,12 +151,13 @@ void cwCTAPlatform::OnReady()
 		}
 		SetPortfolioId(it->second->InstrumentID.c_str(), folioId++);
 
-		MergeStrategyPosition(it->second->InstrumentID);
-
 		if (!GetParameter(it->second->InstrumentID.c_str()))
 		{
 			return;
 		}
+
+		MergeStrategyPosition(m_cwTradeParameter.SignalInstrumentID);
+
 
 		int iExpecetedPosition = GetExpectedPosition(it->second->InstrumentID);
 
@@ -162,8 +168,10 @@ void cwCTAPlatform::OnReady()
 		if (iPosiImbalance != 0)
 		{
 			iunFixPositionCnt++;
-			m_cwShow.AddLog("%s  Unfix:%d  Current Position:%d Signal Position:%d",
-				it->second->InstrumentID.c_str(), iPosiImbalance, iMaintain, iExpecetedPosition);
+			m_cwShow.AddLog("%s  Unfix:%d  Current Position:%d Signal Position:%d Ratio:%f",
+				it->second->InstrumentID.c_str(), iPosiImbalance, iMaintain, iExpecetedPosition, m_cwTradeParameter.Ratio);
+			log.AddLog(cwStrategyLog::enIMMS, "%s  Unfix:%d  Current Position:%d Signal Position:%d Ratio:%f",
+				it->second->InstrumentID.c_str(), iPosiImbalance, iMaintain, iExpecetedPosition, m_cwTradeParameter.Ratio);
 		}
 
 		if (m_pAgentData->pPositionAgent->m_iExpectPosition != iExpecetedPosition)
@@ -173,6 +181,9 @@ void cwCTAPlatform::OnReady()
 	}
 
 	m_cwShow.AddLog("%d Instrument's Positions is Unfix!", iunFixPositionCnt);
+	log.AddLog(iunFixPositionCnt > 0 ? cwStrategyLog::enIMMS: cwStrategyLog::enMsg,
+		"%d Instrument's Positions is Unfix!", iunFixPositionCnt);
+
 }
 
 void cwCTAPlatform::InitialStrategy(const char* pConfigFilePath)
@@ -281,6 +292,7 @@ void cwCTAPlatform::InitialStrategy(const char* pConfigFilePath)
 
 	}
 
+	MergeStrategyPosition(std::string());
 	//{
 	//	cwDualTrust * strategy = new cwDualTrust("DualTrust_hc");
 	//	strategy->m_StrategyPara.CTAPara1 = 5;
@@ -1238,22 +1250,49 @@ void cwCTAPlatform::SetKindle(std::string strStrategyID, bool bIndex, const char
 int cwCTAPlatform::MergeStrategyPosition(std::string InstrumentID)
 {
 	int iPosition = 0;
-	auto Insit = m_InsCTAStrategyList.find(InstrumentID);
-	if (Insit != m_InsCTAStrategyList.end())
+	if (InstrumentID.size() == 0)
 	{
-		for (auto Listit = Insit->second.begin();
-			Listit != Insit->second.end(); Listit++)
+		for (auto Insit = m_InsCTAStrategyList.begin();
+			Insit != m_InsCTAStrategyList.end(); Insit++)
 		{
-			for (auto it = Listit->second.begin();
-				it != Listit->second.end(); it++)
+			for (auto Listit = Insit->second.begin();
+				Listit != Insit->second.end(); Listit++)
 			{
-				auto Posit = (*it)->_pStrategy->m_iStrategyPositionMap.find(InstrumentID);
-				if (Posit != (*it)->_pStrategy->m_iStrategyPositionMap.end())
+				for (auto it = Listit->second.begin();
+					it != Listit->second.end(); it++)
 				{
-					int iPos = (int)(Posit->second * (*it)->_pParameter->dMultiple);
-					m_cwStrategyPositionMap[InstrumentID][(*it)->_StrategyID]
-						= iPos;
-					iPosition += iPos;
+					//auto Posit = (*it)->_pStrategy->m_iStrategyPositionMap.find(InstrumentID);
+					for(auto Posit = (*it)->_pStrategy->m_iStrategyPositionMap.begin();
+						Posit != (*it)->_pStrategy->m_iStrategyPositionMap.end(); Posit++)
+					{
+						int iPos = (int)(Posit->second * (*it)->_pParameter->dMultiple);
+						m_cwStrategyPositionMap[Posit->first][(*it)->_StrategyID]
+							= iPos;
+						iPosition += iPos;
+					}
+				}
+			}
+		}
+	}
+	else
+	{
+		auto Insit = m_InsCTAStrategyList.find(InstrumentID);
+		if (Insit != m_InsCTAStrategyList.end())
+		{
+			for (auto Listit = Insit->second.begin();
+				Listit != Insit->second.end(); Listit++)
+			{
+				for (auto it = Listit->second.begin();
+					it != Listit->second.end(); it++)
+				{
+					auto Posit = (*it)->_pStrategy->m_iStrategyPositionMap.find(InstrumentID);
+					if (Posit != (*it)->_pStrategy->m_iStrategyPositionMap.end())
+					{
+						int iPos = (int)(Posit->second * (*it)->_pParameter->dMultiple);
+						m_cwStrategyPositionMap[InstrumentID][(*it)->_StrategyID]
+							= iPos;
+						iPosition += iPos;
+					}
 				}
 			}
 		}
@@ -1320,9 +1359,9 @@ int cwCTAPlatform::GetExpectedPosition(std::string InstrumentID)
 		{
 			dbInsPos = it->second * m_cwTradeParameter.Ratio;
 
-			StrategyInstrumentUnion StrategyInsUnion;
-			StrategyInsUnion.StrategyName = it->first;
-			StrategyInsUnion.InstrumentID = InstrumentID;
+			//StrategyInstrumentUnion StrategyInsUnion;
+			//StrategyInsUnion.StrategyName = it->first;
+			//StrategyInsUnion.InstrumentID = InstrumentID;
 
 			//auto Manualit = m_ManualinterventionMap.find(StrategyInsUnion);
 			//if (Manualit != m_ManualinterventionMap.end()

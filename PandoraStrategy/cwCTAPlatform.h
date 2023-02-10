@@ -12,6 +12,10 @@ public:
 	enum cwStrategyEnum:int
 	{
 		cw_DualTrust_Strategy = 0
+		, cwJackA_Strategy
+		, cwJackB_Strategy
+		, cwJackC_Strategy
+		, cwJackD_Strategy
 		, cwStrategyCount
 	};
 
@@ -268,7 +272,7 @@ protected:
 	std::unordered_map<std::string, TradeParaPtr>						m_TradeParameterMap;
 
 	//Strategy pool²ßÂÔ³Ø
-	//key:Intrument, key:TimeScale
+	//key:SignalInstrument, key:TimeScale
 	std::unordered_map<std::string, std::unordered_map<int, std::deque<CTAStrategyInfoPtr>>>		m_InsCTAStrategyList;
 	//Key:StrategyID
 	std::unordered_map<std::string, CTAStrategyInfoPtr>					m_NameCTAStrategy;
