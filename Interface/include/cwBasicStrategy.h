@@ -72,7 +72,7 @@ public:
 	virtual void OnRspOrderCancel(cwOrderPtr pOrder, cwRspInfoPtr pRspInfo) {};
 
 	///Strategy Timer
-	virtual void OnStrategyTimer(int iTimerId) {};
+	virtual void OnStrategyTimer(int iTimerId, const char * szInstrumentID) {};
 	//当策略交易初始化完成时会调用OnReady, 可以在此函数做策略的初始化操作
 	virtual void OnReady() {};
 

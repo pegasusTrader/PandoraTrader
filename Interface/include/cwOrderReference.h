@@ -14,6 +14,8 @@
 
 #include "cwMutex.h"
 
+//#define OrderRef_SimpleMode
+
 class cwOrderReference
 {
 public:
@@ -28,10 +30,13 @@ private:
 	cwMUTEX			m_OderRefMutex;
 	uint64_t		m_OrderReferenceIndex;
 
+#ifndef OrderRef_SimpleMode
 #ifdef _MSC_VER
 	DWORD			m_dwCurrentProcessID;
 #else
 	int				m_iCurrentProcessID;
 #endif
+#endif // !OrderRef_SimpleMode
+
 };
 
