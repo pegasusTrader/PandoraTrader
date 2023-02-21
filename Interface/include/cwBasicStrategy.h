@@ -141,7 +141,9 @@ public:
 	//获取合约乘数，如果获取失败返回-1
 	double	  GetMultiplier(const char * szInstrumentID);
 	//获取保证金率，会从柜台中查询，在未查询到之前默认返回1，即百分百保证金占用
-	double	  GetMarginRate(const char * szInstrumentID);
+	cwMarginRateDataPtr			GetMarginRate(const char * szInstrumentID);
+	//获取手续费率，会从柜台中查询，在未查询到之前默认返回0，即不收手续费
+	cwCommissionRateDataPtr		GetCommissionRate(const char * szInstrumentID);
 	//获取产品ID 
 	char *    GetProductID(const char * szInstrumentID);
 

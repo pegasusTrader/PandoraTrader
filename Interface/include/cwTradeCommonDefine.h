@@ -792,6 +792,61 @@ struct cwFtdcInstrumentField
 };
 typedef std::shared_ptr<cwFtdcInstrumentField> cwInstrumentDataPtr;
 
+///合约保证金率
+struct cwFtdcInstrumentMarginRateField
+{
+	///是否为查询值，0为默认值，1为查询值
+	cwFtdcBoolType		QryValue;
+	///经纪公司代码
+	cwFtdcBrokerIDType	BrokerID;
+	///投资者代码
+	cwFtdcInvestorIDType	InvestorID;
+	///投机套保标志
+	cwFtdcHedgeFlagType	HedgeFlag;
+	///多头保证金率
+	cwFtdcRatioType	LongMarginRatioByMoney;
+	///多头保证金费
+	cwFtdcMoneyType	LongMarginRatioByVolume;
+	///空头保证金率
+	cwFtdcRatioType	ShortMarginRatioByMoney;
+	///空头保证金费
+	cwFtdcMoneyType	ShortMarginRatioByVolume;
+	///是否相对交易所收取
+	cwFtdcBoolType	IsRelative;
+	///交易所代码
+	cwFtdcExchangeIDType	ExchangeID;
+	///合约代码
+	cwFtdcInstrumentIDType	InstrumentID;
+};
+typedef std::shared_ptr<cwFtdcInstrumentMarginRateField> cwMarginRateDataPtr;
+
+///合约手续费率
+struct cwFtdcInstrumentCommissionRateField
+{
+	///是否为查询值，0为默认值，1为查询值
+	cwFtdcBoolType		QryValue;
+	///经纪公司代码
+	cwFtdcBrokerIDType	BrokerID;
+	///投资者代码
+	cwFtdcInvestorIDType	InvestorID;
+	///开仓手续费率
+	cwFtdcRatioType	OpenRatioByMoney;
+	///开仓手续费
+	cwFtdcRatioType	OpenRatioByVolume;
+	///平仓手续费率
+	cwFtdcRatioType	CloseRatioByMoney;
+	///平仓手续费
+	cwFtdcRatioType	CloseRatioByVolume;
+	///平今手续费率
+	cwFtdcRatioType	CloseTodayRatioByMoney;
+	///平今手续费
+	cwFtdcRatioType	CloseTodayRatioByVolume;
+	///交易所代码
+	cwFtdcExchangeIDType	ExchangeID;
+	///合约代码
+	cwFtdcInstrumentIDType	InstrumentID;
+};
+typedef std::shared_ptr<cwFtdcInstrumentCommissionRateField> cwCommissionRateDataPtr;
 
 ///--------------------Trade---------------------------------------------
 ///Account

@@ -150,7 +150,9 @@ public:
 	int			GetOrderCancelCount(std::string InstrumentID);
 
 	//查询保证金率
-	virtual double		GetMarginRate(std::string InstrumentID) = 0;
+	virtual cwMarginRateDataPtr			GetMarginRate(std::string InstrumentID) = 0;
+	//查询手续费率
+	virtual cwCommissionRateDataPtr		GetCommissionRate(std::string InstrumentID) = 0;
 
 	//User Trader Method
 	//行情更新
@@ -167,8 +169,9 @@ public:
 	void	SetDisConnectExit(bool bDisConnectExit = true) { m_bDisConnectExit = bDisConnectExit; }
 
 	///Data region
-	std::unordered_map<std::string, cwInstrumentDataPtr>	m_InstrumentMap;
-	std::unordered_map<std::string, double>					m_MarginRateMap;
+	std::unordered_map<std::string, cwInstrumentDataPtr>		m_InstrumentMap;
+	std::unordered_map<std::string, cwMarginRateDataPtr>		m_MarginRateMap;
+	std::unordered_map<std::string, cwCommissionRateDataPtr>	m_CommissionRateMap;
 
 	std::string									m_strInstrumentDataFileName;
 	void	SetSaveInstrumentDataToFile(bool bSave) { m_bSaveInstrumentDataToFile = bSave; }

@@ -66,7 +66,9 @@ public:
 	virtual void CancelOrder(cwOrderPtr pOrder);
 
 	//查询保证金率
-	virtual double		GetMarginRate(std::string InstrumentID);
+	virtual cwMarginRateDataPtr			GetMarginRate(std::string InstrumentID);
+	//查询手续费率
+	virtual cwCommissionRateDataPtr		GetCommissionRate(std::string InstrumentID);
 
 	cwOrderPtr GetcwOrderPtr(const char * szExchangeID, const char * szInstrumentID, cwFtdcDirectionType direction,
 		cwOpenClose openclose, int volume, double price, cwInsertOrderType insertordertype = cwInsertOrderType::cwInsertLimitOrder);
