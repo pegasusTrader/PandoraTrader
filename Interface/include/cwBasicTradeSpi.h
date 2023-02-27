@@ -173,6 +173,11 @@ public:
 	std::unordered_map<std::string, cwMarginRateDataPtr>		m_MarginRateMap;
 	std::unordered_map<std::string, cwCommissionRateDataPtr>	m_CommissionRateMap;
 
+	std::unordered_map<std::string, std::chrono::steady_clock::time_point>		m_MarginRateQryTimeMap;
+	std::unordered_map<std::string, std::chrono::steady_clock::time_point>		m_CommissionQryTimeMap;
+
+
+
 	std::string									m_strInstrumentDataFileName;
 	void	SetSaveInstrumentDataToFile(bool bSave) { m_bSaveInstrumentDataToFile = bSave; }
 	void	SetInstrumentDataFileName(const char * fileName);
