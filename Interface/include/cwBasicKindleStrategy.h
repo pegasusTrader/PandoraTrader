@@ -122,9 +122,13 @@ public:
 	//建议在回测的时候，使用同步模式
 	void					SetSynchronizeMode(bool bSynchronous);
 
+	//设置是否将用于指数计算的最新行情写入缓存文件，
+	//如果有单独指数计算进程，则设置为不需要（false）,如果只有自身进程，则设置为需要（true）
 	void					SetWriteIndexInfoCacheToFile(bool bNeedWriteToFile) { m_bNeedWriteCacheToFile = bNeedWriteToFile; };
+	
 	///系统自用接口信息，勿动
 	virtual void			_SetReady();
+	virtual void			_OnDisConnect();
 	virtual void			_PriceUpdate(cwMarketDataPtr pPriceData);
 	virtual void			_OnRtnTrade(cwTradePtr pTrade);
 	virtual void			_OnRtnOrder(cwOrderPtr pOrder, cwOrderPtr pOriginOrder = cwOrderPtr());
@@ -266,7 +270,7 @@ private:
 	//指数计算工作线程
 	cwMUTEX										m_UpdateIndexPriceDequeMutex;
 	bool										m_bUpdateIndexPriceThreadRun = false;
-	bool										m_bNeedWriteCacheToFile = false;
+	bool										m_bNeedWriteCacheToFile = false;		//默认不需要将数据写入Cache文件，只有行情存储程序才需要。
 	void										_UpdateIndexPriceWorkingThread();
 	std::thread									m_UpdateIndexPriceWorkingThread;
 };

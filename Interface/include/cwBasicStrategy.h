@@ -186,6 +186,7 @@ public:
 	void					_SetIsSimulation(bool IsSimulation = false) { m_bIsSimulation = IsSimulation; };
 
 	virtual void			_SetReady() = 0;
+	virtual void			_OnDisConnect() = 0;
 	virtual void			_PriceUpdate(cwMarketDataPtr pPriceData) = 0;
 	virtual void			_OnRtnTrade(cwTradePtr pTrade) = 0;
 	virtual void			_OnRtnOrder(cwOrderPtr pOrder, cwOrderPtr pOriginOrder = cwOrderPtr()) = 0;

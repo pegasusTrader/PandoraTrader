@@ -334,11 +334,6 @@ void cwPandoraPositionAgent::DealExpectedPosition(std::string InstrumentID, int 
 				else
 				{
 					int iLittleVol = InsLittleOrderVolume;
-					//if (m_LongOrderRivalPrice[InstrumentID] < MainMarketData->AskPrice1 - dInsEQ)
-					//{
-					//	//多头超止损价
-					//	iLittleVol = (int)(iLittleVol * 2);
-					//}
 					if (MarketData->UpperLimitPrice - MarketData->AskPrice1 < dInsEQ)
 					{
 						//快涨停
@@ -354,20 +349,20 @@ void cwPandoraPositionAgent::DealExpectedPosition(std::string InstrumentID, int 
 					{
 						orderprice = MarketData->BidPrice1;
 					}
-					if (MarketData->AskVolume1 <= 0)
-					{
-						//已经涨停
-						orderprice = MarketData->BidPrice1;
-					}
 				}
-				if (MarketData->AskVolume1 <= 0)
+				
+				if (MarketData->BidPrice1 >= MarketData->UpperLimitPrice - dInsEQ)
 				{
 					//已经涨停
-					//m_LongOrderRivalPrice[m_cwArbiParameter.MainInstrument] = MainMarketData->BidPrice1;
+					orderprice = MarketData->UpperLimitPrice;
 				}
-				else
+
+				if ((MarketData->AskPrice1 <= MarketData->LowerLimitPrice + dInsEQ
+					&& MarketData->BidVolume1 <= 0)
+					|| orderprice < MarketData->LowerLimitPrice - dInsEQ)
 				{
-					//m_LongOrderRivalPrice[m_cwArbiParameter.MainInstrument] = MainMarketData->AskPrice1;
+					//已经跌停
+					orderprice = MarketData->LowerLimitPrice;
 				}
 
 				if (iImbalance > InsLittleOrderVolume)
@@ -379,13 +374,16 @@ void cwPandoraPositionAgent::DealExpectedPosition(std::string InstrumentID, int 
 					ordervolume = iImbalance;
 				}
 
+				if (ordervolume > 2)
+				{
+					ordervolume = 2;
+				}
+
 				if (orderprice > dTickSize
 					&& ordervolume > 0)
 				{
-					cwOrderPtr orderptr = EasyInputOrder(InstrumentID.c_str(), ordervolume, orderprice, OpenCloseMode);
-					if (orderptr.get() != NULL)
-					{
-					}
+					EasyInputMultiOrder(InstrumentID.c_str(), ordervolume, orderprice, OpenCloseMode);
+					
 				}
 			}
 			else
@@ -430,11 +428,6 @@ void cwPandoraPositionAgent::DealExpectedPosition(std::string InstrumentID, int 
 				else
 				{
 					int iLittleVol = InsLittleOrderVolume;
-					//if (m_ShortOrderRivalPrice[m_cwArbiParameter.MainInstrument] - dInsEQ > MainMarketData->BidPrice1 )
-					//{
-					//	//空头超止损价
-					//	iLittleVol = (int)(iLittleVol * 2);
-					//}
 					if (MarketData->BidPrice1 - MarketData->LowerLimitPrice < dInsEQ)
 					{
 						//快跌停
@@ -450,20 +443,19 @@ void cwPandoraPositionAgent::DealExpectedPosition(std::string InstrumentID, int 
 					{
 						orderprice = MarketData->AskPrice1;
 					}
-					if (MarketData->BidVolume1 <= 0)
-					{
-						//已经跌停
-						orderprice = MarketData->AskPrice1;
-					}
 				}
-				if (MarketData->BidVolume1 <= 0)
+				if (MarketData->AskPrice1 <= MarketData->LowerLimitPrice + dInsEQ
+					&& MarketData->BidVolume1 <= 0)
 				{
 					//已经跌停
-					//m_ShortOrderRivalPrice[m_cwArbiParameter.MainInstrument] = MainMarketData->AskPrice1;
+					orderprice = MarketData->LowerLimitPrice;
 				}
-				else
+
+				if (MarketData->BidPrice1 >= MarketData->UpperLimitPrice - dInsEQ
+					|| orderprice < MarketData->LowerLimitPrice - dInsEQ)
 				{
-					//m_ShortOrderRivalPrice[m_cwArbiParameter.MainInstrument] = MainMarketData->BidPrice1;
+					//已经涨停
+					orderprice = MarketData->UpperLimitPrice;
 				}
 
 				if (iImbalance * -1 > InsLittleOrderVolume)
@@ -475,13 +467,15 @@ void cwPandoraPositionAgent::DealExpectedPosition(std::string InstrumentID, int 
 					ordervolume = iImbalance;
 				}
 
+				if (ordervolume < -2)
+				{
+					ordervolume = -2;
+				}
+
 				if (orderprice > dTickSize
 					&& ordervolume < 0)
 				{
-					cwOrderPtr orderptr = EasyInputOrder(InstrumentID.c_str(), ordervolume, orderprice, OpenCloseMode);
-					if (orderptr.get() != NULL)
-					{
-					}
+					EasyInputMultiOrder(InstrumentID.c_str(), ordervolume, orderprice, OpenCloseMode);
 				}
 			}
 		}

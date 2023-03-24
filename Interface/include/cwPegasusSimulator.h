@@ -71,6 +71,9 @@ public:
 	int					GetCustomDataDequeSize() { return m_iCustomDataDequeSize; }
 
 	std::string									m_strSimulatorName;
+
+	cwTickTradeManager							m_cwTickManager;
+
 private:
 	enum SIMTYPE:int
 	{
@@ -108,7 +111,6 @@ private:
 	//系统成交编号
 	int					m_iSysTradeID;
 
-	cwTickTradeManager	m_cwTickManager;
 
 	//最新的行情数据，key:InstrumentID
 	std::map<std::string, cwMarketDataPtr>								m_LastestMarketDataMap;

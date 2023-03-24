@@ -9,8 +9,10 @@
 	<Instrument ID="SR909"/>
 	<Instrument ID="cu1909"/>
     </Subscription>
-    
 
+  <HisDataFolder>
+    F:\dat\
+  </HisDataFolder>
     <StrategyConfigFile>
 .\StrategyDemo.xml
     </StrategyConfigFile>
