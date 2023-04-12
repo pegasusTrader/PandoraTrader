@@ -125,7 +125,11 @@ public:
 	//设置是否将用于指数计算的最新行情写入缓存文件，
 	//如果有单独指数计算进程，则设置为不需要（false）,如果只有自身进程，则设置为需要（true）
 	void					SetWriteIndexInfoCacheToFile(bool bNeedWriteToFile) { m_bNeedWriteCacheToFile = bNeedWriteToFile; };
-	
+
+	//研究模式
+	void					SetResearchMode(bool bResearch, int iReserveTime = 5);
+
+
 	///系统自用接口信息，勿动
 	virtual void			_SetReady();
 	virtual void			_OnDisConnect();
@@ -161,6 +165,8 @@ protected:
 	std::string				m_strAppStartTime;					//程序开启时间
 
 	const unsigned int		m_iDefaultWorkBenchId;				//默认工作区ID, 为0，自定义工作区ID,请大于0.
+
+	bool					m_bResearchMode = false;			//研究模式
 
 private:
 	bool					m_bSynchronizeMode;					//是否同步	true:同步， false:异步
