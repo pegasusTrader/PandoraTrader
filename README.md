@@ -255,6 +255,9 @@ cwMarketDataReceiver存下csv文件，cwMarketDataBinaryReceiver存下的是bin�
 甚至可以是一个做市商策略。    
 可以套利套保，可以做波段，甚至是高频做市商。
 
+### 核心开放计划
+核心库代码采用邀请授权机制开放，有C++开发功底的朋友，可以简要描述您自身情况以及参与项目意愿发送邮件到pandoratrader@163.com, 会尽快回复您的诉求。
+
 ### 致谢
    - tinyxml2 -- https://github.com/leethomason/tinyxml2
 
