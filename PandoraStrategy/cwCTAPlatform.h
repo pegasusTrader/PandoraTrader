@@ -4,6 +4,16 @@
 #include "cwPandoraAgentManager.h"
 
 #include "cwDualTrust.h"
+#include "cwJackAStrategy.h"
+#include "cwJackBStrategy.h"
+#include "cwJackCStrategy.h"
+#include "cwJackDStrategy.h"
+//#include "cwJackGStrategy.h"
+#include "cwJack49Strategy.h"
+#include "cwJackK2Strategy.h"
+#include "cwJackKZQStrategy.h"
+#include "cwJackT1Strategy.h"
+#include "cwAnonymousStrategy.h"
 
 class cwCTAPlatform :
     public cwBasicKindleStrategy
@@ -16,6 +26,11 @@ public:
 		, cwJackB_Strategy
 		, cwJackC_Strategy
 		, cwJackD_Strategy
+		, cwJackG_Strategy
+		, cwJackK2_Strategy
+		, cwJackKZQ_Strategy
+		, cwJackT1_Strategy
+		, cwAnonymous_Strategy
 		, cwStrategyCount
 	};
 
@@ -240,6 +255,9 @@ public:
 
 	virtual void			OnReady();
 
+	virtual void			OnStrategyTimer(int iTimerId, const char * szInstrumentID);
+
+
 	virtual  void	InitialStrategy(const char* pConfigFilePath);
 	bool			IsNearDeliverDateWarning(const char* szInstrumentID);
 	int				GetTradingDayRemainWarning(const char* szInstrumentID);
@@ -304,7 +322,7 @@ protected:
 	cwStrategyLog			m_StrategyLog;
 
 	std::string				m_strConfigFileFullPath;
-	bool					m_bFirstGetConfig;
+	bool					m_bFirstGetConfig = true;
 	time_t					m_tLastestGetConfigTime;
 
 	cwMUTEX					m_ParameterMutex;

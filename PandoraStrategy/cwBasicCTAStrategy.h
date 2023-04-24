@@ -2,6 +2,8 @@
 #include "cwBasicKindleStrategy.h"
 #include "cwStrategyLog.h"
 
+#define CW_NEED_STRATEGY_LOG
+
 class cwBasicCTAStrategy
 {
 	//
@@ -84,28 +86,36 @@ public:
 
 	double		 GetEntryPrice(std::string InstrumentID);
 	int			 GetEntryIndex(std::string InstrumentID);
-
+	const char * GetEntryTime(std::string InstrumentID);
 
 	std::unordered_map<std::string,int>			m_iStrategyPositionMap;
 
 	cwCTAParaField			m_StrategyPara;
 	std::string				m_strDealInstrument;
 
-	std::string				m_strLastUpdateTime;
-
 	cwInstrumentDataPtr		m_pInstrument;
 	//
 	virtual void			_OnBar(bool bFinished, int iTimeScale, cwBasicKindleStrategy::cwKindleSeriesPtr pKindleSeries);
+
 protected:
 	std::string				m_strStrategyName;
+
+#ifdef CW_NEED_STRATEGY_LOG
+public:
+	cwStrategyLog			m_StrategyLog;
+#endif // CW_NEED_STRATEGY_LOG
+
 private:
 	std::string				m_strWorkingPath;
-	cwStrategyLog			m_StrategyLog;
+	cwStrategyLog			m_StrategyTradeListLog;
 
-	std::unordered_map<std::string, double>		m_dEntryPrice;
-	std::unordered_map<std::string, int>		m_iEntryIndex;
-
+	//
+	std::unordered_map<std::string, double>			m_dEntryPrice;
+	std::unordered_map<std::string, int>			m_iEntryIndex;
+	std::unordered_map<std::string, std::string>	m_strEntryTime;
+public:
 	double					m_dLastPrice;			//当前价格
 	size_t					m_iLastIndex;			//当前k线数
+	std::string				m_strLastUpdateTime;	//当前行情时间
 };
 

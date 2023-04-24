@@ -10,7 +10,7 @@
 
 std::string cwCTAPlatform::GetStrategyVersion()
 {
-	return "20230111_v1";
+	return "20230302_v1";
 }
 
 std::string cwCTAPlatform::GetStrategyName()
@@ -26,12 +26,9 @@ std::string cwCTAPlatform::GetStrategyName()
 
 void cwCTAPlatform::PriceUpdate(cwMarketDataPtr pPriceData)
 {
-	m_strCurrentUpdateTime = pPriceData->UpdateTime;
+	cwEasyStrategyLog log(m_StrategyLog, "PriceUpdate");
 
-	if (!GetParameter(pPriceData->InstrumentID))
-	{
-		return;
-	}
+	m_strCurrentUpdateTime = pPriceData->UpdateTime;
 
 	auto Insit = m_InsCTAStrategyList.find(pPriceData->InstrumentID);
 	if (Insit != m_InsCTAStrategyList.end())
@@ -40,16 +37,24 @@ void cwCTAPlatform::PriceUpdate(cwMarketDataPtr pPriceData)
 			Listit != Insit->second.end(); Listit++)
 		{
 			cwBasicKindleStrategy::cwKindleSeriesPtr pKindleSeries = GetKindleSeries(pPriceData->InstrumentID, Listit->first);
-			for (auto it = Listit->second.begin();
-				it != Listit->second.end(); it++)
+			if (pKindleSeries.get() != nullptr)
 			{
-				(*it)->_pStrategy->m_strLastUpdateTime = pPriceData->ActionDay;
-				(*it)->_pStrategy->m_strLastUpdateTime.append("_");
-				(*it)->_pStrategy->m_strLastUpdateTime.append(pPriceData->UpdateTime);
+				for (auto it = Listit->second.begin();
+					it != Listit->second.end(); it++)
+				{
+					(*it)->_pStrategy->m_strLastUpdateTime = pPriceData->ActionDay;
+					(*it)->_pStrategy->m_strLastUpdateTime.append("_");
+					(*it)->_pStrategy->m_strLastUpdateTime.append(pPriceData->UpdateTime);
 
-				(*it)->_pStrategy->_OnBar(false, Listit->first, pKindleSeries);;
+					(*it)->_pStrategy->_OnBar(false, Listit->first, pKindleSeries);;
+				}
 			}
 		}
+	}
+
+	if (!GetParameter(pPriceData->InstrumentID))
+	{
+		return;
 	}
 
 	MergeStrategyPosition(m_cwTradeParameter.SignalInstrumentID);
@@ -58,6 +63,12 @@ void cwCTAPlatform::PriceUpdate(cwMarketDataPtr pPriceData)
 	int iExpecetedPosition = GetExpectedPosition(pPriceData->InstrumentID);
 	if (m_pAgentData->pPositionAgent->m_iExpectPosition != iExpecetedPosition)
 	{
+		log.AddLog(cwStrategyLog::enIMMS, "%s PositionChange %d => %d", pPriceData->InstrumentID,
+			m_pAgentData->pPositionAgent->m_iExpectPosition, iExpecetedPosition);
+
+		m_cwShow.AddLog("%s PositionChange %d => %d", pPriceData->InstrumentID,
+			m_pAgentData->pPositionAgent->m_iExpectPosition, iExpecetedPosition);
+
 		m_pAgentData->pPositionAgent->SetExpectPosition(iExpecetedPosition);
 	}
 
@@ -92,6 +103,8 @@ void cwCTAPlatform::PriceUpdate(cwMarketDataPtr pPriceData)
 
 void cwCTAPlatform::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKindleStrategy::cwKindleSeriesPtr pKindleSeries)
 {
+	cwEasyStrategyLog log(m_StrategyLog, "OnBar");
+
 	auto Insit = m_InsCTAStrategyList.find(pKindleSeries->GetInstrumentID());
 	if (Insit != m_InsCTAStrategyList.end())
 	{
@@ -101,10 +114,18 @@ void cwCTAPlatform::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKin
 			for (auto it = Listit->second.begin();
 				it != Listit->second.end(); it++)
 			{
-				cwKindleStickPtr pKindle = pKindleSeries->GetLastKindleStick();
-				(*it)->_pStrategy->m_strLastUpdateTime = pKindle->szStartTime;
-
+				//cwKindleStickPtr pKindle = pKindleSeries->GetLastKindleStick();
+				//if (pKindle.get() != nullptr)
+				//{
+				//	(*it)->_pStrategy->m_strLastUpdateTime = pKindle->szStartTime;
+				//}
 				(*it)->_pStrategy->_OnBar(pKindleSeries->m_bIsNewKindle, iTimeScale, pKindleSeries);
+				//if (pKindleSeries->m_bIsNewKindle)
+				//{
+				//	log.AddLog(cwStrategyLog::enIMMS, "%s OnBar %d count:%d", pPriceData->InstrumentID,
+				//		iTimeScale, pKindleSeries->GetKindleSize());
+
+				//}
 			}
 		}
 	}
@@ -121,13 +142,22 @@ void cwCTAPlatform::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKin
 	int iExpecetedPosition = GetExpectedPosition(pPriceData->InstrumentID);
 	if (m_pAgentData->pPositionAgent->m_iExpectPosition != iExpecetedPosition)
 	{
+		log.AddLog(cwStrategyLog::enIMMS, "%s PositionChange %d => %d", pPriceData->InstrumentID,
+			m_pAgentData->pPositionAgent->m_iExpectPosition, iExpecetedPosition);
+
+		m_cwShow.AddLog("%s PositionChange %d => %d", pPriceData->InstrumentID,
+			m_pAgentData->pPositionAgent->m_iExpectPosition, iExpecetedPosition);
+
 		m_pAgentData->pPositionAgent->SetExpectPosition(iExpecetedPosition);
 	}
 }
 
+
 void cwCTAPlatform::OnReady()
 {
 	cwEasyStrategyLog log(m_StrategyLog, "OnReady");
+
+	SetTimer(1, 5000);
 
 	int iunFixPositionCnt = 0;
 	m_cwShow.AddLog(" Unfix Position: ");
@@ -145,16 +175,21 @@ void cwCTAPlatform::OnReady()
 			m_cwAgentDataMap[it->second->InstrumentID] = m_pAgentData;
 
 			//设置算法参数
-			m_pAgentData->pPositionAgent->InsLargeOrderVolume = 100;
-			m_pAgentData->pPositionAgent->InsLittleOrderVolume = 5;
-			m_pAgentData->pPositionAgent->InsAskBidGap = 1;
+			m_pAgentData->pPositionAgent->InsLargeOrderVolume = 200;
+			m_pAgentData->pPositionAgent->InsLittleOrderVolume = 100;
+			m_pAgentData->pPositionAgent->InsAskBidGap = 3;
 		}
-		SetPortfolioId(it->second->InstrumentID.c_str(), folioId++);
+		//SetPortfolioId(it->second->InstrumentID.c_str(), folioId++);
 
 		if (!GetParameter(it->second->InstrumentID.c_str()))
 		{
 			return;
 		}
+
+		m_pAgentData->pPositionAgent->InsLargeOrderVolume = m_cwTradeParameter.InsLargeOrderVolume;
+		m_pAgentData->pPositionAgent->InsLittleOrderVolume = m_cwTradeParameter.InsLittleOrderVolume;
+		m_pAgentData->pPositionAgent->InsAskBidGap = m_cwTradeParameter.InsAskBidGap;
+
 
 		MergeStrategyPosition(m_cwTradeParameter.SignalInstrumentID);
 
@@ -173,6 +208,11 @@ void cwCTAPlatform::OnReady()
 			log.AddLog(cwStrategyLog::enIMMS, "%s  Unfix:%d  Current Position:%d Signal Position:%d Ratio:%f",
 				it->second->InstrumentID.c_str(), iPosiImbalance, iMaintain, iExpecetedPosition, m_cwTradeParameter.Ratio);
 		}
+		else
+		{
+			log.AddLog(cwStrategyLog::enMsg, "%s  Current Position:%d Signal Position:%d Ratio:%f",
+				it->second->InstrumentID.c_str(), iMaintain, iExpecetedPosition, m_cwTradeParameter.Ratio);
+		}
 
 		if (m_pAgentData->pPositionAgent->m_iExpectPosition != iExpecetedPosition)
 		{
@@ -184,6 +224,15 @@ void cwCTAPlatform::OnReady()
 	log.AddLog(iunFixPositionCnt > 0 ? cwStrategyLog::enIMMS: cwStrategyLog::enMsg,
 		"%d Instrument's Positions is Unfix!", iunFixPositionCnt);
 
+}
+
+void cwCTAPlatform::OnStrategyTimer(int iTimerId, const char * szInstrumentID)
+{
+	if (iTimerId == 1
+		&& m_strConfigFileFullPath.size() > 0)
+	{
+		ReadXmlConfigFile(m_strConfigFileFullPath.c_str());
+	}
 }
 
 void cwCTAPlatform::InitialStrategy(const char* pConfigFilePath)
@@ -247,19 +296,76 @@ void cwCTAPlatform::InitialStrategy(const char* pConfigFilePath)
 
 	ReadXmlConfigFile(m_strConfigFileFullPath.c_str());
 
-	cwBasicCTAStrategy* pStrategy = nullptr;
-
 	for (auto it = m_StrategyParameterMap.begin();
 		it != m_StrategyParameterMap.end(); it++)
 	{
+		cwBasicCTAStrategy* pStrategy = nullptr;
+
 		if (it->second->StrategyName == "DualTrust")
 		{
 			pStrategy = dynamic_cast<cwBasicCTAStrategy*>(new cwDualTrust(it->second->StrategyID.c_str()));
 		}
 		//Add Your Strategy Initial here!
 
+#ifdef _MSC_VER
+#pragma region StrateygSelection
+#endif // _MSC_VER
+		if (it->second->StrategyName == "JackA")
+		{
+			pStrategy = dynamic_cast<cwBasicCTAStrategy*>(new cwJackAStrategy(it->second->StrategyID.c_str()));
+		}
+
+		if (it->second->StrategyName == "JackB")
+		{
+			pStrategy = dynamic_cast<cwBasicCTAStrategy*>(new cwJackBStrategy(it->second->StrategyID.c_str()));
+		}
+
+		if (it->second->StrategyName == "JackC")
+		{
+			pStrategy = dynamic_cast<cwBasicCTAStrategy*>(new cwJackCStrategy(it->second->StrategyID.c_str()));
+		}
+
+		if (it->second->StrategyName == "JackD")
+		{
+			pStrategy = dynamic_cast<cwBasicCTAStrategy*>(new cwJackDStrategy(it->second->StrategyID.c_str()));
+		}
+
+		if (it->second->StrategyName == "JackG")
+		{
+			//pStrategy = dynamic_cast<cwBasicCTAStrategy*>(new cwJackGStrategy(it->second->StrategyID.c_str()));
+		}
+
+		if (it->second->StrategyName == "Jack49")
+		{
+			pStrategy = dynamic_cast<cwBasicCTAStrategy*>(new cwJack49Strategy(it->second->StrategyID.c_str()));
+		}
+
+		if (it->second->StrategyName == "JackK2")
+		{
+			pStrategy = dynamic_cast<cwBasicCTAStrategy*>(new cwJackK2Strategy(it->second->StrategyID.c_str()));
+		}
+
+		if (it->second->StrategyName == "JackKZQ")
+		{
+			pStrategy = dynamic_cast<cwBasicCTAStrategy*>(new cwJackKZQStrategy(it->second->StrategyID.c_str()));
+		}
+
+		if (it->second->StrategyName == "JackT1")
+		{
+			pStrategy = dynamic_cast<cwBasicCTAStrategy*>(new cwJackT1Strategy(it->second->StrategyID.c_str()));
+		}
+
+		if (it->second->StrategyName == "Anonymous")
+		{
+			pStrategy = dynamic_cast<cwBasicCTAStrategy*>(new cwAnonymousStrategy(it->second->StrategyID.c_str()));
+		}
+#ifdef _MSC_VER
+#pragma endregion
+#endif
+
 		if (pStrategy == nullptr)
 		{
+			m_cwShow.AddLog("UnDefine Strategy:%s Please Cheak!", it->second->StrategyName.c_str());
 			continue;
 		}
 
@@ -275,6 +381,14 @@ void cwCTAPlatform::InitialStrategy(const char* pConfigFilePath)
 		else
 		{
 			pStrategy->m_pInstrument = GetInstrumentData(it->second->InstrumentID.c_str());
+		}
+		if (pStrategy->m_pInstrument.get() == nullptr)
+		{
+			m_cwShow.AddLog("Can NOT Find Instrument:%s%s Check, Please!", 
+				it->second->InstrumentID.c_str(), it->second->bIndex ? "(IsIndex)" :"");
+			log.AddLog(cwStrategyLog::enIMMS, 
+				"Can NOT Find Instrument:%s. Check, Please!", it->second->InstrumentID.c_str());
+			continue;
 		}
 		pStrategy->InitialStrategy();
 
@@ -1079,7 +1193,7 @@ void cwCTAPlatform::SetKindle(std::string strStrategyID, bool bIndex, const char
 		pKindle = SubcribeIndexKindle(szInstrumentID, iTimeScale, HisKindleCount);
 		if (pKindle.get() == NULL)
 		{
-			m_cwShow.AddLog("Init Kindle Faild! Please Chech Instrument File!");
+			m_cwShow.AddLog("%s Init Kindle Faild! Please Chech Instrument File!", szInstrumentID);
 			m_cwShow.AddLog("The Program will shut down in 5 seconds!");
 			int nCnt = 0;
 			while (nCnt < 5)
@@ -1222,20 +1336,20 @@ void cwCTAPlatform::SetKindle(std::string strStrategyID, bool bIndex, const char
 #endif
 		pTmpKindle->Close = pTmpKindle->High = pTmpKindle->Low = pTmpKindle->Open;
 		pHisKindle->UpdateKindle(pTmpKindle);
-		pStrategyInfo->_pStrategy->_OnBar(false, iTimeScale, pHisKindle);
+		pStrategyInfo->_pStrategy->_OnBar(pHisKindle->m_bIsNewKindle, iTimeScale, pHisKindle);
 
 
 		pTmpKindle->Close = pTmpKindle->Low = pkindleStick->Low;
 		pHisKindle->UpdateKindle(pTmpKindle);
-		pStrategyInfo->_pStrategy->_OnBar(false, iTimeScale, pHisKindle);
+		pStrategyInfo->_pStrategy->_OnBar(pHisKindle->m_bIsNewKindle, iTimeScale, pHisKindle);
 
 		pTmpKindle->Close = pTmpKindle->High = pkindleStick->High;
 		pHisKindle->UpdateKindle(pTmpKindle);
-		pStrategyInfo->_pStrategy->_OnBar(false, iTimeScale, pHisKindle);
+		pStrategyInfo->_pStrategy->_OnBar(pHisKindle->m_bIsNewKindle, iTimeScale, pHisKindle);
 
 		pHisKindle->UpdateKindle(pkindleStick);
 
-		pStrategyInfo->_pStrategy->_OnBar(true, iTimeScale, pHisKindle);
+		pStrategyInfo->_pStrategy->_OnBar(pHisKindle->m_bIsNewKindle, iTimeScale, pHisKindle);
 
 		//OnBar(dataPtr, iTimeScale, pHisKindle);
 
