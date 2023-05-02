@@ -168,6 +168,8 @@ public:
 
 	//获取合约当前撤单次数
 	int		  GetInstrumentCancelCount(std::string InstrumentID);
+	//获取合约当前信息量
+	int		  GetInstrumentDeclarationMsgCount(std::string InstrumentID);
 	//获取合约是否是订阅
 	bool	  IsThisStrategySubScribed(std::string InstrumentID);
 	//获取当前状态是否为回测模拟情况 如果回测模式下返回true，否则false

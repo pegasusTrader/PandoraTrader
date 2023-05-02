@@ -126,7 +126,7 @@ public:
 	//如果有单独指数计算进程，则设置为不需要（false）,如果只有自身进程，则设置为需要（true）
 	void					SetWriteIndexInfoCacheToFile(bool bNeedWriteToFile) { m_bNeedWriteCacheToFile = bNeedWriteToFile; };
 
-	//研究模式
+	//研究模式(暂不支持）
 	void					SetResearchMode(bool bResearch, int iReserveTime = 5);
 
 

@@ -148,6 +148,7 @@ public:
 		int& TotalPositon, int& TodayPosition, int& FrozenTdPosition, int& FrozenYdPosition);
 
 	int			GetOrderCancelCount(std::string InstrumentID);
+	int			GetInsDeclarationMsgCount(std::string InstrumentID);
 
 	//查询保证金率
 	virtual cwMarginRateDataPtr			GetMarginRate(std::string InstrumentID) = 0;
@@ -242,7 +243,10 @@ protected:
 
 	//CWRISK
 #ifdef CWCANCELRISK
-	const int													m_iMaxCancelLimitNum;					//最大撤单次数
+public:
+	inline	void				SetMaxCancelLimit(int iMaxLimit = 480) { m_iMaxCancelLimitNum = iMaxLimit; }
+protected:
+	int															m_iMaxCancelLimitNum;					//最大撤单次数(该值会达到，如交易所限制500，应当设置480.490等小于交易所限制的数值）
 	std::unordered_map<std::string, int>						m_iCancelCountMap;						//撤单次数统计，key:InstrumentID
 
 	//本地报单 Ref登记， 遇到错单，减回撤单次数，便于准确统计
@@ -252,7 +256,10 @@ protected:
 
 	//CWDeclarationFeeRISK
 #ifdef CWDeclarationFeeRISK
-	const int													m_iMaxDeclarationMsgLimitNum;			//最大撤单次数
+public:
+		inline	void			SetMaxDeclarationMsgLimit(int iMaxLimit = 3950) { m_iMaxDeclarationMsgLimitNum = iMaxLimit; }
+protected:
+	int															m_iMaxDeclarationMsgLimitNum;			//最大信息量设置(该值会达到，如交易所限制4000，应当设置3800.3900等小于交易所限制的数值）
 	std::unordered_map<std::string, int>						m_iDeclarationMsgCountMap;				//申报信息量统计，key:InstrumentID
 
 #ifndef CWCANCELRISK
