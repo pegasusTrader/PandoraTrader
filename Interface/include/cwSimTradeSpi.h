@@ -55,6 +55,7 @@ public:
 	virtual void OnSimulationFinished();
 
 	void UpdateTradingDay(const char * szTradingDay);
+	void OnSimulationBegin(int64_t timeStamp);
 
 	virtual	cwOrderPtr InputLimitOrder(const char * szInstrumentID, cwFtdcDirectionType direction,
 		cwOpenClose openclose, int volume, double price);

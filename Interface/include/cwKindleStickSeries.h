@@ -51,6 +51,10 @@ public:
 	void UpdateKindle(cwKindleStickPtr pKindle);
 	//替换现有k线序列
 	void ReplaceKindle(cwKindleStickPtr pKindle);
+	//移除时间点之前的K线
+	void RemoveKinldeBeforeTime(int64_t time);
+	//移除时间点以后的K线
+	void RemoveKinldeAfterTime(int64_t time);
 	//获取k线周期
 	inline uint32_t GetTimeScale() { return m_iTimeScale; }
 	//设置K线行情处理的数据精度，默认值为0.00001

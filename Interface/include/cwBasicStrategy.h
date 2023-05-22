@@ -78,10 +78,14 @@ public:
 
 	///Special For Simulation 
 	///These functions will NOT be called in normal mode
+	/// 按回测开始第一个行情过来前回调（稍晚于OnReady），如删除读入过多的k线
+	virtual void OnSimulationBegin(int64_t timeStamp) {};
 	//回测部分结束（夜盘结束和日盘结束）将被调用
 	virtual void OnSimulationPartEnd() {};
 	//整个回测结束将被调用
 	virtual void OnSimulationFinished() {};
+
+
 
 	virtual void InitialStrategy(const char * pConfigFilePath);
 	std::string			m_strConfigFileFullPath;
@@ -186,6 +190,8 @@ public:
 	void					_SetMdSpi(cwMDAPIType apiType, void * pSpi);
 	void					_SetTradeSpi(cwTradeAPIType apiType, void *pSpi);
 	void					_SetIsSimulation(bool IsSimulation = false) { m_bIsSimulation = IsSimulation; };
+
+	virtual void			_OnSimulationBegin(int64_t timeStamp) = 0;
 
 	virtual void			_SetReady() = 0;
 	virtual void			_OnDisConnect() = 0;

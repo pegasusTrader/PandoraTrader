@@ -12,6 +12,7 @@
 #pragma once
 #include <thread>
 #include <atomic>
+#include <set>
 
 #include "cwBasicSimulator.h"
 #include "cwTickTradeManager.h"
@@ -163,7 +164,7 @@ private:
 
 	cwMUTEX													m_CacheWorkingMutex;
 	std::deque<std::string>									m_CacheWorkingList;
-
+	std::set<std::string>									m_CacheInstrumentSet;
 	std::map<std::string, std::string>						m_MarketDataCacheFileMap;
 
 	//Result 

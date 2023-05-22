@@ -133,6 +133,7 @@ public:
 	///系统自用接口信息，勿动
 	virtual void			_SetReady();
 	virtual void			_OnDisConnect();
+	virtual void			_OnSimulationBegin(int64_t timeStamp);
 	virtual void			_PriceUpdate(cwMarketDataPtr pPriceData);
 	virtual void			_OnRtnTrade(cwTradePtr pTrade);
 	virtual void			_OnRtnOrder(cwOrderPtr pOrder, cwOrderPtr pOriginOrder = cwOrderPtr());

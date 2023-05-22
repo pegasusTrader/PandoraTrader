@@ -187,3 +187,8 @@ void cwStrategyDemo::OnOrderCanceled(cwOrderPtr pOrder)
 {
 }
 
+void cwStrategyDemo::OnReady()
+{
+	SubScribePrice("ag2312");
+}
+

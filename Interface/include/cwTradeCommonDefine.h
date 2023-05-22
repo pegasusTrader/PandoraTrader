@@ -1251,3 +1251,12 @@ typedef std::shared_ptr<cwFtdcRspInfoField> cwRspInfoPtr;
 
 
 cwActiveOrderKey GenerateActiveKey(cwOrderPtr pOrder);
+
+namespace cwPandoraFs{
+// 获取当前执行文件的绝对路径
+// @return 文件路径分隔符，0 当前是windows系统'\\'，1 当前是linux系统'/'
+int GetExePath(std::string &exePath);
+// 创建目录，路径分隔符参考GetExePath的返回值。
+// @return 0:目录已存在.  1:目录不存在，则创建.
+int MkDir(std::string &dirPath);
+}
