@@ -96,6 +96,7 @@ private:
 	std::thread			m_SimulatorProcessorThread;
 	volatile bool		m_bMarketDataUpdateThreadRun;
 	void				SimulatorProcessor();
+	void				SimulatorSimpleModeWithoutTradeProcessor();
 
 	std::thread			m_MarketDataUpdateThread;
 	void				CsvMarketDataUpdate();

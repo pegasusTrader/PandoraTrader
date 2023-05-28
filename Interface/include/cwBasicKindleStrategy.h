@@ -183,6 +183,7 @@ private:
 	enum StrategyEventType
 	{
 		EventType_OnReady = 0							//系统Ready回调
+		, EventType_SimulationBegin						//回测开始
 		, EventType_OnTimer								//定时器回调
 		, EventType_PriceUpdate							//Tick行情更新
 		, EventType_OnBar								//K线更新
@@ -210,7 +211,7 @@ private:
 		cwRspInfoPtr			pRspInfo;				//回报信息
 
 		std::string				strInstrumentID;		//合约
-		int						iBarId;					//k线号
+		int64_t					iBarId;					//k线号
 		cwKindleSeriesPtr		pKindle;				//K线内容
 	};
 	typedef std::shared_ptr<EventTypeStruct>					EventTypeStructPtr;
