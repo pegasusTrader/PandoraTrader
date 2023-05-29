@@ -17,4 +17,7 @@
   	<TotalResult bSave="1" Interval="10" />
   	<InsResult ID="IC1907" bSave="0" Interval="1"/>
   </Result>
+  <System>
+    <Cache Need="0" Path="" Instrument="MA305,pp2305"/>
+  </System>
 </Config>
