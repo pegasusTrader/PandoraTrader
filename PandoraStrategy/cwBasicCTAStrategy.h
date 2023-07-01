@@ -85,7 +85,7 @@ public:
 	int			 GetStrategyPosition(char* szInstrumentID = nullptr);
 
 	double		 GetEntryPrice(std::string InstrumentID);
-	int			 GetEntryIndex(std::string InstrumentID);
+	size_t		 GetEntryIndex(std::string InstrumentID);
 	const char * GetEntryTime(std::string InstrumentID);
 
 	std::unordered_map<std::string,int>			m_iStrategyPositionMap;
@@ -95,7 +95,7 @@ public:
 
 	cwInstrumentDataPtr		m_pInstrument;
 	//
-	virtual void			_OnBar(bool bFinished, int iTimeScale, cwBasicKindleStrategy::cwKindleSeriesPtr pKindleSeries);
+	void					_PreOnBar(bool bFinished, int iTimeScale, cwBasicKindleStrategy::cwKindleSeriesPtr pKindleSeries);
 
 protected:
 	std::string				m_strStrategyName;
@@ -111,7 +111,7 @@ private:
 
 	//
 	std::unordered_map<std::string, double>			m_dEntryPrice;
-	std::unordered_map<std::string, int>			m_iEntryIndex;
+	std::unordered_map<std::string, size_t>			m_iEntryIndex;
 	std::unordered_map<std::string, std::string>	m_strEntryTime;
 public:
 	double					m_dLastPrice;			//当前价格

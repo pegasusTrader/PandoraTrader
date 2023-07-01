@@ -12,30 +12,24 @@ cwBasicCTAStrategy::cwBasicCTAStrategy(const char* szStrategyName)
 	m_StrategyTradeListLog.AddTitle("Localtime,MD,InstrumentID,DateTime,Position,price");
 }
 
-void cwBasicCTAStrategy::_OnBar(bool bFinished, int iTimeScale, cwBasicKindleStrategy::cwKindleSeriesPtr pKindleSeries)
+void cwBasicCTAStrategy::_PreOnBar(bool bFinished, int iTimeScale, cwBasicKindleStrategy::cwKindleSeriesPtr pKindleSeries)
 {
 	cwKindleStickPtr pKindle = pKindleSeries->GetLastKindleStick();
-	if (pKindle.get() != nullptr)
+	if (pKindle.get() == nullptr)
 	{
-		m_strLastUpdateTime = pKindle->szStartTime;
+		return ;
+	}
+	m_strLastUpdateTime = pKindle->szStartTime;
 
-		if (pKindleSeries->m_bIsNewKindle)
-		{
-			m_dLastPrice = pKindle->Open;
-		}
-		else
-		{
-			m_dLastPrice = pKindle->Close;
-		}
-
+	if (pKindleSeries->m_bIsNewKindle)
+	{
+		m_dLastPrice = pKindle->Open;
 	}
 	else
 	{
-		return;
+		m_dLastPrice = pKindle->Close;
 	}
 	m_iLastIndex = pKindleSeries->GetKindleSize();
-
-	OnBar(bFinished, iTimeScale, pKindleSeries);
 }
 
 void cwBasicCTAStrategy::SetStrategyPosition(int iPosition, char* szInstrumentID)
@@ -116,7 +110,7 @@ double cwBasicCTAStrategy::GetEntryPrice(std::string InstrumentID)
 	return 0.0;
 }
 
-int cwBasicCTAStrategy::GetEntryIndex(std::string InstrumentID)
+size_t cwBasicCTAStrategy::GetEntryIndex(std::string InstrumentID)
 {
 	auto it = m_iEntryIndex.find(std::move(InstrumentID));
 	if (it != m_iEntryIndex.end())
