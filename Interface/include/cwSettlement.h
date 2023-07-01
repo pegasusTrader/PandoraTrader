@@ -41,6 +41,7 @@ public:
 
 	void UpdateOrder(cwOrderPtr pOrder);
 	void UpdateTrade(cwTradePtr pTrade);
+	void UpdateTrade(std::string instrumentid, double price, int volume);
 
 	//Èë½ð
 	void Deposit(double ddeposit)

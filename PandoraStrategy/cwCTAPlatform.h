@@ -8,6 +8,7 @@
 #include "cwJackBStrategy.h"
 #include "cwJackCStrategy.h"
 #include "cwJackDStrategy.h"
+#include "cwJackEStrategy.h"
 //#include "cwJackGStrategy.h"
 #include "cwJack49Strategy.h"
 #include "cwJackK2Strategy.h"
@@ -26,6 +27,7 @@ public:
 		, cwJackB_Strategy
 		, cwJackC_Strategy
 		, cwJackD_Strategy
+		, cwJackE_Strategy
 		, cwJackG_Strategy
 		, cwJackK2_Strategy
 		, cwJackKZQ_Strategy
@@ -179,11 +181,11 @@ public:
 
 		std::string InstrumentID;
 		std::string StrategyName;
-		int			ExpectedPosition;
+		double			ExpectedPosition;
 
 		ManualIntervention()
 			: Manual(false)
-			, ExpectedPosition(0)
+			, ExpectedPosition(0.0)
 		{
 
 		}
@@ -258,30 +260,31 @@ public:
 	virtual void			OnStrategyTimer(int iTimerId, const char * szInstrumentID);
 
 
-	virtual  void	InitialStrategy(const char* pConfigFilePath);
-	bool			IsNearDeliverDateWarning(const char* szInstrumentID);
-	int				GetTradingDayRemainWarning(const char* szInstrumentID);
+	virtual  void			InitialStrategy(const char* pConfigFilePath);
+	bool					IsNearDeliverDateWarning(const char* szInstrumentID);
+	int						GetTradingDayRemainWarning(const char* szInstrumentID);
 
-	bool			ReadXmlConfigFile(const char * pConfigFilePath, bool bNeedDisPlay = true);
+	bool					ReadXmlConfigFile(const char * pConfigFilePath, bool bNeedDisPlay = true);
 
 
 
-	bool		 AddStrategyToPools(std::string strStrategyID, cwBasicCTAStrategy * pCTAStrategy, StrategyParaPtr pPara);
-	void		 SetKindle(std::string strStrategyID, bool bIndex, const char* szInstrumentID, int iTimeScale, int HisKindleCount);
+	bool					AddStrategyToPools(std::string strStrategyID, cwBasicCTAStrategy * pCTAStrategy, StrategyParaPtr pPara);
+	void					SetKindle(std::string strStrategyID, bool bIndex, const char* szInstrumentID, int iTimeScale, int HisKindleCount);
 
-	int			MergeStrategyPosition(std::string InstrumentID);
+	double					MergeStrategyPosition(std::string InstrumentID);
 	
-	cwInstrumentDataPtr GetFirstInstrumentData(std::string ProductID);
+	cwInstrumentDataPtr		GetFirstInstrumentData(std::string ProductID);
 
 	///strategy parameter
 	//策略运行代号
-	std::string			m_strStrategyName;
-	std::string			m_strCurrentUpdateTime;
+	std::string				m_strStrategyName;
+	std::string				m_strCurrentUpdateTime;
 
 	//策略是否运行
-	bool		m_bStrategyRun;
-	bool		m_bShowPosition;
+	bool					m_bStrategyRun;
+	bool					m_bShowPosition;
 
+	int64_t					m_iKindleBeginTime = 0;
 protected:
 	//配置参数
 	//Key:StrategyID
@@ -301,21 +304,18 @@ protected:
 
 
 	//key:SignalInstrument, key:StrategyID
-	std::unordered_map<std::string, std::unordered_map<std::string, int>> m_cwStrategyPositionMap;
-
+	std::unordered_map<std::string, std::unordered_map<std::string, double>> m_cwStrategyPositionMap;
+	void		WriteSignalToFile();
 
 	//Deal Trade Signal
-	TradeParameter									m_cwTradeParameter;
-	cwPandoraAgentManager::cwAgentDataPtr			m_pAgentData;
-
-	bool		GetParameter(const char * szInstrumentID);
-	int			GetExpectedPosition(std::string InstrumentID);
+	bool		GetParameter(const char * szInstrumentID, 
+		TradeParameter& para, cwPandoraAgentManager::cwAgentDataPtr& pAgent);
+	int			GetExpectedPosition(std::string InstrumentID, TradeParameter& para);
 
 
 	//Agent
 	cwPandoraAgentManager											m_PandoraAgentManager;		//代理人管理者，可通过他创建代理人
-	cwPandoraAgentManager::cwAgentDataPtr							m_pPositionAgent;			//仓位管理代理人，要指定合约
-	std::map<std::string, cwPandoraAgentManager::cwAgentDataPtr>	m_cwAgentDataMap;	//key Instrument value AgentData
+	std::map<std::string, cwPandoraAgentManager::cwAgentDataPtr>	m_cwAgentDataMap;			//key Instrument value AgentData
 
 
 

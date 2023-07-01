@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <Config Name="cu" Run="1" ShowPrice="0" ShowPosition="0" Generated_at="2017-11-18 12:21:47">
-  <CTAStrategy>
+  <CTAStrategy BeginTime="2022_03_01_08:00:00">
     <Strategy Name="JackC">
       <Kindle  Index="1" Instrument="hc" TimeScale ="900"/>
       <multiple value="1"/>
@@ -13,11 +13,11 @@
     <Instrument ID="j1901" SignalID="j_Index" OpenClose="0" AddTick="0" LargeOrderVolume="90" LittleOrderVolume="10" AskBidGap="1" WaitInterval="1" Pause="0"/>
   </Subscription>
   <ManualIntervention>
-    <Strategy name="JACK20signal" Manual="0" InstrumentID="ni1901" ExpectedPosition="0"/>
-    <Strategy name="JACK21signal" Manual="0" InstrumentID="ni1903" ExpectedPosition="0"/>
+    <Strategy name="JACK20signal" Manual="0" SignalID="ni1901" ExpectedPosition="0"/>
+    <Strategy name="JACK21signal" Manual="0" SignalID="ni1903" ExpectedPosition="0"/>
   </ManualIntervention>
   <DirectionMask>
-    <Strategy name="JACK20signal"  InstrumentID="ni1901" Ratio="0.5" NoLong="0" NoShort="0"/>
+    <Strategy name="JACK20signal"  SignalID="ni1901" Ratio="0.5" NoLong="0" NoShort="0"/>
   </DirectionMask>
 
 </Config>
