@@ -4,17 +4,6 @@
 #include "cwPandoraAgentManager.h"
 
 #include "cwDualTrust.h"
-#include "cwJackAStrategy.h"
-#include "cwJackBStrategy.h"
-#include "cwJackCStrategy.h"
-#include "cwJackDStrategy.h"
-#include "cwJackEStrategy.h"
-//#include "cwJackGStrategy.h"
-#include "cwJack49Strategy.h"
-#include "cwJackK2Strategy.h"
-#include "cwJackKZQStrategy.h"
-#include "cwJackT1Strategy.h"
-#include "cwAnonymousStrategy.h"
 
 class cwCTAPlatform :
     public cwBasicKindleStrategy
@@ -23,16 +12,6 @@ public:
 	enum cwStrategyEnum:int
 	{
 		cw_DualTrust_Strategy = 0
-		, cwJackA_Strategy
-		, cwJackB_Strategy
-		, cwJackC_Strategy
-		, cwJackD_Strategy
-		, cwJackE_Strategy
-		, cwJackG_Strategy
-		, cwJackK2_Strategy
-		, cwJackKZQ_Strategy
-		, cwJackT1_Strategy
-		, cwAnonymous_Strategy
 		, cwStrategyCount
 	};
 
@@ -284,7 +263,7 @@ public:
 	bool					m_bStrategyRun;
 	bool					m_bShowPosition;
 
-	int64_t					m_iKindleBeginTime = 0;
+	uint64_t				m_iKindleBeginTime = 0;
 protected:
 	//≈‰÷√≤Œ ˝
 	//Key:StrategyID

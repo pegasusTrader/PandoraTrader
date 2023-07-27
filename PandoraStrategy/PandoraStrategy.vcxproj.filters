@@ -85,5 +85,8 @@
     <Xml Include="cwChasingRisingStrategy.xml">
       <Filter>XmlConfig</Filter>
     </Xml>
+    <Xml Include="CTAPlatformConfig.xml">
+      <Filter>XmlConfig</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

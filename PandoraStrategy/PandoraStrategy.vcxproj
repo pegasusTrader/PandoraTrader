@@ -147,6 +147,7 @@
     <ClInclude Include="cwStrategyDemo.h" />
   </ItemGroup>
   <ItemGroup>
+    <Xml Include="CTAPlatformConfig.xml" />
     <Xml Include="cwChasingRisingStrategy.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

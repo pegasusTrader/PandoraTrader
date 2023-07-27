@@ -326,79 +326,6 @@ void cwCTAPlatform::InitialStrategy(const char* pConfigFilePath)
 			}
 			//Add Your Strategy Initial here!
 
-#ifdef _MSC_VER
-#pragma region StrateygSelection
-#endif // _MSC_VER
-		
-			if (it->second->StrategyName == "JackA")
-			{
-				pStrategy = dynamic_cast<cwBasicCTAStrategy*>(new cwJackAStrategy(it->second->StrategyID.c_str()));
-				break;
-			}
-
-			if (it->second->StrategyName == "JackB")
-			{
-				pStrategy = dynamic_cast<cwBasicCTAStrategy*>(new cwJackBStrategy(it->second->StrategyID.c_str()));
-				break;
-			}
-
-			if (it->second->StrategyName == "JackC")
-			{
-				pStrategy = dynamic_cast<cwBasicCTAStrategy*>(new cwJackCStrategy(it->second->StrategyID.c_str()));
-				break;
-			}
-
-			if (it->second->StrategyName == "JackD")
-			{
-				pStrategy = dynamic_cast<cwBasicCTAStrategy*>(new cwJackDStrategy(it->second->StrategyID.c_str()));
-				break;
-			}
-
-			if (it->second->StrategyName == "JackE")
-			{
-				pStrategy = dynamic_cast<cwBasicCTAStrategy*>(new cwJackEStrategy(it->second->StrategyID.c_str()));
-				break;
-			}
-
-			if (it->second->StrategyName == "JackG")
-			{
-				//pStrategy = dynamic_cast<cwBasicCTAStrategy*>(new cwJackGStrategy(it->second->StrategyID.c_str()));
-				break;
-			}
-
-			if (it->second->StrategyName == "Jack49")
-			{
-				pStrategy = dynamic_cast<cwBasicCTAStrategy*>(new cwJack49Strategy(it->second->StrategyID.c_str()));
-				break;
-			}
-
-			if (it->second->StrategyName == "JackK2")
-			{
-				pStrategy = dynamic_cast<cwBasicCTAStrategy*>(new cwJackK2Strategy(it->second->StrategyID.c_str()));
-				break;
-			}
-
-			if (it->second->StrategyName == "JackKZQ")
-			{
-				pStrategy = dynamic_cast<cwBasicCTAStrategy*>(new cwJackKZQStrategy(it->second->StrategyID.c_str()));
-				break;
-			}
-
-			if (it->second->StrategyName == "JackT1")
-			{
-				pStrategy = dynamic_cast<cwBasicCTAStrategy*>(new cwJackT1Strategy(it->second->StrategyID.c_str()));
-				break;
-			}
-
-			if (it->second->StrategyName == "Anonymous")
-			{
-				pStrategy = dynamic_cast<cwBasicCTAStrategy*>(new cwAnonymousStrategy(it->second->StrategyID.c_str()));
-				break;
-			}
-		
-#ifdef _MSC_VER
-#pragma endregion
-#endif
 		} while (false);
 
 		if (pStrategy == nullptr)
@@ -630,13 +557,18 @@ bool cwCTAPlatform::ReadXmlConfigFile(const char * pConfigFilePath, bool bNeedDi
 				TiXmlElement* Element = ChildNode->ToElement();
 				const char* pszTemp = Element->Attribute("BeginTime");
 				if (pszTemp != NULL
-					&& strlen(pszTemp) > 19)
+					&& strlen(pszTemp) >= 19)
 				{
 					int year = 2000, month = 1, day = 1, hour = 8, minute = 0, second = 0;
-
+#ifdef _MSC_VER
+					sscanf_s(pszTemp, "%d_%d_%d_%d:%d:%d",
+						&year, &month, &day,
+						&hour, &minute, &second);
+#else
 					sscanf(pszTemp, "%d_%d_%d_%d:%d:%d",
 						&year, &month, &day,
 						&hour, &minute, &second);
+#endif // _MSC_VER
 
 					cwTimeStamp t;
 					t.SetYear(year);
@@ -656,7 +588,7 @@ bool cwCTAPlatform::ReadXmlConfigFile(const char * pConfigFilePath, bool bNeedDi
 					{
 						m_iKindleBeginTime = t.GetTotalMicrosecond();
 
-						m_cwShow.AddLog("Kindel Start Time Set: %4d%2d%2d_%2d:%2d:2d",
+						m_cwShow.AddLog("Kindel Start Time Set: %4d%02d%02d_%02d:%02d:%02d",
 							year, month, day, hour, minute, second);
 
 					}
@@ -1324,7 +1256,7 @@ void cwCTAPlatform::SetKindle(std::string strStrategyID, bool bIndex, const char
 		pHisKindle->InitialKindleStickSeries(pKindle->GetInstrumentID(), GetProductID(szInstrumentID),
 			cwKindleStickSeries::cwKindleTypeMinute, iTimeScale);
 	}
-	int iCount = pKindle->GetKindleSize();
+	int iCount = (int)pKindle->GetKindleSize();
 
 	cwKindleStickPtr pTmpKindle  = std::make_shared<cwKindleStick>();
 
@@ -1345,6 +1277,7 @@ void cwCTAPlatform::SetKindle(std::string strStrategyID, bool bIndex, const char
 		memcpy(pTmpKindle.get(), pkindleStick.get(), sizeof(cwKindleStick));
 #endif
 		pTmpKindle->Close = pTmpKindle->High = pTmpKindle->Low = pTmpKindle->Open;
+		pTmpKindle->LastVolume = pTmpKindle->LastTurnOver = 0;
 		pHisKindle->UpdateKindle(pTmpKindle);
 		pStrategyInfo->_pStrategy->_PreOnBar(pHisKindle->m_bIsNewKindle, iTimeScale, pHisKindle);
 		pStrategyInfo->_pStrategy->OnBar(pHisKindle->m_bIsNewKindle, iTimeScale, pHisKindle);
@@ -1446,7 +1379,7 @@ void cwCTAPlatform::WriteSignalToFile()
 
 	cwAUTOMUTEX mt(m_ParameterMutex, true);
 
-	wfile.open("CTASignalPosition.log", std::ios::trunc);
+	wfile.open("SignalPosition.log", std::ios::trunc);
 	wfile << m_strCurrentUpdateTime.c_str() << "InstrumentID,StrategyName,Position\n";
 	if (wfile.is_open())
 	{
@@ -1461,6 +1394,8 @@ void cwCTAPlatform::WriteSignalToFile()
 					<< it->first.c_str() << ","
 					<< it->second << '\n';
 				dPos += it->second;
+
+				m_cwShow.AddLog("%s %s %.1f", InsIt->first.c_str(), it->first.c_str(), it->second);
 			}
 
 			wfile << InsIt->first.c_str() << ","

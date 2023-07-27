@@ -2,7 +2,7 @@
 #include "cwBasicKindleStrategy.h"
 #include "cwStrategyLog.h"
 
-#define CW_NEED_STRATEGY_LOG
+//#define CW_NEED_STRATEGY_LOG
 
 class cwBasicCTAStrategy
 {
