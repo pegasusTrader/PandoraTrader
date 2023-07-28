@@ -52,9 +52,9 @@ public:
 	//替换现有k线序列
 	void ReplaceKindle(cwKindleStickPtr pKindle);
 	//移除时间点之前的K线
-	void RemoveKinldeBeforeTime(int64_t time);
+	void RemoveKinldeBeforeTime(uint64_t time);
 	//移除时间点以后的K线
-	void RemoveKinldeAfterTime(int64_t time);
+	void RemoveKinldeAfterTime(uint64_t time);
 	//获取k线周期
 	inline uint32_t GetTimeScale() { return m_iTimeScale; }
 	//设置K线行情处理的数据精度，默认值为0.00001
@@ -200,10 +200,18 @@ public:
 	bool GetKindleStickTrough(unsigned int nBegin, unsigned int nEnd,
 		unsigned int nUnilateralCompareNum, std::vector<unsigned int>& nIndexVector, unsigned int& nIndexLowestTrough);
 
+	/*函数功能：获取当日K线数，
+	* 参数描述：
+	*  
+	* 返回值：
+	*     返回当日K线数，如果不用产品初始时间，则返回-1，表示错误，当前处于开盘第一根K线则，返回1.
+	*/
+	int  GetBarCountSinceToday();
+
 	const char* GetInstrumentID() { return m_strInstrumentID.c_str(); }
 private:
 	std::string								m_strInstrumentID;
-	std::string								m_strProductID;
+	std::string								m_strProductID;							//产品信息，在m_bUsingProductTradeTime为true的时候有效
 
 	cwKindleSeriesType						m_cwKindleSeriesType;
 	//K线周期，秒为单位
@@ -211,8 +219,12 @@ private:
 	bool									m_bIsInitialed;
 	std::uint64_t							m_LastestUpdateTime;
 
+	//是否根据品种交易时间来合成
 	bool									m_bUsingProductTradeTime;
 	cwProductTradeTime						m_ProductTradeTime;
+
+	std::uint64_t							m_iTodayBeginTime;						//该交易日的开始时间，在m_bUsingProductTradeTime为true的时候有效
+	std::uint64_t							m_iTodayEndTime;						//该交易日的结束时间，在m_bUsingProductTradeTime为true的时候有效
 
 #ifdef KINDLE_MULTI_THREAD
 	cwMUTEX									m_KindleQueueMutex;

@@ -95,6 +95,6 @@ private:
 private:
 	//不需要工作
 	volatile bool						m_bNoWorkRequired;
-
+	volatile bool						m_bKeepFileOpen;
 };
 
