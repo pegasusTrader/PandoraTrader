@@ -11,7 +11,7 @@
 
 std::string cwCTAPlatform::GetStrategyVersion()
 {
-	return "20230302_v1";
+	return "20230809_v1.1";
 }
 
 std::string cwCTAPlatform::GetStrategyName()
@@ -113,6 +113,7 @@ void cwCTAPlatform::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKin
 {
 	cwEasyStrategyLog log(m_StrategyLog, "OnBar");
 
+	double dBalance = 0.0;
 	auto Insit = m_InsCTAStrategyList.find(pKindleSeries->GetInstrumentID());
 	if (Insit != m_InsCTAStrategyList.end())
 	{
@@ -133,8 +134,9 @@ void cwCTAPlatform::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKin
 				//{
 				//	log.AddLog(cwStrategyLog::enIMMS, "%s OnBar %d count:%d", pPriceData->InstrumentID,
 				//		iTimeScale, pKindleSeries->GetKindleSize());
-
 				//}
+
+				dBalance += (*it)->_pStrategy->m_cwSettlement.m_dBalance;
 			}
 		}
 	}
@@ -248,6 +250,8 @@ void cwCTAPlatform::OnStrategyTimer(int iTimerId, const char * szInstrumentID)
 		&& m_strConfigFileFullPath.size() > 0)
 	{
 		ReadXmlConfigFile(m_strConfigFileFullPath.c_str());
+
+		//ShowSignalPosition();
 	}
 }
 
@@ -325,7 +329,6 @@ void cwCTAPlatform::InitialStrategy(const char* pConfigFilePath)
 				break;
 			}
 			//Add Your Strategy Initial here!
-
 		} while (false);
 
 		if (pStrategy == nullptr)
@@ -372,36 +375,8 @@ void cwCTAPlatform::InitialStrategy(const char* pConfigFilePath)
 	}
 
 	MergeStrategyPosition(std::string());
-	//{
-	//	cwDualTrust * strategy = new cwDualTrust("DualTrust_hc");
-	//	strategy->m_StrategyPara.CTAPara1 = 5;
-	//	strategy->m_StrategyPara.CTAPara2 = 3;
-	//	strategy->m_StrategyPara.CTAPara3 = 5;
 
-	//	strategy->InitialStrategy();
-
-	//	AddStrategyToPools("DualTrust_hc", dynamic_cast<cwBasicCTAStrategy*>(strategy));
-	//	SetKindle("DualTrust_hc", true, "hc", cwKINDLE_TIMESCALE_15MIN, 100);
-
-	//}
-
-	//{
-	//	cwJackCStrategy * strategy = new cwJackCStrategy("JackC_MA");
-
-	//	strategy->m_StrategyPara.CTAPara1 = 300;	//Length_MAC(300)
-	//	strategy->m_StrategyPara.CTAPara2 = 10;		//LENGTH_EMAC(10);
-	//	strategy->m_StrategyPara.CTAPara3 = 20;		//ATRLength(20);
-	//	strategy->m_StrategyPara.CTAPara4 = 1;		//RiskRatio(1)
-	//	strategy->m_StrategyPara.CTAPara5 = 1;		//STOPLOSS(1);
-	//	strategy->m_StrategyPara.CTAPara6 = 3;		//DarkBack(3)
-
-	//	strategy->m_pInstrument = GetInstrumentData("MA209");
-	//	strategy->InitialStrategy();
-
-	//	AddStrategyToPools("JackC_MA", dynamic_cast<cwBasicCTAStrategy*>(strategy));
-	//	SetKindle("JackC_MA", true, "MA", cwKINDLE_TIMESCALE_15MIN, 100);
-
-	//}
+	WriteSignalToFile();
 
 }
 
@@ -1277,7 +1252,8 @@ void cwCTAPlatform::SetKindle(std::string strStrategyID, bool bIndex, const char
 		memcpy(pTmpKindle.get(), pkindleStick.get(), sizeof(cwKindleStick));
 #endif
 		pTmpKindle->Close = pTmpKindle->High = pTmpKindle->Low = pTmpKindle->Open;
-		pTmpKindle->LastVolume = pTmpKindle->LastTurnOver = 0;
+		pTmpKindle->LastTurnOver = 0.0;
+		pTmpKindle->LastVolume = 0;
 		pHisKindle->UpdateKindle(pTmpKindle);
 		pStrategyInfo->_pStrategy->_PreOnBar(pHisKindle->m_bIsNewKindle, iTimeScale, pHisKindle);
 		pStrategyInfo->_pStrategy->OnBar(pHisKindle->m_bIsNewKindle, iTimeScale, pHisKindle);
@@ -1408,6 +1384,29 @@ void cwCTAPlatform::WriteSignalToFile()
 		wfile.close();
 	}
 
+}
+
+void cwCTAPlatform::WriteNetAssetValueToFile()
+{
+
+}
+
+void cwCTAPlatform::ShowSignalPosition()
+{
+	m_cwShow.AddLog("");
+
+	cwAUTOMUTEX mt(m_ParameterMutex, true);
+
+	for (auto InsIt = m_cwStrategyPositionMap.begin();
+		InsIt != m_cwStrategyPositionMap.end(); InsIt++)
+	{
+		double dPos = 0.0;
+		for (auto it = InsIt->second.begin();
+			it != InsIt->second.end(); it++)
+		{
+			m_cwShow.AddLog("%s %s %.1f", InsIt->first.c_str(), it->first.c_str(), it->second);
+		}
+	}
 }
 
 

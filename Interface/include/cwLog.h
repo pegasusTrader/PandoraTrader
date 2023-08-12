@@ -58,7 +58,7 @@ public:
 	cwLog(const char * pFileName, const char * pFolder = NULL);
 	~cwLog();
 	
-	const char * GetLogFileName() { return m_LogFileName.c_str(); }
+
 
 	void AddTitle(const char * pData);
 	void AddLog(LogDataPtr LogPtr, bool bForceWrite = false);
@@ -68,11 +68,13 @@ public:
 	void WriteLog(bool bForceWrite = false);
 #endif
 
+	const char* GetLogFileName() { return m_LogFileName.c_str(); }
+
 	void			SetBufferLength(size_t nLength);
 	inline size_t	SetBufferLength() { return m_iBufferLength; }
 
 	void			SetNoWorkRequired(bool NoWork = false);
-
+	void			SetKeepFileOpen(bool FileOpen = false);
 private:
 	std::thread							m_LogWorkingThread;
 	volatile std::atomic<bool>			m_bLogWorkingThreadRun;

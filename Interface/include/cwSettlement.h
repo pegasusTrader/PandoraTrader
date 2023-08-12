@@ -35,13 +35,13 @@ public:
 #pragma endregion
 #endif // _MSC_VER
 
-	void UpdatePrice(cwMarketDataPtr pMdData);
+	void UpdatePrice(cwMarketDataPtr pMdData, double dPriceTick, double dVolumeMultiple);
 
-	void SettlementPrice(std::string instrumentid, double price);
+	void SettlementPrice(std::string sInstrumentid, double dPrice, double dVolumeMultiple);
 
 	void UpdateOrder(cwOrderPtr pOrder);
-	void UpdateTrade(cwTradePtr pTrade);
-	void UpdateTrade(std::string instrumentid, double price, int volume);
+	void UpdateTrade(cwTradePtr pTrade, double dPriceTick, double dVolumeMultiple);
+	void UpdateTrade(std::string instrumentid, double price, int volume, double dPriceTick, double dVolumeMultiple);
 
 	//Èë½ð
 	void Deposit(double ddeposit)
@@ -50,12 +50,7 @@ public:
 		m_dBalance += ddeposit;
 	}
 
-	//update Instrument Data
-	void SetInstrumentData(std::unordered_map<std::string, cwInstrumentDataPtr>& InstrumentMap);
-
 	cwMUTEX													m_ProcessMutex;
-
-	std::unordered_map<std::string, cwInstrumentDataPtr>	m_InstrumentMap;	//kye Isntrumentid, value: InstrumentData
 
 	std::unordered_map<std::string, cwMarketDataPtr>		m_LastPriceMap;					//Key Insrumentid,	value: MarketData
 

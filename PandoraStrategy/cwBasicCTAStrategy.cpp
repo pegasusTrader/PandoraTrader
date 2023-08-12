@@ -30,6 +30,16 @@ void cwBasicCTAStrategy::_PreOnBar(bool bFinished, int iTimeScale, cwBasicKindle
 		m_dLastPrice = pKindle->Close;
 	}
 	m_iLastIndex = pKindleSeries->GetKindleSize();
+
+	if (bFinished)
+	{
+		m_cwSettlement.SettlementPrice(pKindleSeries->GetInstrumentID(), m_dLastPrice, m_pInstrument->VolumeMultiple);
+
+		TimeBalanceData tbd;
+		tbd.strDateTime = m_strLastUpdateTime;
+		tbd.dBalance = m_cwSettlement.m_dBalance;
+		m_dTimeBalanceDQ.push_back(tbd);
+	}
 }
 
 void cwBasicCTAStrategy::SetStrategyPosition(int iPosition, char* szInstrumentID)
@@ -51,6 +61,8 @@ void cwBasicCTAStrategy::SetStrategyPosition(int iPosition, char* szInstrumentID
 			m_dEntryPrice[InstrumentID] = m_dLastPrice;
 			m_iEntryIndex[InstrumentID] = m_iLastIndex;
 			m_strEntryTime[InstrumentID] = m_strLastUpdateTime;
+
+			m_cwSettlement.UpdateTrade(InstrumentID, m_dLastPrice, iPosition, m_pInstrument->PriceTick, m_pInstrument->VolumeMultiple);
 		}
 	}
 	else
@@ -62,7 +74,10 @@ void cwBasicCTAStrategy::SetStrategyPosition(int iPosition, char* szInstrumentID
 
 		if (ret.first->second * iPosition < 0)
 		{
+			m_cwSettlement.UpdateTrade(InstrumentID, m_dLastPrice, -1 * ret.first->second, m_pInstrument->PriceTick, m_pInstrument->VolumeMultiple);
+
 			ret.first->second = 0;
+
 			m_StrategyTradeListLog.AddLog(cwStrategyLog::enIMMS, "%s, %s, %d, %.2f",
 				InstrumentID.c_str(), m_strLastUpdateTime.c_str(), 0, m_dLastPrice);
 		}
@@ -74,6 +89,9 @@ void cwBasicCTAStrategy::SetStrategyPosition(int iPosition, char* szInstrumentID
 			m_iEntryIndex[InstrumentID] = m_iLastIndex;
 			m_strEntryTime[InstrumentID] = m_strLastUpdateTime;
 		}
+
+		m_cwSettlement.UpdateTrade(InstrumentID, m_dLastPrice, iPosition - ret.first->second, m_pInstrument->PriceTick, m_pInstrument->VolumeMultiple);
+
 		ret.first->second = iPosition;
 	}
 

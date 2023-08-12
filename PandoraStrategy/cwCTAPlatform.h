@@ -285,6 +285,8 @@ protected:
 	//key:SignalInstrument, key:StrategyID
 	std::unordered_map<std::string, std::unordered_map<std::string, double>> m_cwStrategyPositionMap;
 	void		WriteSignalToFile();
+	void		WriteNetAssetValueToFile();
+	void		ShowSignalPosition();
 
 	//Deal Trade Signal
 	bool		GetParameter(const char * szInstrumentID, 

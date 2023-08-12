@@ -152,7 +152,7 @@ public:
 	int GetKindleStickLowestFirstOne(unsigned int nBegin, unsigned int nEnd);
 	int GetKindleStickLowestFirstOne(unsigned int nCount);
 
-	/*函数功能：获取K线最高的k线的最小值
+	/*函数功能：获取K线最低的k线的最小值
 	* 参数描述：
 	*     [in] nBegin	- K线范围开始编号；
 	*     [in] nEnd		- K线范围结束编号；

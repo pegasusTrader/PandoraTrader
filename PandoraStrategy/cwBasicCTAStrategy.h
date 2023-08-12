@@ -1,6 +1,7 @@
 #pragma once
 #include "cwBasicKindleStrategy.h"
 #include "cwStrategyLog.h"
+#include "cwSettlement.h"
 
 //#define CW_NEED_STRATEGY_LOG
 
@@ -71,6 +72,11 @@ public:
 
 	};
 
+	struct TimeBalanceData
+	{
+		std::string		strDateTime;
+		double			dBalance;
+	};
 
 public:
 	cwBasicCTAStrategy(const char* szStrategyName);
@@ -117,5 +123,9 @@ public:
 	double					m_dLastPrice;			//当前价格
 	size_t					m_iLastIndex;			//当前k线数
 	std::string				m_strLastUpdateTime;	//当前行情时间
+
+	//用于记录策略净值变化
+	cwSettlement			m_cwSettlement;
+	std::deque<TimeBalanceData>						m_dTimeBalanceDQ;
 };
 
