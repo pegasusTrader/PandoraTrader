@@ -12,6 +12,10 @@ cwBasicCTAStrategy::cwBasicCTAStrategy(const char* szStrategyName)
 	m_StrategyTradeListLog.AddTitle("Localtime,MD,InstrumentID,DateTime,Position,price");
 }
 
+cwBasicCTAStrategy::~cwBasicCTAStrategy()
+{
+}
+
 void cwBasicCTAStrategy::_PreOnBar(bool bFinished, int iTimeScale, cwBasicKindleStrategy::cwKindleSeriesPtr pKindleSeries)
 {
 	cwKindleStickPtr pKindle = pKindleSeries->GetLastKindleStick();
@@ -33,13 +37,59 @@ void cwBasicCTAStrategy::_PreOnBar(bool bFinished, int iTimeScale, cwBasicKindle
 
 	if (bFinished)
 	{
+		//更新权益
 		m_cwSettlement.SettlementPrice(pKindleSeries->GetInstrumentID(), m_dLastPrice, m_pInstrument->VolumeMultiple);
 
-		TimeBalanceData tbd;
-		tbd.strDateTime = m_strLastUpdateTime;
-		tbd.dBalance = m_cwSettlement.m_dBalance;
-		m_dTimeBalanceDQ.push_back(tbd);
+		//评价
+		//(1)TBQ序列无
+		if (m_dTimeBalanceDQ.begin() == m_dTimeBalanceDQ.end())
+		{
+			//初始化m_dEvaluatorDQ的初始资金
+			UpdateEvaluator(m_cwSettlement.m_dMaxFundOccupied,0, m_cwSettlement.m_dBalance, m_strLastUpdateTime, pKindle->StartTime,0.05);
+		}
+		else//已有历史记录时
+		{
+			TimeBalanceDataPtr latest_tbd = m_dTimeBalanceDQ.back();
+			UpdateEvaluator(m_cwSettlement.m_dMaxFundOccupied, latest_tbd->dMaxFundOccupied, m_cwSettlement.m_dBalance, m_strLastUpdateTime, pKindle->StartTime,0.05);
+		}
+
+		//存储更新权益
+		TimeBalanceDataPtr tbdPtr = std::make_shared<TimeBalanceData>();
+		tbdPtr->strDateTime = m_strLastUpdateTime;
+		tbdPtr->iTimeStamp = pKindle->StartTime;
+		tbdPtr->dBalance = m_cwSettlement.m_dBalance;
+		tbdPtr->dMaxFundOccupied = m_cwSettlement.m_dMaxFundOccupied;
+
+		m_dTimeBalanceDQ.push_back(tbdPtr);
 	}
+}
+
+//策略评价更新函数
+void cwBasicCTAStrategy::UpdateEvaluator(double dCurrentMoneyUsed, double dPreMoneyUsed, double dCurrentTotalProfit, std::string str_time, std::uint64_t timeStamp, double dExpectedRet)
+{
+	m_cwEvaluator.UpdateNetValueByTotalPNL(timeStamp, dCurrentTotalProfit, dCurrentMoneyUsed);
+	
+	//copy 数据
+	EvaluatorTimeSeriesData tsd;
+
+	tsd.iTimeStamp = m_cwEvaluator.m_iTimeStamp;
+	tsd.dNetAsset = m_cwEvaluator.m_dCurNetAsset;
+	tsd.dTradingYears = m_cwEvaluator.m_dTradingYears;
+	tsd.dIRR = m_cwEvaluator.m_dIRR;
+	tsd.dAR = m_cwEvaluator.m_dAR;
+
+	tsd.dVolatility = m_cwEvaluator.m_dVolatility;
+	tsd.dVolatilityDownward = m_cwEvaluator.m_dVolatilityDownward;
+
+	tsd.dDrawDownRatio = m_cwEvaluator.m_dDrawDownRatio;
+	tsd.dMaxDrawDownRatio = m_cwEvaluator.m_dMaxDrawDownRatio;
+	tsd.dAverageDDR = m_cwEvaluator.m_dAverageDDR;
+	tsd.dSharpeRatio = m_cwEvaluator.m_dSharpeRatio;
+	tsd.dSortinoRatio = m_cwEvaluator.m_dSortinoRatio;
+	tsd.dCalmarRatio = m_cwEvaluator.m_dCalmarRatio;
+	tsd.dSterlingRatio = m_cwEvaluator.m_dSterlingRatio;
+
+	m_dEvaluatorDQ.push_back(tsd);
 }
 
 void cwBasicCTAStrategy::SetStrategyPosition(int iPosition, char* szInstrumentID)
@@ -62,7 +112,7 @@ void cwBasicCTAStrategy::SetStrategyPosition(int iPosition, char* szInstrumentID
 			m_iEntryIndex[InstrumentID] = m_iLastIndex;
 			m_strEntryTime[InstrumentID] = m_strLastUpdateTime;
 
-			m_cwSettlement.UpdateTrade(InstrumentID, m_dLastPrice, iPosition, m_pInstrument->PriceTick, m_pInstrument->VolumeMultiple);
+			m_cwSettlement.UpdateTrade(InstrumentID, m_dLastPrice, iPosition, m_pInstrument->VolumeMultiple);
 		}
 	}
 	else
@@ -74,7 +124,7 @@ void cwBasicCTAStrategy::SetStrategyPosition(int iPosition, char* szInstrumentID
 
 		if (ret.first->second * iPosition < 0)
 		{
-			m_cwSettlement.UpdateTrade(InstrumentID, m_dLastPrice, -1 * ret.first->second, m_pInstrument->PriceTick, m_pInstrument->VolumeMultiple);
+			m_cwSettlement.UpdateTrade(InstrumentID, m_dLastPrice, -1 * ret.first->second, m_pInstrument->VolumeMultiple);
 
 			ret.first->second = 0;
 
@@ -90,7 +140,7 @@ void cwBasicCTAStrategy::SetStrategyPosition(int iPosition, char* szInstrumentID
 			m_strEntryTime[InstrumentID] = m_strLastUpdateTime;
 		}
 
-		m_cwSettlement.UpdateTrade(InstrumentID, m_dLastPrice, iPosition - ret.first->second, m_pInstrument->PriceTick, m_pInstrument->VolumeMultiple);
+		m_cwSettlement.UpdateTrade(InstrumentID, m_dLastPrice, iPosition - ret.first->second, m_pInstrument->VolumeMultiple);
 
 		ret.first->second = iPosition;
 	}

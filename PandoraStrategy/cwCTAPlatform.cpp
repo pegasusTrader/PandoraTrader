@@ -9,6 +9,22 @@
 #endif // !cwDouble_EQ
 
 
+cwCTAPlatform::cwCTAPlatform()
+	: m_bStrategyRun(true)
+	, m_bShowPosition(false)
+	, m_dAccountRatio(1.0)
+	, m_iKindleBeginTime(0)
+	, m_dSignalPreBalance(0.0)
+	, m_dSignalBalance(0.0)
+	, m_dPreBalance(0.0)
+	, m_dBalance(0.0)
+{
+}
+
+cwCTAPlatform::~cwCTAPlatform()
+{
+}
+
 std::string cwCTAPlatform::GetStrategyVersion()
 {
 	return "20230809_v1.1";
@@ -242,6 +258,16 @@ void cwCTAPlatform::OnReady()
 		"%d Instrument's Positions is Unfix!", iunFixPositionCnt);
 
 	WriteSignalToFile();
+
+	auto pAccount = GetAccount();
+	if (pAccount.get() != nullptr)
+	{
+		if (m_dPreBalance < 1)
+		{
+			m_dPreBalance = pAccount->Balance;
+		}
+		m_dBalance = pAccount->Balance;
+	}
 }
 
 void cwCTAPlatform::OnStrategyTimer(int iTimerId, const char * szInstrumentID)
@@ -252,6 +278,24 @@ void cwCTAPlatform::OnStrategyTimer(int iTimerId, const char * szInstrumentID)
 		ReadXmlConfigFile(m_strConfigFileFullPath.c_str());
 
 		//ShowSignalPosition();
+
+		double	dBalance = 0.0;
+		for (auto it = m_NameCTAStrategy.begin();
+			it != m_NameCTAStrategy.end(); it++)
+		{
+			dBalance += it->second->_pStrategy->m_cwSettlement.m_dBalance;
+		}
+		m_dSignalBalance = dBalance;
+
+		auto pAccount = GetAccount();
+		if (pAccount.get() != nullptr)
+		{
+			if (m_dPreBalance < 1)
+			{
+				m_dPreBalance = pAccount->Balance;
+			}
+			m_dBalance = pAccount->Balance;
+		}
 	}
 }
 
@@ -261,6 +305,21 @@ void cwCTAPlatform::InitialStrategy(const char* pConfigFilePath)
 
 	log.AddLog(cwStrategyLog::enIMMS, "%s StrategyVersion: %s", GetStrategyName().c_str(), GetStrategyVersion().c_str());
 	m_cwShow.AddLog("%s StrategyVersion: %s", GetStrategyName().c_str(), GetStrategyVersion().c_str());
+
+	{
+		int iRet = cwPandoraFs::GetExePath(m_strWorkingPath);
+		std::size_t found = m_strWorkingPath.find_last_of("/\\");
+		m_strWorkingPath = m_strWorkingPath.substr(0, found);
+
+		if (iRet == 0)
+		{
+			m_strWorkingPath.append("\\");
+		}
+		else
+		{
+			m_strWorkingPath.append("/");
+		}
+	}
 
 	if (pConfigFilePath == nullptr
 		|| strlen(pConfigFilePath) == 0)
@@ -369,14 +428,13 @@ void cwCTAPlatform::InitialStrategy(const char* pConfigFilePath)
 
 		log.AddLog(cwStrategyLog::enIMMS, "%s Last: %s %d", it->second->StrategyID.c_str(), 
 			pStrategy->m_strLastUpdateTime.c_str(),pStrategy->GetStrategyPosition());
-
-		//log.AddLog(cwStrategyLog::enMsg, "%s Index:%s", it->second->bIndex ? "true" : "false");
-
+		
 	}
 
 	MergeStrategyPosition(std::string());
 
 	WriteSignalToFile();
+	WriteNetAssetValueToFile();
 
 }
 
@@ -474,6 +532,11 @@ bool cwCTAPlatform::ReadXmlConfigFile(const char * pConfigFilePath, bool bNeedDi
 	TiXmlNode* RootNode = doc.RootElement();
 	if (RootNode != NULL)
 	{
+		int iTemp;
+		double dbTemp;
+		std::string strTemp;
+
+
 		//Save config file Lastest Changed time
 		m_tLastestGetConfigTime = statbuf.st_mtime;
 
@@ -516,13 +579,27 @@ bool cwCTAPlatform::ReadXmlConfigFile(const char * pConfigFilePath, bool bNeedDi
 			}
 		}
 
+		if (TIXML_SUCCESS != RootElement->QueryDoubleAttribute("AccountRatio", &dbTemp))
+		{
+			m_dAccountRatio = 1.0;
+		}
+		else
+		{
+			if (dbTemp != m_dAccountRatio)
+			{
+				if (bNeedDisPlay)
+				{
+					m_cwShow.AddLog("m_dAccountRatio: %.1f ==> %.1f !",
+						m_dAccountRatio, dbTemp);
+				}
+				log.AddLog(cwStrategyLog::enIMMS, "m_dAccountRatio : %.1f ==> %.1f !", m_dAccountRatio, dbTemp);
+				m_dAccountRatio = dbTemp;
+			}
+		}
+
 		m_strStrategyName = RootElement->Attribute("Name");
 
 		cwAUTOMUTEX mt(m_ParameterMutex, true);
-
-		int iTemp;
-		double dbTemp;
-		std::string strTemp;
 
 		//Read General
 		TiXmlNode* ChildNode = RootNode->FirstChild("CTAStrategy");
@@ -922,217 +999,199 @@ bool cwCTAPlatform::ReadXmlConfigFile(const char * pConfigFilePath, bool bNeedDi
 			}
 		}
 
-		//ChildNode = RootNode->FirstChild("ManualIntervention");
-		//if (ChildNode != NULL)
-		//{
-		//	ManualInterventionPtr ParaPtr;
-		//	StrategyInstrumentUnion StrategyInsUnion;
+		ChildNode = RootNode->FirstChild("ManualIntervention");
+		if (ChildNode != NULL)
+		{
+			ManualInterventionPtr ParaPtr;
+			std::string				strStrategyID;
 
-		//	TiXmlNode* SubChildNode = ChildNode->FirstChild("Strategy");
-		//	while (SubChildNode != NULL)
-		//	{
-		//		TiXmlElement * Element = SubChildNode->ToElement();
-		//		const char * pszTemp = Element->Attribute("name");
-		//		if (pszTemp != NULL)
-		//		{
-		//			strTemp = pszTemp;
-		//		}
-		//		else
-		//		{
-		//			SubChildNode = SubChildNode->NextSibling("Strategy");
-		//			continue;
-		//		}
-		//		StrategyInsUnion.StrategyName = strTemp;
+			TiXmlNode* SubChildNode = ChildNode->FirstChild("Strategy");
+			while (SubChildNode != NULL)
+			{
+				TiXmlElement * Element = SubChildNode->ToElement();
+				const char * pszTemp = Element->Attribute("ID");
+				if (pszTemp != NULL)
+				{
+					strTemp = pszTemp;
+				}
+				else
+				{
+					SubChildNode = SubChildNode->NextSibling("Strategy");
+					continue;
+				}
+				strStrategyID = strTemp;
 
-		//		pszTemp = Element->Attribute("InstrumentID");
-		//		if (pszTemp != NULL)
-		//		{
-		//			strTemp = pszTemp;
-		//		}
-		//		else
-		//		{
-		//			SubChildNode = SubChildNode->NextSibling("Strategy");
-		//			continue;
-		//		}
-		//		StrategyInsUnion.InstrumentID = strTemp;
+				auto it = m_ManualinterventionMap.find(strStrategyID);
+				if (it == m_ManualinterventionMap.end()
+					|| it->second.get() == NULL)
+				{
+					ParaPtr.reset(new ManualIntervention());
+					it = m_ManualinterventionMap.insert(std::pair<std::string, ManualInterventionPtr>(strStrategyID, ParaPtr)).first;
+				}
+				else
+				{
+					ParaPtr = it->second;
+				}
+				ParaPtr->StrategyID = strStrategyID;
 
-		//		auto it = m_ManualinterventionMap.find(StrategyInsUnion);
-		//		if (it == m_ManualinterventionMap.end()
-		//			|| it->second.get() == NULL)
-		//		{
-		//			ParaPtr.reset(new ManualIntervention());
-		//			it = m_ManualinterventionMap.insert(std::pair<StrategyInstrumentUnion, ManualInterventionPtr>(StrategyInsUnion, ParaPtr)).first;
-		//		}
-		//		else
-		//		{
-		//			ParaPtr = it->second;
-		//		}
+				pszTemp = Element->Attribute("SignalID");
+				if (pszTemp != NULL)
+				{
+					strTemp = pszTemp;
+					ParaPtr->SignalID = strTemp;
+				}
+				/*else
+				{
+					SubChildNode = SubChildNode->NextSibling("Strategy");
+					continue;
+				}*/
 
-		//		ParaPtr->InstrumentID = StrategyInsUnion.InstrumentID;
-		//		ParaPtr->StrategyName = StrategyInsUnion.StrategyName;
+				if (TIXML_SUCCESS != Element->QueryBoolAttribute("Manual", &loadOkay))
+				{
+					ParaPtr->Manual = false;
+				}
+				else
+				{
+					if (loadOkay != ParaPtr->Manual)
+					{
+						if (bNeedDisPlay)
+						{
+							m_cwShow.AddLog("%s %s Manual:  ParaPtr->Manual : %s ==> %s !",
+								it->second->StrategyID.c_str(), it->second->SignalID.c_str(), (ParaPtr->Manual ? "true" : "false"), (loadOkay ? "true" : "false"));
+						}
+						log.AddLog(cwStrategyLog::enIMMS, "%s %s Manual:  ParaPtr->Manual : %s ==> %s !",
+							it->second->StrategyID.c_str(), it->second->SignalID.c_str(), (ParaPtr->Manual ? "true" : "false"), (loadOkay ? "true" : "false"));
+						ParaPtr->Manual = loadOkay;
+					}
+				}
+				if (Element->Attribute("ExpectedPosition", &iTemp) != NULL)
+				{
+					if (iTemp != ParaPtr->ExpectedPosition)
+					{
+						if (bNeedDisPlay)
+						{
+							m_cwShow.AddLog("%s %s ExpectedPosition : %d ==> %d !",
+								it->second->StrategyID.c_str(), it->second->SignalID.c_str(), (int)ParaPtr->ExpectedPosition, iTemp);
+						}
+						log.AddLog(cwStrategyLog::enIMMS, "%s %s ExpectedPosition : %d ==> %d !",
+							it->second->StrategyID.c_str(), it->second->SignalID.c_str(), (int)ParaPtr->ExpectedPosition, iTemp);
+						ParaPtr->ExpectedPosition = iTemp;
+					}
+				}
 
-		//		if (TIXML_SUCCESS != Element->QueryBoolAttribute("Manual", &loadOkay))
-		//		{
-		//			ParaPtr->Manual = false;
-		//		}
-		//		else
-		//		{
-		//			if (loadOkay != ParaPtr->Manual)
-		//			{
-		//				if (bNeedDisPlay)
-		//				{
-		//					m_cwShow.AddLog("%s %s Manual:  ParaPtr->Manual : %s ==> %s !",
-		//						it->first.StrategyName.c_str(), it->first.InstrumentID.c_str(), (ParaPtr->Manual ? "true" : "false"), (loadOkay ? "true" : "false"));
+				SubChildNode = SubChildNode->NextSibling("Strategy");
+			}
+		}
 
-		//					//std::cout << it->first.StrategyName.c_str() << " " << it->first.InstrumentID.c_str()
-		//					//	<< " Manual: " << (ParaPtr->Manual ? "true ==> " : "false ==>") << (loadOkay ? "true !" : "false !") << std::endl;
-		//				}
-		//				log.AddLog(cwStrategyLog::enIMMS, "%s %s Manual:  ParaPtr->Manual : %s ==> %s !",
-		//					it->first.StrategyName.c_str(), it->first.InstrumentID.c_str(), (ParaPtr->Manual ? "true" : "false"), (loadOkay ? "true" : "false"));
-		//				ParaPtr->Manual = loadOkay;
-		//			}
-		//		}
-		//		if (Element->Attribute("ExpectedPosition", &iTemp) != NULL)
-		//		{
-		//			if (iTemp != ParaPtr->ExpectedPosition)
-		//			{
-		//				if (bNeedDisPlay)
-		//				{
-		//					m_cwShow.AddLog("%s %s ExpectedPosition : %d ==> %d !",
-		//						it->first.StrategyName.c_str(), it->first.InstrumentID.c_str(), (int)ParaPtr->ExpectedPosition, iTemp);
+		ChildNode = RootNode->FirstChild("DirectionMask");
+		if (ChildNode != NULL)
+		{
+			DirectionMaskPtr ParaPtr;
+			std::string				strStrategyID;
 
-		//					//std::cout << it->first.StrategyName.c_str() << " " << it->first.InstrumentID.c_str()
-		//					//	<< " ExpectedPosition: " << ParaPtr->ExpectedPosition << " ==>" << iTemp << std::endl;
-		//				}
-		//				log.AddLog(cwStrategyLog::enIMMS, "%s %s ExpectedPosition : %d ==> %d !",
-		//					it->first.StrategyName.c_str(), it->first.InstrumentID.c_str(), (int)ParaPtr->ExpectedPosition, iTemp);
-		//				ParaPtr->ExpectedPosition = iTemp;
-		//			}
-		//		}
+			TiXmlNode* SubChildNode = ChildNode->FirstChild("Strategy");
+			while (SubChildNode != NULL)
+			{
+				TiXmlElement * Element = SubChildNode->ToElement();
+				const char * pszTemp = Element->Attribute("ID");
+				if (pszTemp != NULL)
+				{
+					strTemp = pszTemp;
+				}
+				else
+				{
+					SubChildNode = SubChildNode->NextSibling("Strategy");
+					continue;
+				}
+				strStrategyID = strTemp;
 
-		//		SubChildNode = SubChildNode->NextSibling("Strategy");
-		//	}
-		//}
+				auto it = m_DirectionMaskMap.find(strStrategyID);
+				if (it == m_DirectionMaskMap.end()
+					|| it->second.get() == NULL)
+				{
+					ParaPtr.reset(new DirectionMask());
+					it = m_DirectionMaskMap.insert(std::pair<std::string, DirectionMaskPtr>(strStrategyID, ParaPtr)).first;
+				}
+				else
+				{
+					ParaPtr = it->second;
+				}
+				ParaPtr->StrategyID = strStrategyID;
 
-		//ChildNode = RootNode->FirstChild("DirectionMask");
-		//if (ChildNode != NULL)
-		//{
-		//	DirectionMaskPtr ParaPtr;
-		//	StrategyInstrumentUnion StrategyInsUnion;
+				pszTemp = Element->Attribute("SignalID");
+				if (pszTemp != NULL)
+				{
+					strTemp = pszTemp;
+					ParaPtr->SignalID = strTemp;
+				}
+				/*else
+				{
+					SubChildNode = SubChildNode->NextSibling("Strategy");
+					continue;
+				}*/
 
-		//	TiXmlNode* SubChildNode = ChildNode->FirstChild("Strategy");
-		//	while (SubChildNode != NULL)
-		//	{
-		//		TiXmlElement * Element = SubChildNode->ToElement();
-		//		const char * pszTemp = Element->Attribute("name");
-		//		if (pszTemp != NULL)
-		//		{
-		//			strTemp = pszTemp;
-		//		}
-		//		else
-		//		{
-		//			SubChildNode = SubChildNode->NextSibling("Strategy");
-		//			continue;
-		//		}
-		//		StrategyInsUnion.StrategyName = strTemp;
+				if (TIXML_SUCCESS != Element->QueryDoubleAttribute("Ratio", &dbTemp))
+				{
+					ParaPtr->StrategyInsRatio = 1;
+				}
+				else
+				{
+					if (dbTemp != ParaPtr->StrategyInsRatio)
+					{
+						if (bNeedDisPlay)
+						{
+							m_cwShow.AddLog("%s %s StrategyInsRatio:%.3f ==> %.3f",
+								ParaPtr->StrategyID.c_str(), ParaPtr->SignalID.c_str(),
+								ParaPtr->StrategyInsRatio, dbTemp);
+						}
+						log.AddLog(cwStrategyLog::enIMMS, " %s %s StrategyInsRatio : %.2f ==> %.2f !",
+							ParaPtr->StrategyID.c_str(), ParaPtr->SignalID.c_str(),
+							ParaPtr->StrategyInsRatio, dbTemp);
+						ParaPtr->StrategyInsRatio = dbTemp;
+					}
+				}
 
-		//		pszTemp = Element->Attribute("InstrumentID");
-		//		if (pszTemp != NULL)
-		//		{
-		//			strTemp = pszTemp;
-		//		}
-		//		else
-		//		{
-		//			SubChildNode = SubChildNode->NextSibling("Strategy");
-		//			continue;
-		//		}
-		//		StrategyInsUnion.InstrumentID = strTemp;
+				if (TIXML_SUCCESS != Element->QueryBoolAttribute("NoLong", &loadOkay))
+				{
+					ParaPtr->NoLong = false;
+				}
+				else
+				{
+					if (loadOkay != ParaPtr->NoLong)
+					{
+						if (bNeedDisPlay)
+						{
+							m_cwShow.AddLog("%s %s NoLong:  ParaPtr->NoLong : %s ==> %s !",
+								it->second->StrategyID.c_str(), it->second->SignalID.c_str(), (ParaPtr->NoLong ? "true" : "false"), (loadOkay ? "true" : "false"));
+						}
+						log.AddLog(cwStrategyLog::enIMMS, "%s %s NoLong:  ParaPtr->NoLong : %s ==> %s !",
+							it->second->StrategyID.c_str(), it->second->SignalID.c_str(), (ParaPtr->NoLong ? "true" : "false"), (loadOkay ? "true" : "false"));
+						ParaPtr->NoLong = loadOkay;
+					}
+				}
 
-		//		auto it = m_DirectionMaskMap.find(StrategyInsUnion);
-		//		if (it == m_DirectionMaskMap.end()
-		//			|| it->second.get() == NULL)
-		//		{
-		//			ParaPtr.reset(new DirectionMask());
-		//			it = m_DirectionMaskMap.insert(std::pair<StrategyInstrumentUnion, DirectionMaskPtr>(StrategyInsUnion, ParaPtr)).first;
-		//		}
-		//		else
-		//		{
-		//			ParaPtr = it->second;
-		//		}
+				if (TIXML_SUCCESS != Element->QueryBoolAttribute("NoShort", &loadOkay))
+				{
+					ParaPtr->NoShort = false;
+				}
+				else
+				{
+					if (loadOkay != ParaPtr->NoShort)
+					{
+						if (bNeedDisPlay)
+						{
+							m_cwShow.AddLog("%s %s NoShort:  ParaPtr->NoShort : %s ==> %s !",
+								it->second->StrategyID.c_str(), it->second->SignalID.c_str(), (ParaPtr->NoShort ? "true" : "false"), (loadOkay ? "true" : "false"));
+						}
+						log.AddLog(cwStrategyLog::enIMMS, "%s %s NoShort:  ParaPtr->NoShort : %s ==> %s !",
+							it->second->StrategyID.c_str(), it->second->SignalID.c_str(), (ParaPtr->NoShort ? "true" : "false"), (loadOkay ? "true" : "false"));
+						ParaPtr->NoShort = loadOkay;
+					}
+				}
 
-		//		ParaPtr->InstrumentID = StrategyInsUnion.InstrumentID;
-		//		ParaPtr->StrategyName = StrategyInsUnion.StrategyName;
-
-		//		if (TIXML_SUCCESS != Element->QueryDoubleAttribute("Ratio", &dbTemp))
-		//		{
-		//			ParaPtr->StrategyInsRatio = 1;
-		//		}
-		//		else
-		//		{
-		//			if (dbTemp != ParaPtr->StrategyInsRatio)
-		//			{
-		//				if (bNeedDisPlay)
-		//				{
-		//					m_cwShow.AddLog("%s %s StrategyInsRatio:%.3f ==> %.3f",
-		//						StrategyInsUnion.StrategyName.c_str(), StrategyInsUnion.InstrumentID.c_str(),
-		//						ParaPtr->StrategyInsRatio, dbTemp);
-
-		//					//std::cout << it->first.c_str() << " Ratio: " << ParaPtr->Ratio << " ==>" << dbTemp << std::endl;
-		//				}
-		//				log.AddLog(cwStrategyLog::enIMMS, " %s %s StrategyInsRatio : %.2f ==> %.2f !",
-		//					StrategyInsUnion.StrategyName.c_str(), StrategyInsUnion.InstrumentID.c_str(),
-		//					ParaPtr->StrategyInsRatio, dbTemp);
-		//				ParaPtr->StrategyInsRatio = dbTemp;
-		//			}
-		//		}
-
-		//		if (TIXML_SUCCESS != Element->QueryBoolAttribute("NoLong", &loadOkay))
-		//		{
-		//			ParaPtr->NoLong = false;
-		//		}
-		//		else
-		//		{
-		//			if (loadOkay != ParaPtr->NoLong)
-		//			{
-		//				if (bNeedDisPlay)
-		//				{
-		//					m_cwShow.AddLog("%s %s NoLong:  ParaPtr->NoLong : %s ==> %s !",
-		//						it->first.StrategyName.c_str(), it->first.InstrumentID.c_str(), (ParaPtr->NoLong ? "true" : "false"), (loadOkay ? "true" : "false"));
-
-		//					//std::cout << it->first.StrategyName.c_str() << " " << it->first.InstrumentID.c_str()
-		//					//	<< " NoLong: " << (ParaPtr->NoLong ? "true ==> " : "false ==>") << (loadOkay ? "true !" : "false !") << std::endl;
-		//				}
-		//				log.AddLog(cwStrategyLog::enIMMS, "%s %s NoLong:  ParaPtr->NoLong : %s ==> %s !",
-		//					it->first.StrategyName.c_str(), it->first.InstrumentID.c_str(), (ParaPtr->NoLong ? "true" : "false"), (loadOkay ? "true" : "false"));
-		//				ParaPtr->NoLong = loadOkay;
-		//			}
-		//		}
-
-		//		if (TIXML_SUCCESS != Element->QueryBoolAttribute("NoShort", &loadOkay))
-		//		{
-		//			ParaPtr->NoShort = false;
-		//		}
-		//		else
-		//		{
-		//			if (loadOkay != ParaPtr->NoShort)
-		//			{
-		//				if (bNeedDisPlay)
-		//				{
-		//					m_cwShow.AddLog("%s %s NoShort:  ParaPtr->NoShort : %s ==> %s !",
-		//						it->first.StrategyName.c_str(), it->first.InstrumentID.c_str(), (ParaPtr->NoShort ? "true" : "false"), (loadOkay ? "true" : "false"));
-
-		//					//std::cout << it->first.StrategyName.c_str() << " " << it->first.InstrumentID.c_str() 
-		//					//	<< " NoShort: " << (ParaPtr->NoShort ? "true ==> " : "false ==>") << (loadOkay ? "true !" : "false !") << std::endl;
-		//				}
-		//				log.AddLog(cwStrategyLog::enIMMS, "%s %s NoShort:  ParaPtr->NoShort : %s ==> %s !",
-		//					it->first.StrategyName.c_str(), it->first.InstrumentID.c_str(), (ParaPtr->NoShort ? "true" : "false"), (loadOkay ? "true" : "false"));
-		//				ParaPtr->NoShort = loadOkay;
-		//			}
-		//		}
-
-		//		SubChildNode = SubChildNode->NextSibling("Strategy");
-		//	}
-		//}
+				SubChildNode = SubChildNode->NextSibling("Strategy");
+			}
+		}
 
 	}
 
@@ -1278,7 +1337,10 @@ void cwCTAPlatform::SetKindle(std::string strStrategyID, bool bIndex, const char
 	//	pStrategyInfo->_pStrategy->m_strLastUpdateTime.c_str(), pStrategyInfo->_pStrategy->GetStrategyPosition());
 	m_cwShow.AddLog("%s HisKindle Count:%d Last: %s %d", strStrategyID.c_str(), iCount,
 		pStrategyInfo->_pStrategy->m_strLastUpdateTime.c_str(), pStrategyInfo->_pStrategy->GetStrategyPosition());
-
+	m_cwShow.AddLog("%s 净值:%.1f 回撤:%.1f%% 夏普:%.1f%%",
+		pStrategyInfo->_pStrategy->m_cwEvaluator.m_dCurNetAsset,
+		pStrategyInfo->_pStrategy->m_cwEvaluator.m_dMaxDrawDownRatio,
+		pStrategyInfo->_pStrategy->m_cwEvaluator.m_dSharpeRatio);
 }
 
 double cwCTAPlatform::MergeStrategyPosition(std::string InstrumentID)
@@ -1388,7 +1450,85 @@ void cwCTAPlatform::WriteSignalToFile()
 
 void cwCTAPlatform::WriteNetAssetValueToFile()
 {
+	std::ofstream wfile;//写文件流;
 
+	std::map<std::uint64_t, std::unordered_map<std::string, cwBasicCTAStrategy::TimeBalanceDataPtr>> BalanceSeries;
+
+	cwAUTOMUTEX mt(m_ParameterMutex, true);
+
+	for (auto it = m_NameCTAStrategy.begin();
+		it != m_NameCTAStrategy.end(); it++)
+	{
+			
+		std::string	strFile = m_strWorkingPath + it->second->_pStrategy->GetStrategyName();
+#ifdef WIN32
+		strFile.append("\\");
+#else
+		strFile.append("/");
+#endif
+		strFile += "NetAssetValue.csv";
+		wfile.open(strFile.c_str(), std::ios::trunc);
+		wfile << m_strCurrentUpdateTime.c_str() << "DateTime,TimeStamp,Balance,MaxFundUsed\n";
+
+		for (auto TBit = it->second->_pStrategy->m_dTimeBalanceDQ.begin();
+			TBit != it->second->_pStrategy->m_dTimeBalanceDQ.end(); TBit++)
+		{
+			wfile << (*TBit)->strDateTime.c_str() << ","
+				<< (*TBit)->iTimeStamp << ","
+				<< (*TBit)->dBalance << ","
+				<< (*TBit)->dMaxFundOccupied << '\n';
+
+			BalanceSeries[(*TBit)->iTimeStamp][it->first] = (*TBit);
+		}
+		wfile.close();
+	}
+
+	std::string	strFile = m_strWorkingPath;
+
+	strFile += "TotalNetAssetValue.csv";
+	wfile.open(strFile.c_str(), std::ios::trunc);
+	wfile << m_strCurrentUpdateTime.c_str() << "DateTime,TimeStamp,Balance,MaxFundUsed\n";
+
+	std::map<std::string, cwBasicCTAStrategy::TimeBalanceDataPtr> LastestTBDMap;
+
+	for (auto BsIt = BalanceSeries.begin();
+		BsIt != BalanceSeries.end(); BsIt++)
+	{
+		std::string strDateTime;
+		std::uint64_t iTimeStamp;
+		double dTotalBalance = 0.0, dTotalFundOccupied = 0.0;
+
+		for (auto it = BsIt->second.begin();
+			it != BsIt->second.end(); it++)
+		{
+			LastestTBDMap[it->first] = it->second;
+
+			strDateTime = it->second->strDateTime;
+			iTimeStamp = it->second->iTimeStamp;
+		}
+
+		for (auto it = LastestTBDMap.begin();
+			it != LastestTBDMap.end(); it++)
+		{
+			dTotalBalance += it->second->dBalance;
+			dTotalFundOccupied += it->second->dMaxFundOccupied;
+		}
+
+		wfile << strDateTime.c_str() << ","
+			<< iTimeStamp << ","
+			<< dTotalBalance << ","
+			<< dTotalFundOccupied << '\n';
+	}
+	wfile.close();
+
+	double dTotalBalance = 0.0;
+	for (auto it = LastestTBDMap.begin();
+		it != LastestTBDMap.end(); it++)
+	{
+		dTotalBalance += it->second->dBalance;
+	}
+	m_dSignalPreBalance = dTotalBalance;
+	m_dSignalBalance = m_dSignalPreBalance;
 }
 
 void cwCTAPlatform::ShowSignalPosition()
@@ -1448,49 +1588,48 @@ int cwCTAPlatform::GetExpectedPosition(std::string InstrumentID, TradeParameter&
 	auto StrategySignalPosIt = m_cwStrategyPositionMap.find(SignalInstrumentID);
 	if (StrategySignalPosIt != m_cwStrategyPositionMap.end())
 	{
-		double dbInsPos = 0;
-		double dbExpectionMaintain = 0.0;
+		double dbInsPos = 0;									//单策略下策略持仓信号
+		double dbExpectionMaintain = 0.0;						//汇总持仓信号
 		for (auto it = StrategySignalPosIt->second.begin();
 			it != StrategySignalPosIt->second.end(); it++)
 		{
+			//信号持仓 * 映射合约倍数
 			dbInsPos = it->second * cwTradeParameter.Ratio;
 
-			//StrategyInstrumentUnion StrategyInsUnion;
-			//StrategyInsUnion.StrategyName = it->first;
-			//StrategyInsUnion.InstrumentID = InstrumentID;
+			auto Manualit = m_ManualinterventionMap.find(it->first);
+			if (Manualit != m_ManualinterventionMap.end()
+				&& Manualit->second.get() != NULL
+				&& Manualit->second->Manual)
+			{
+				dbInsPos = Manualit->second->ExpectedPosition;
+			}
+			else
+			{
+				auto MaskIt = m_DirectionMaskMap.find(it->first);
+				if (MaskIt != m_DirectionMaskMap.end()
+					&& MaskIt->second.get() != NULL)
+				{
+					if (dbInsPos > 0
+						&& MaskIt->second->NoLong)
+					{
+						dbInsPos = 0;
+					}
+					if (dbInsPos < 0
+						&& MaskIt->second->NoShort)
+					{
+						dbInsPos = 0;
+					}
 
-			//auto Manualit = m_ManualinterventionMap.find(StrategyInsUnion);
-			//if (Manualit != m_ManualinterventionMap.end()
-			//	&& Manualit->second.get() != NULL
-			//	&& Manualit->second->Manual)
-			//{
-			//	iExpectedMaintain += Manualit->second->ExpectedPosition;
-			//}
-			//else
-			//{
-			//	auto MaskIt = m_DirectionMaskMap.find(StrategyInsUnion);
-			//	if (MaskIt != m_DirectionMaskMap.end()
-			//		&& MaskIt->second.get() != NULL)
-			//	{
-			//		if (dbInsPos > 0
-			//			&& MaskIt->second->NoLong)
-			//		{
-			//			dbInsPos = 0;
-			//		}
-			//		if (dbInsPos < 0
-			//			&& MaskIt->second->NoShort)
-			//		{
-			//			dbInsPos = 0;
-			//		}
-
-			//		dbInsPos = dbInsPos * MaskIt->second->StrategyInsRatio;
-			//	}
-
-			//	dbExpectionMaintain += dbInsPos;
-			//}
+					dbInsPos = dbInsPos * MaskIt->second->StrategyInsRatio;
+				}
+			}
 			dbExpectionMaintain += dbInsPos;
 
 		}
+
+		//账户总体仓位控制：账户控制持仓
+		dbExpectionMaintain = dbExpectionMaintain * m_dAccountRatio;
+
 		if (cwTradeParameter.Mod)
 		{
 			if (dbExpectionMaintain > cwDouble_EQ)

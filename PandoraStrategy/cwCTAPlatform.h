@@ -9,6 +9,10 @@ class cwCTAPlatform :
     public cwBasicKindleStrategy
 {
 public:
+	cwCTAPlatform();
+	~cwCTAPlatform();
+
+
 	enum cwStrategyEnum:int
 	{
 		cw_DualTrust_Strategy = 0
@@ -158,8 +162,9 @@ public:
 	{
 		bool Manual;
 
-		std::string InstrumentID;
-		std::string StrategyName;
+		std::string StrategyID;
+
+		std::string SignalID;
 		double			ExpectedPosition;
 
 		ManualIntervention()
@@ -170,6 +175,27 @@ public:
 		}
 	};
 	typedef std::shared_ptr<ManualIntervention>			ManualInterventionPtr;
+
+	struct DirectionMask
+	{
+		std::string StrategyID;
+
+		std::string SignalID;
+
+		double		StrategyInsRatio;			//对于某个策略
+
+		bool		NoLong;
+		bool		NoShort;
+
+		DirectionMask()
+			: StrategyInsRatio(1.0)
+			, NoLong(false)
+			, NoShort(false)
+		{
+
+		}
+	};
+	typedef std::shared_ptr<DirectionMask>			DirectionMaskPtr;
 
 	struct StrategyInstrumentUnion
 	{
@@ -263,13 +289,29 @@ public:
 	bool					m_bStrategyRun;
 	bool					m_bShowPosition;
 
+	double					m_dAccountRatio = 1.0;
+
 	uint64_t				m_iKindleBeginTime = 0;
+
+
+	//账户权益信息
+	double					m_dSignalPreBalance;				//账户信号启动时权益（当日）
+	double                  m_dSignalBalance;					//账户信号最新权益（当日）
+
+	double					m_dPreBalance;						//账户实际启动时权益（当日）
+	double					m_dBalance;							//账户实际最新权益（当日）
 protected:
 	//配置参数
 	//Key:StrategyID
 	std::unordered_map<std::string, StrategyParaPtr>					m_StrategyParameterMap;
 	//Key:TradeInstrumentID
 	std::unordered_map<std::string, TradeParaPtr>						m_TradeParameterMap;
+
+	//Key:StrategyID  value:ManualIntervention
+	std::map<std::string, ManualInterventionPtr>						m_ManualinterventionMap;	
+	//key:StrategyID value:DirectionMask
+	std::map<std::string, DirectionMaskPtr>								m_DirectionMaskMap;			
+
 
 	//Strategy pool策略池
 	//key:SignalInstrument, key:TimeScale
@@ -279,11 +321,11 @@ protected:
 
 	//策略组合 Portfolio
 	//key:
-	std::unordered_map<std::string, std::deque<CTAStrategyInfoPtr>>		m_PortfolioStrategyList;
+	//std::unordered_map<std::string, std::deque<CTAStrategyInfoPtr>>		m_PortfolioStrategyList;
 
 
 	//key:SignalInstrument, key:StrategyID
-	std::unordered_map<std::string, std::unordered_map<std::string, double>> m_cwStrategyPositionMap;
+	std::map<std::string, std::map<std::string, double>> m_cwStrategyPositionMap;
 	void		WriteSignalToFile();
 	void		WriteNetAssetValueToFile();
 	void		ShowSignalPosition();
@@ -300,13 +342,14 @@ protected:
 
 
 
-	cwStrategyLog			m_StrategyLog;
+	cwStrategyLog													m_StrategyLog;
 
-	std::string				m_strConfigFileFullPath;
-	bool					m_bFirstGetConfig = true;
-	time_t					m_tLastestGetConfigTime;
+	std::string														m_strWorkingPath;
 
-	cwMUTEX					m_ParameterMutex;
+	std::string						                                m_strConfigFileFullPath;
+	bool					                                        m_bFirstGetConfig = true;
+	time_t					                                        m_tLastestGetConfigTime;
 
+	cwMUTEX					                                        m_ParameterMutex;
 };
 

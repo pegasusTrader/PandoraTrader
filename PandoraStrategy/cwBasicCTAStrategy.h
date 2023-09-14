@@ -2,6 +2,7 @@
 #include "cwBasicKindleStrategy.h"
 #include "cwStrategyLog.h"
 #include "cwSettlement.h"
+#include "cwNetValueEvaluation.h"
 
 //#define CW_NEED_STRATEGY_LOG
 
@@ -75,17 +76,43 @@ public:
 	struct TimeBalanceData
 	{
 		std::string		strDateTime;
+		std::uint64_t	iTimeStamp;
 		double			dBalance;
+		double			dMaxFundOccupied;
+	};
+	typedef std::shared_ptr<TimeBalanceData> TimeBalanceDataPtr;
+
+
+	struct EvaluatorTimeSeriesData
+	{
+		std::uint64_t	iTimeStamp;
+		double			dNetAsset;					//净值曲线
+		double			dTradingYears;				//累计交易年限（自然日计算）
+		double          dIRR;						//年化复利
+		double          dVolatility;				//日收益率的波动率
+		double          dVolatilityDownward;		//下行波动率
+		double          dAR;						//年化单利
+
+		double          dDrawDownRatio;				//当前回撤比率
+		double          dMaxDrawDownRatio;			//最大回撤率
+		double          dAverageDDR;				//简单平均回撤率
+
+		double          dSharpeRatio;				//夏普比率
+		double          dSortinoRatio;				//索提诺比率
+		double          dCalmarRatio;				//卡玛比率
+		double          dSterlingRatio;				//斯特林比率
 	};
 
 public:
 	cwBasicCTAStrategy(const char* szStrategyName);
-
+	~cwBasicCTAStrategy();
 
 	//初始化策略
 	virtual void			InitialStrategy() {};
 	//当生成一根新K线的时候，会调用该回调
 	virtual void			OnBar(bool bFinished, int iTimeScale, cwBasicKindleStrategy::cwKindleSeriesPtr pKindleSeries) = 0;
+
+	inline const char*		GetStrategyName() { return m_strStrategyName.c_str(); }
 
 	void		 SetStrategyPosition(int iPosition, char * szInstrumentID = nullptr);
 	int			 GetStrategyPosition(char* szInstrumentID = nullptr);
@@ -102,6 +129,8 @@ public:
 	cwInstrumentDataPtr		m_pInstrument;
 	//
 	void					_PreOnBar(bool bFinished, int iTimeScale, cwBasicKindleStrategy::cwKindleSeriesPtr pKindleSeries);
+	void                    UpdateEvaluator(double dCurrentMoneyUsed, double dPreMoneyUsed, double dCurrentTotalProfit,
+											std::string str_time, std::uint64_t timeStamp, double dExpectedRet);
 
 protected:
 	std::string				m_strStrategyName;
@@ -112,7 +141,6 @@ public:
 #endif // CW_NEED_STRATEGY_LOG
 
 private:
-	std::string				m_strWorkingPath;
 	cwStrategyLog			m_StrategyTradeListLog;
 
 	//
@@ -125,7 +153,12 @@ public:
 	std::string				m_strLastUpdateTime;	//当前行情时间
 
 	//用于记录策略净值变化
-	cwSettlement			m_cwSettlement;
-	std::deque<TimeBalanceData>						m_dTimeBalanceDQ;
+	cwSettlement									m_cwSettlement;
+	std::deque<TimeBalanceDataPtr>					m_dTimeBalanceDQ;//采用push back方法增加元素
+	
+
+	//策略评价器
+	cwNetValueEvaluation                            m_cwEvaluator;
+	std::deque< EvaluatorTimeSeriesData>            m_dEvaluatorDQ;//策略评价数据记录
 };
 
