@@ -55,7 +55,7 @@ typedef std::shared_ptr<LogData> LogDataPtr;
 class cwLog
 {
 public:
-	cwLog(const char * pFileName, const char * pFolder = NULL);
+	cwLog(const char * pFileName, const char * pFolder = NULL, bool bTimeInName = true);
 	~cwLog();
 	
 
@@ -75,6 +75,7 @@ public:
 
 	void			SetNoWorkRequired(bool NoWork = false);
 	void			SetKeepFileOpen(bool FileOpen = false);
+	void			SetWriteLogMsgOnly(bool MsgOnly = false);
 private:
 	std::thread							m_LogWorkingThread;
 	volatile std::atomic<bool>			m_bLogWorkingThreadRun;
@@ -96,7 +97,8 @@ private:
 
 private:
 	//不需要工作
-	volatile bool						m_bNoWorkRequired;
-	volatile bool						m_bKeepFileOpen;
+	bool								m_bNoWorkRequired;
+	bool								m_bKeepFileOpen;
+	bool								m_bWritLogMsgOnly;
 };
 

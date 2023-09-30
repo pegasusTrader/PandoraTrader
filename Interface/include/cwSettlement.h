@@ -35,13 +35,15 @@ public:
 #pragma endregion
 #endif // _MSC_VER
 
+	//核心更新函数
+	void SettlementPrice(std::string sInstrumentid, double dPrice, double dVolumeMultiple);
+	void UpdateTrade(std::string instrumentid, double price, int volume, double dVolumeMultiple);
+
+	//拓展更新函数
 	void UpdatePrice(cwMarketDataPtr pMdData, double dPriceTick, double dVolumeMultiple);
 
-	void SettlementPrice(std::string sInstrumentid, double dPrice, double dVolumeMultiple);
-
 	void UpdateOrder(cwOrderPtr pOrder);
-	void UpdateTrade(cwTradePtr pTrade, double dPriceTick, double dVolumeMultiple);
-	void UpdateTrade(std::string instrumentid, double price, int volume, double dPriceTick, double dVolumeMultiple);
+	void UpdateTrade(cwTradePtr pTrade, double dVolumeMultiple);
 
 	//入金
 	void Deposit(double ddeposit)
@@ -52,7 +54,7 @@ public:
 
 	cwMUTEX													m_ProcessMutex;
 
-	std::unordered_map<std::string, cwMarketDataPtr>		m_LastPriceMap;					//Key Insrumentid,	value: MarketData
+	std::unordered_map<std::string, double>					m_LastPriceMap;					//Key Insrumentid,	value: LastPrice
 
 	std::unordered_map<std::string, int>					m_Position;						//key Instrumentid	value: NetPosition
 
@@ -66,7 +68,8 @@ public:
 	std::unordered_map<std::string, double>					m_PositionProfitMap;			//key:InstrumentID, value: This Instrument PositionProfit
 	std::unordered_map<std::string, double>					m_FeeMap;						//key:InstrumentID, value: This Instrument Fee
 
-	std::unordered_map<std::string, std::deque<double>>		m_UnClosePositionCost;			//key:InstrumentID, value: Position Cost deque
+	std::unordered_map<std::string, std::deque<double>>		m_UnClosePositionCostDetail;	//key:InstrumentID, value: Position Cost deque
+	std::unordered_map<std::string, double>					m_UnClosePositionCost;			//key:InstrumentID, value: Position Cost
 	std::unordered_map<std::string, int>					m_TradeCountMap;				//key:InstrumentID, value: TradeCount
 
 	std::unordered_map<std::string, double>					m_dInsMaxBalanceMap;			//key:InstrumentID, value: Instrument Max Balance For Max Drop Down
@@ -74,6 +77,7 @@ public:
 
 	double													m_dPreBalance;					//初始权益
 	double													m_dBalance;						//当前权益
+	double													m_dMaxFundOccupied;				//最大资金占用
 
 	double													m_dPositionProfit;				//持仓盈亏
 	double													m_dCloseProfit;					//平仓盈亏
