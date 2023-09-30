@@ -37,7 +37,9 @@ public:
 	
 	//variable
 	std::uint64_t											m_iStartTimeStamp;              //开始时间戳
+	std::string												m_strStartTimeStamp;			//开始时间字符串
 	std::uint64_t											m_iTimeStamp;                   //最新时间戳
+	std::string												m_strTimeStamp;					//最新时间字符串
 	std::uint64_t											m_iThisDayEndTimeStamp;			//当日结束时间戳（默认为周一到周五，16时）
 
 	double													m_dPreTotalPNL;					//上次总盈亏
@@ -79,6 +81,8 @@ public:
 	void Deposit(double deposit);
 	//更新净值
 	void UpdateNetValueByTotalPNL(std::uint64_t timestamp, double totalPNL, double fundUsed);
+	void Calculate();
+
 	//设置预期收益
 	void SetExpectedReturn(double expectedret);
 	

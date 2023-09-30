@@ -5,6 +5,7 @@
 
 #include "cwDualTrust.h"
 
+
 class cwCTAPlatform :
     public cwBasicKindleStrategy
 {
@@ -280,6 +281,10 @@ public:
 	
 	cwInstrumentDataPtr		GetFirstInstrumentData(std::string ProductID);
 
+	void					ShowSignalPosition();
+	void					ShowManualInfor();
+
+
 	///strategy parameter
 	//策略运行代号
 	std::string				m_strStrategyName;
@@ -328,7 +333,6 @@ protected:
 	std::map<std::string, std::map<std::string, double>> m_cwStrategyPositionMap;
 	void		WriteSignalToFile();
 	void		WriteNetAssetValueToFile();
-	void		ShowSignalPosition();
 
 	//Deal Trade Signal
 	bool		GetParameter(const char * szInstrumentID, 

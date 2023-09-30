@@ -89,7 +89,7 @@ void cwNetValueEvaluation::UpdateNetValueByTotalPNL(std::uint64_t timestamp, dou
 	{
 		return;
 	}
-	
+
 	//换日处理
 	if (timestamp > m_iThisDayEndTimeStamp)
 	{
@@ -131,6 +131,10 @@ void cwNetValueEvaluation::UpdateNetValueByTotalPNL(std::uint64_t timestamp, dou
 	{
 		m_dMaxDrawDownRatio = m_dDrawDownRatio;
 	}
+}
+
+void cwNetValueEvaluation::Calculate()
+{
 	m_dAverageDDR = (m_dAverageDDR * (m_iKindleCount - 1) + m_dDrawDownRatio) / m_iKindleCount;
 
 	m_dTradingYears = (m_iTimeStamp - m_iStartTimeStamp) / (1000.0 * 1000 * 24 * 60 * 60 * 365);//24小时*60分钟*60秒*365日

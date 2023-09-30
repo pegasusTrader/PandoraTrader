@@ -75,10 +75,11 @@ public:
 
 	struct TimeBalanceData
 	{
-		std::string		strDateTime;
-		std::uint64_t	iTimeStamp;
-		double			dBalance;
-		double			dMaxFundOccupied;
+		std::string		strDateTime;			//时间字符串
+		std::uint64_t	iTimeStamp;				//时间戳
+		double			dBalance;				//总盈亏
+		double			dMaxFundOccupied;		//最大资金占用
+		double			dNetAsset;				//净值
 	};
 	typedef std::shared_ptr<TimeBalanceData> TimeBalanceDataPtr;
 
@@ -129,7 +130,7 @@ public:
 	cwInstrumentDataPtr		m_pInstrument;
 	//
 	void					_PreOnBar(bool bFinished, int iTimeScale, cwBasicKindleStrategy::cwKindleSeriesPtr pKindleSeries);
-	void                    UpdateEvaluator(double dCurrentMoneyUsed, double dPreMoneyUsed, double dCurrentTotalProfit,
+	void                    UpdateEvaluator(double dCurrentMoneyUsed, double dCurrentTotalProfit,
 											std::string str_time, std::uint64_t timeStamp, double dExpectedRet);
 
 protected:

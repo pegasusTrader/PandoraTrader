@@ -27,7 +27,7 @@ cwCTAPlatform::~cwCTAPlatform()
 
 std::string cwCTAPlatform::GetStrategyVersion()
 {
-	return "20230809_v1.1";
+	return "20230926_v1.1";
 }
 
 std::string cwCTAPlatform::GetStrategyName()
@@ -272,11 +272,12 @@ void cwCTAPlatform::OnReady()
 
 void cwCTAPlatform::OnStrategyTimer(int iTimerId, const char * szInstrumentID)
 {
-	if (iTimerId == 1
-		&& m_strConfigFileFullPath.size() > 0)
+	if (iTimerId == 1)
 	{
-		ReadXmlConfigFile(m_strConfigFileFullPath.c_str());
-
+		if (m_strConfigFileFullPath.size() > 0)
+		{
+			ReadXmlConfigFile(m_strConfigFileFullPath.c_str());
+		}
 		//ShowSignalPosition();
 
 		double	dBalance = 0.0;
@@ -494,7 +495,7 @@ bool cwCTAPlatform::ReadXmlConfigFile(const char * pConfigFilePath, bool bNeedDi
 			if (m_bFirstGetConfig)
 			{
 				m_cwShow.AddLog(" First Get Config File!\n FilePath: %s", pConfigFilePath);
-				log.AddLog(cwStrategyLog::enIMMS, "First Get Config File.", false);
+				log.AddLog(cwStrategyLog::enIMMS, "First Get Config File.StrategyVersion:%s", GetStrategyVersion().c_str());
 				log.AddLog(cwStrategyLog::enIMMS, pConfigFilePath, false);
 			}
 			else
@@ -514,7 +515,6 @@ bool cwCTAPlatform::ReadXmlConfigFile(const char * pConfigFilePath, bool bNeedDi
 
 	if (m_bFirstGetConfig)
 	{
-		m_bFirstGetConfig = false;
 		bNeedDisPlay = false;
 	}
 
@@ -640,8 +640,14 @@ bool cwCTAPlatform::ReadXmlConfigFile(const char * pConfigFilePath, bool bNeedDi
 					{
 						m_iKindleBeginTime = t.GetTotalMicrosecond();
 
-						m_cwShow.AddLog("Kindel Start Time Set: %4d%02d%02d_%02d:%02d:%02d",
-							year, month, day, hour, minute, second);
+						if (m_bFirstGetConfig)
+						{
+							m_cwShow.AddLog("Kindel Start Time Set: %4d%02d%02d_%02d:%02d:%02d",
+								year, month, day, hour, minute, second);
+
+							log.AddLog(cwStrategyLog::enIMMS, "Kindel Start Time Set: %4d%02d%02d_%02d:%02d:%02d",
+								year, month, day, hour, minute, second);
+						}
 
 					}
 				}
@@ -884,7 +890,10 @@ bool cwCTAPlatform::ReadXmlConfigFile(const char * pConfigFilePath, bool bNeedDi
 								(ParaPtr->Mod ? "true" : "false"),
 								(loadOkay ? "true" : "false"));
 						}
-						log.AddLog(cwStrategyLog::enIMMS, "Mod : %s ==> %s !", (ParaPtr->Mod ? "true" : "false"), (loadOkay ? "true" : "false"));
+						log.AddLog(cwStrategyLog::enIMMS, "%s Mod : %s ==> %s !", 
+							it->first.c_str(),
+							(ParaPtr->Mod ? "true" : "false"), 
+							(loadOkay ? "true" : "false"));
 						ParaPtr->Mod = loadOkay;
 					}
 				}
@@ -1056,10 +1065,10 @@ bool cwCTAPlatform::ReadXmlConfigFile(const char * pConfigFilePath, bool bNeedDi
 					{
 						if (bNeedDisPlay)
 						{
-							m_cwShow.AddLog("%s %s Manual:  ParaPtr->Manual : %s ==> %s !",
+							m_cwShow.AddLog("%s %s Manual:  %s ==> %s !",
 								it->second->StrategyID.c_str(), it->second->SignalID.c_str(), (ParaPtr->Manual ? "true" : "false"), (loadOkay ? "true" : "false"));
 						}
-						log.AddLog(cwStrategyLog::enIMMS, "%s %s Manual:  ParaPtr->Manual : %s ==> %s !",
+						log.AddLog(cwStrategyLog::enIMMS, "%s %s Manual: %s ==> %s !",
 							it->second->StrategyID.c_str(), it->second->SignalID.c_str(), (ParaPtr->Manual ? "true" : "false"), (loadOkay ? "true" : "false"));
 						ParaPtr->Manual = loadOkay;
 					}
@@ -1161,10 +1170,10 @@ bool cwCTAPlatform::ReadXmlConfigFile(const char * pConfigFilePath, bool bNeedDi
 					{
 						if (bNeedDisPlay)
 						{
-							m_cwShow.AddLog("%s %s NoLong:  ParaPtr->NoLong : %s ==> %s !",
+							m_cwShow.AddLog("%s %s NoLong: %s ==> %s !",
 								it->second->StrategyID.c_str(), it->second->SignalID.c_str(), (ParaPtr->NoLong ? "true" : "false"), (loadOkay ? "true" : "false"));
 						}
-						log.AddLog(cwStrategyLog::enIMMS, "%s %s NoLong:  ParaPtr->NoLong : %s ==> %s !",
+						log.AddLog(cwStrategyLog::enIMMS, "%s %s NoLong: %s ==> %s !",
 							it->second->StrategyID.c_str(), it->second->SignalID.c_str(), (ParaPtr->NoLong ? "true" : "false"), (loadOkay ? "true" : "false"));
 						ParaPtr->NoLong = loadOkay;
 					}
@@ -1180,10 +1189,10 @@ bool cwCTAPlatform::ReadXmlConfigFile(const char * pConfigFilePath, bool bNeedDi
 					{
 						if (bNeedDisPlay)
 						{
-							m_cwShow.AddLog("%s %s NoShort:  ParaPtr->NoShort : %s ==> %s !",
+							m_cwShow.AddLog("%s %s NoShort: %s ==> %s !",
 								it->second->StrategyID.c_str(), it->second->SignalID.c_str(), (ParaPtr->NoShort ? "true" : "false"), (loadOkay ? "true" : "false"));
 						}
-						log.AddLog(cwStrategyLog::enIMMS, "%s %s NoShort:  ParaPtr->NoShort : %s ==> %s !",
+						log.AddLog(cwStrategyLog::enIMMS, "%s %s NoShort: %s ==> %s !",
 							it->second->StrategyID.c_str(), it->second->SignalID.c_str(), (ParaPtr->NoShort ? "true" : "false"), (loadOkay ? "true" : "false"));
 						ParaPtr->NoShort = loadOkay;
 					}
@@ -1194,6 +1203,8 @@ bool cwCTAPlatform::ReadXmlConfigFile(const char * pConfigFilePath, bool bNeedDi
 		}
 
 	}
+
+	m_bFirstGetConfig = false;
 
 	return true;
 }
@@ -1337,9 +1348,11 @@ void cwCTAPlatform::SetKindle(std::string strStrategyID, bool bIndex, const char
 	//	pStrategyInfo->_pStrategy->m_strLastUpdateTime.c_str(), pStrategyInfo->_pStrategy->GetStrategyPosition());
 	m_cwShow.AddLog("%s HisKindle Count:%d Last: %s %d", strStrategyID.c_str(), iCount,
 		pStrategyInfo->_pStrategy->m_strLastUpdateTime.c_str(), pStrategyInfo->_pStrategy->GetStrategyPosition());
-	m_cwShow.AddLog("%s ¾»Öµ:%.1f »Ø³·:%.1f%% ÏÄÆÕ:%.1f%%",
+
+	pStrategyInfo->_pStrategy->m_cwEvaluator.Calculate();
+	m_cwShow.AddLog("¾»Öµ:%.1f »Ø³·:%.1f%% ÏÄÆÕ:%.1f",
 		pStrategyInfo->_pStrategy->m_cwEvaluator.m_dCurNetAsset,
-		pStrategyInfo->_pStrategy->m_cwEvaluator.m_dMaxDrawDownRatio,
+		pStrategyInfo->_pStrategy->m_cwEvaluator.m_dMaxDrawDownRatio * 100,
 		pStrategyInfo->_pStrategy->m_cwEvaluator.m_dSharpeRatio);
 }
 
@@ -1468,7 +1481,7 @@ void cwCTAPlatform::WriteNetAssetValueToFile()
 #endif
 		strFile += "NetAssetValue.csv";
 		wfile.open(strFile.c_str(), std::ios::trunc);
-		wfile << m_strCurrentUpdateTime.c_str() << "DateTime,TimeStamp,Balance,MaxFundUsed\n";
+		wfile << m_strCurrentUpdateTime.c_str() << "DateTime,TimeStamp,Balance,MaxFundUsed,NetAsset\n";
 
 		for (auto TBit = it->second->_pStrategy->m_dTimeBalanceDQ.begin();
 			TBit != it->second->_pStrategy->m_dTimeBalanceDQ.end(); TBit++)
@@ -1476,7 +1489,8 @@ void cwCTAPlatform::WriteNetAssetValueToFile()
 			wfile << (*TBit)->strDateTime.c_str() << ","
 				<< (*TBit)->iTimeStamp << ","
 				<< (*TBit)->dBalance << ","
-				<< (*TBit)->dMaxFundOccupied << '\n';
+				<< (*TBit)->dMaxFundOccupied << ","
+				<< (*TBit)->dNetAsset << '\n';
 
 			BalanceSeries[(*TBit)->iTimeStamp][it->first] = (*TBit);
 		}
@@ -1487,10 +1501,11 @@ void cwCTAPlatform::WriteNetAssetValueToFile()
 
 	strFile += "TotalNetAssetValue.csv";
 	wfile.open(strFile.c_str(), std::ios::trunc);
-	wfile << m_strCurrentUpdateTime.c_str() << "DateTime,TimeStamp,Balance,MaxFundUsed\n";
+	wfile << m_strCurrentUpdateTime.c_str() << "DateTime,TimeStamp,Balance,MaxFundUsed,NetAsset\n";
 
 	std::map<std::string, cwBasicCTAStrategy::TimeBalanceDataPtr> LastestTBDMap;
 
+	cwNetValueEvaluation netValueEvaluator;
 	for (auto BsIt = BalanceSeries.begin();
 		BsIt != BalanceSeries.end(); BsIt++)
 	{
@@ -1513,11 +1528,13 @@ void cwCTAPlatform::WriteNetAssetValueToFile()
 			dTotalBalance += it->second->dBalance;
 			dTotalFundOccupied += it->second->dMaxFundOccupied;
 		}
+		netValueEvaluator.UpdateNetValueByTotalPNL(iTimeStamp, dTotalBalance, dTotalFundOccupied);
 
 		wfile << strDateTime.c_str() << ","
 			<< iTimeStamp << ","
 			<< dTotalBalance << ","
-			<< dTotalFundOccupied << '\n';
+			<< dTotalFundOccupied <<","
+			<< netValueEvaluator.m_dCurNetAsset << '\n';
 	}
 	wfile.close();
 
@@ -1545,6 +1562,26 @@ void cwCTAPlatform::ShowSignalPosition()
 			it != InsIt->second.end(); it++)
 		{
 			m_cwShow.AddLog("%s %s %.1f", InsIt->first.c_str(), it->first.c_str(), it->second);
+		}
+	}
+}
+
+void cwCTAPlatform::ShowManualInfor()
+{
+	for (auto Manualit = m_ManualinterventionMap.begin();
+		Manualit != m_ManualinterventionMap.end(); Manualit++)
+	{
+		if (Manualit->second.get() != NULL
+			&& Manualit->second->Manual)
+		{
+			auto it = m_NameCTAStrategy.find(Manualit->first);
+			if (it != m_NameCTAStrategy.end())
+			{
+				m_cwShow.AddLog("%s SetManual Expect:%d, Signal:%d!",
+					Manualit->first.c_str(),
+					(int)(Manualit->second->ExpectedPosition),
+					it->second->_pStrategy->GetStrategyPosition());
+			}
 		}
 	}
 }
@@ -1601,7 +1638,7 @@ int cwCTAPlatform::GetExpectedPosition(std::string InstrumentID, TradeParameter&
 				&& Manualit->second.get() != NULL
 				&& Manualit->second->Manual)
 			{
-				dbInsPos = Manualit->second->ExpectedPosition;
+				dbInsPos = Manualit->second->ExpectedPosition * cwTradeParameter.Ratio;
 			}
 			else
 			{

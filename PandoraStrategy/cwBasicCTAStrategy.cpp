@@ -40,18 +40,7 @@ void cwBasicCTAStrategy::_PreOnBar(bool bFinished, int iTimeScale, cwBasicKindle
 		//更新权益
 		m_cwSettlement.SettlementPrice(pKindleSeries->GetInstrumentID(), m_dLastPrice, m_pInstrument->VolumeMultiple);
 
-		//评价
-		//(1)TBQ序列无
-		if (m_dTimeBalanceDQ.begin() == m_dTimeBalanceDQ.end())
-		{
-			//初始化m_dEvaluatorDQ的初始资金
-			UpdateEvaluator(m_cwSettlement.m_dMaxFundOccupied,0, m_cwSettlement.m_dBalance, m_strLastUpdateTime, pKindle->StartTime,0.05);
-		}
-		else//已有历史记录时
-		{
-			TimeBalanceDataPtr latest_tbd = m_dTimeBalanceDQ.back();
-			UpdateEvaluator(m_cwSettlement.m_dMaxFundOccupied, latest_tbd->dMaxFundOccupied, m_cwSettlement.m_dBalance, m_strLastUpdateTime, pKindle->StartTime,0.05);
-		}
+		UpdateEvaluator(m_cwSettlement.m_dMaxFundOccupied, m_cwSettlement.m_dBalance, m_strLastUpdateTime, pKindle->StartTime, 0.05);
 
 		//存储更新权益
 		TimeBalanceDataPtr tbdPtr = std::make_shared<TimeBalanceData>();
@@ -59,13 +48,14 @@ void cwBasicCTAStrategy::_PreOnBar(bool bFinished, int iTimeScale, cwBasicKindle
 		tbdPtr->iTimeStamp = pKindle->StartTime;
 		tbdPtr->dBalance = m_cwSettlement.m_dBalance;
 		tbdPtr->dMaxFundOccupied = m_cwSettlement.m_dMaxFundOccupied;
+		tbdPtr->dNetAsset = m_cwEvaluator.m_dCurNetAsset;
 
 		m_dTimeBalanceDQ.push_back(tbdPtr);
 	}
 }
 
 //策略评价更新函数
-void cwBasicCTAStrategy::UpdateEvaluator(double dCurrentMoneyUsed, double dPreMoneyUsed, double dCurrentTotalProfit, std::string str_time, std::uint64_t timeStamp, double dExpectedRet)
+void cwBasicCTAStrategy::UpdateEvaluator(double dCurrentMoneyUsed, double dCurrentTotalProfit, std::string str_time, std::uint64_t timeStamp, double dExpectedRet)
 {
 	m_cwEvaluator.UpdateNetValueByTotalPNL(timeStamp, dCurrentTotalProfit, dCurrentMoneyUsed);
 	
