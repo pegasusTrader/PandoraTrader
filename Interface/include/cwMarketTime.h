@@ -35,7 +35,7 @@ public:
 		}
 	}
 
-	inline bool Reset(int hour, int minute, int second, int MilliSecond = 0);
+	bool Reset(int hour, int minute, int second, int MilliSecond = 0);
 	bool Reset(std::string updatetime, int MilliSecond = 0);
 	bool Reset(int64_t iTotalMilliSecond);
 	

@@ -22,7 +22,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{B3B810B5-370E-4A47-ACF9-3BC14481DC94}</ProjectGuid>
     <RootNamespace>PandoraStrategy</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -123,12 +123,32 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="cwBasicCTAStrategy.cpp" />
+    <ClCompile Include="cwChasingRisingStrategy.cpp" />
+    <ClCompile Include="cwCTAPlatform.cpp" />
+    <ClCompile Include="cwDualTrust.cpp" />
     <ClCompile Include="cwEmptyStrategy.cpp" />
+    <ClCompile Include="cwMarketDataReceiver.cpp" />
+    <ClCompile Include="cwPandoraAgentManager.cpp" />
+    <ClCompile Include="cwPandoraPairTrading.cpp" />
+    <ClCompile Include="cwPandoraPositionAgent.cpp" />
     <ClCompile Include="cwStrategyDemo.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="cwBasicCTAStrategy.h" />
+    <ClInclude Include="cwChasingRisingStrategy.h" />
+    <ClInclude Include="cwCTAPlatform.h" />
+    <ClInclude Include="cwDualTrust.h" />
     <ClInclude Include="cwEmptyStrategy.h" />
+    <ClInclude Include="cwMarketDataReceiver.h" />
+    <ClInclude Include="cwPandoraAgentManager.h" />
+    <ClInclude Include="cwPandoraPairTrading.h" />
+    <ClInclude Include="cwPandoraPositionAgent.h" />
     <ClInclude Include="cwStrategyDemo.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="CTAPlatformConfig.xml" />
+    <Xml Include="cwChasingRisingStrategy.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -27,9 +27,10 @@
 class cwTickTradeManager
 {
 public:
-	cwTickTradeManager(bool bNeedStatic = false);
+	cwTickTradeManager(bool bSimpleMode = false, bool bNeedStatic = false);
 	~cwTickTradeManager();
 
+	void SetSimpleMode(bool bSimpleMode = false) { m_bSimpleMode = bSimpleMode; }
 	void Reset();
 
 	//update Instrument Data
@@ -39,18 +40,18 @@ public:
 	void UpdatePrice(cwMarketDataPtr pPriceData);
 
 	//Get this tick's trade volume
-	std::map<int64_t, uint32_t>& GetCurrentTradeMap() 
+	std::map<int64_t, int64_t>& GetCurrentTradeMap() 
 	{
 		cwAUTOMUTEX mt(m_CurrentTradeMutex, true);
 		return m_CurrentTradeMap; 
 	}
-	uint32_t GetCurrentBuyVolume()
+	int64_t GetCurrentBuyVolume()
 	{
 		cwAUTOMUTEX mt(m_CurrentTradeMutex, true);
 		return m_iCurrentBuyVolume;
 
 	}
-	uint32_t GetCurrentSellVolume()
+	int64_t GetCurrentSellVolume()
 	{
 		cwAUTOMUTEX mt(m_CurrentTradeMutex, true);
 		return m_iCurrentSellVolume;
@@ -61,7 +62,7 @@ public:
 	void ResetTotalTradeMap() { m_TotalTradeMap.clear(); }
 
 	void SaveTotalTradeVolumeNumMap();
-	std::map<uint64_t, uint32_t>& GetTotalTradeVolumeNumMap() { return m_TotalTradeVolumeNumMap; }
+	std::map<uint64_t, int64_t>& GetTotalTradeVolumeNumMap() { return m_TotalTradeVolumeNumMap; }
 	void ResetTotalTradeVolumeNumMap() { m_TotalTradeVolumeNumMap.clear(); }
 
 	void SaveTotalTickVolumeNumMap();
@@ -75,20 +76,20 @@ private:
 
 	//price update
 	//Key:Price*1000 value:TradeVolume
-	std::map<int64_t, uint32_t> m_CurrentTradeMap;
-	cwMUTEX						 m_CurrentTradeMutex;
+	std::map<int64_t, int64_t>		m_CurrentTradeMap;
+	cwMUTEX							m_CurrentTradeMutex;
 
-	uint32_t					 m_iCurrentBuyVolume;
-	uint32_t					 m_iCurrentSellVolume;
+	int64_t							m_iCurrentBuyVolume;
+	int64_t							m_iCurrentSellVolume;
 
 	//static Update
 	//Key:Price*1000 value:TradeVolume	
-	std::map<int64_t, uint64_t> m_TotalTradeMap;
+	std::map<int64_t, uint64_t>		m_TotalTradeMap;
 	//Key:TradeVolume value:how many times appear
-	std::map<uint64_t, uint32_t> m_TotalTradeVolumeNumMap;
+	std::map<uint64_t, int64_t>		m_TotalTradeVolumeNumMap;
 
 	//key:TickVolume value:how many times appear
-	std::map<uint64_t, uint32_t> m_TotalTickVolumeNumMap;
+	std::map<uint64_t, uint32_t>	m_TotalTickVolumeNumMap;
 
 	//Total Average Price
 	double		m_dbAvgPrice;
@@ -101,6 +102,7 @@ private:
 	bool		m_bNeedStatic;
 	void		Static();
 
+	bool		m_bSimpleMode;
 #ifdef TRADEINFO_LOG
 	//Price Log
 	std::ofstream	m_Price_log;

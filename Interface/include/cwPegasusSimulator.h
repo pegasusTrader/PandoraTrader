@@ -12,6 +12,7 @@
 #pragma once
 #include <thread>
 #include <atomic>
+#include <set>
 
 #include "cwBasicSimulator.h"
 #include "cwTickTradeManager.h"
@@ -71,6 +72,9 @@ public:
 	int					GetCustomDataDequeSize() { return m_iCustomDataDequeSize; }
 
 	std::string									m_strSimulatorName;
+
+	cwTickTradeManager							m_cwTickManager;
+
 private:
 	enum SIMTYPE:int
 	{
@@ -92,6 +96,7 @@ private:
 	std::thread			m_SimulatorProcessorThread;
 	volatile bool		m_bMarketDataUpdateThreadRun;
 	void				SimulatorProcessor();
+	void				SimulatorSimpleModeWithoutTradeProcessor();
 
 	std::thread			m_MarketDataUpdateThread;
 	void				CsvMarketDataUpdate();
@@ -108,7 +113,6 @@ private:
 	//系统成交编号
 	int					m_iSysTradeID;
 
-	cwTickTradeManager	m_cwTickManager;
 
 	//最新的行情数据，key:InstrumentID
 	std::map<std::string, cwMarketDataPtr>								m_LastestMarketDataMap;
@@ -161,7 +165,7 @@ private:
 
 	cwMUTEX													m_CacheWorkingMutex;
 	std::deque<std::string>									m_CacheWorkingList;
-
+	std::set<std::string>									m_CacheInstrumentSet;
 	std::map<std::string, std::string>						m_MarketDataCacheFileMap;
 
 	//Result 

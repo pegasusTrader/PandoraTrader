@@ -83,6 +83,7 @@ public:
 		, cwReqQryTrade
 		, cwReqSettlementInfo
 		, cwReqMarginRate
+		, cwReqCommissionRate
 	};
 
 public:
@@ -477,7 +478,9 @@ public:
 	virtual void CancelOrder(cwOrderPtr pOrder);
 
 	//查询保证金率
-	virtual double		GetMarginRate(std::string InstrumentID);
+	virtual cwMarginRateDataPtr			GetMarginRate(std::string InstrumentID);
+	//查询手续费率
+	virtual cwCommissionRateDataPtr		GetCommissionRate(std::string InstrumentID);
 
 protected:
 	bool		MyReqFunction(cwReqType nType, void * pData);

@@ -78,10 +78,14 @@ public:
 
 	///Special For Simulation 
 	///These functions will NOT be called in normal mode
+	/// 按回测开始第一个行情过来前回调（稍晚于OnReady），如删除读入过多的k线
+	virtual void OnSimulationBegin(int64_t timeStamp) {};
 	//回测部分结束（夜盘结束和日盘结束）将被调用
 	virtual void OnSimulationPartEnd() {};
 	//整个回测结束将被调用
 	virtual void OnSimulationFinished() {};
+
+
 
 	virtual void InitialStrategy(const char * pConfigFilePath);
 	std::string			m_strConfigFileFullPath;
@@ -141,7 +145,9 @@ public:
 	//获取合约乘数，如果获取失败返回-1
 	double	  GetMultiplier(const char * szInstrumentID);
 	//获取保证金率，会从柜台中查询，在未查询到之前默认返回1，即百分百保证金占用
-	double	  GetMarginRate(const char * szInstrumentID);
+	cwMarginRateDataPtr			GetMarginRate(const char * szInstrumentID);
+	//获取手续费率，会从柜台中查询，在未查询到之前默认返回0，即不收手续费
+	cwCommissionRateDataPtr		GetCommissionRate(const char * szInstrumentID);
 	//获取产品ID 
 	char *    GetProductID(const char * szInstrumentID);
 
@@ -166,6 +172,8 @@ public:
 
 	//获取合约当前撤单次数
 	int		  GetInstrumentCancelCount(std::string InstrumentID);
+	//获取合约当前信息量
+	int		  GetInstrumentDeclarationMsgCount(std::string InstrumentID);
 	//获取合约是否是订阅
 	bool	  IsThisStrategySubScribed(std::string InstrumentID);
 	//获取当前状态是否为回测模拟情况 如果回测模式下返回true，否则false
@@ -183,7 +191,10 @@ public:
 	void					_SetTradeSpi(cwTradeAPIType apiType, void *pSpi);
 	void					_SetIsSimulation(bool IsSimulation = false) { m_bIsSimulation = IsSimulation; };
 
+	virtual void			_OnSimulationBegin(int64_t timeStamp) = 0;
+
 	virtual void			_SetReady() = 0;
+	virtual void			_OnDisConnect() = 0;
 	virtual void			_PriceUpdate(cwMarketDataPtr pPriceData) = 0;
 	virtual void			_OnRtnTrade(cwTradePtr pTrade) = 0;
 	virtual void			_OnRtnOrder(cwOrderPtr pOrder, cwOrderPtr pOriginOrder = cwOrderPtr()) = 0;

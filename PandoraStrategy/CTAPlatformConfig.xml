@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+<Config Name="cu" Run="1" AccountRatio="1" ShowPrice="0" ShowPosition="0" Generated_at="2017-11-18 12:21:47">
+  <CTAStrategy BeginTime="2022_03_01_08:00:00">
+	  <Strategy Name="DualTrust">
+		  <Kindle  Index="1" Instrument="hc" TimeScale ="900"/>
+		  <multiple value="1"/>
+		  <ParaField P1="300" P2="10" P3="20" P4="1" P5="1" P6="3"/>
+	  </Strategy>
+  </CTAStrategy>
+  <Subscription>
+	  <Instrument ID="hc2310" SignalID="hc_Index" Ratio="0.7" Mod="0" OpenClose="0" AddTick="0" LargeOrderVolume="90" LittleOrderVolume="10" AskBidGap="1" WaitInterval="1" Pause="0"/>
+	  <Instrument ID="hc2401" SignalID="hc_Index" Ratio="0.3" Mod="1" OpenClose="0" AddTick="0" LargeOrderVolume="90" LittleOrderVolume="10" AskBidGap="1" WaitInterval="1" Pause="0"/>
+  </Subscription>
+  <ManualIntervention>
+    <Strategy ID="JackT1_v_300" SignalID="v_Index" Manual="0" ExpectedPosition="0"/>
+    <Strategy ID="JackT1_v2401_300" SignalID="v2401" Manual="0" ExpectedPosition="0"/>
+  </ManualIntervention>
+  <DirectionMask>
+    <Strategy ID="JackT1_v_300" SignalID="ni1901" Ratio="0.5" NoLong="0" NoShort="0"/>
+  </DirectionMask>
+
+</Config>

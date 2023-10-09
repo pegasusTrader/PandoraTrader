@@ -32,6 +32,9 @@ public:
 	virtual void OnRspQryInstrument(std::unordered_map<std::string, cwInstrumentDataPtr>& InstrumentData);
 
 
+	virtual void OnRspQryInstrument(std::unordered_map<std::string, cwInstrumentDataPtr>& InstrumentData);
+
+
 	//User Trader Method
 	//行情更新
 	virtual void PriceUpdate(cwMarketDataPtr pPriceData);
@@ -55,6 +58,7 @@ public:
 	virtual void OnSimulationFinished();
 
 	void UpdateTradingDay(const char * szTradingDay);
+	void OnSimulationBegin(int64_t timeStamp);
 
 	virtual	cwOrderPtr InputLimitOrder(const char * szInstrumentID, cwFtdcDirectionType direction,
 		cwOpenClose openclose, int volume, double price);
@@ -66,7 +70,9 @@ public:
 	virtual void CancelOrder(cwOrderPtr pOrder);
 
 	//查询保证金率
-	virtual double		GetMarginRate(std::string InstrumentID);
+	virtual cwMarginRateDataPtr			GetMarginRate(std::string InstrumentID);
+	//查询手续费率
+	virtual cwCommissionRateDataPtr		GetCommissionRate(std::string InstrumentID);
 
 	cwOrderPtr GetcwOrderPtr(const char * szExchangeID, const char * szInstrumentID, cwFtdcDirectionType direction,
 		cwOpenClose openclose, int volume, double price, cwInsertOrderType insertordertype = cwInsertOrderType::cwInsertLimitOrder);

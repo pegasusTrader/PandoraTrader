@@ -98,11 +98,11 @@ void cwEmptyStrategy::OnReady()
 
 		if (SubscribeInstrument.size() >= 10)
 		{
-			SubScribePrice(SubscribeInstrument);
+			//SubScribePrice(SubscribeInstrument);
 
 			SubscribeInstrument.clear();
 		}
 	}
 	
-	SubScribePrice(SubscribeInstrument);
+	//SubScribePrice(SubscribeInstrument);
 }

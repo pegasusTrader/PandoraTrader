@@ -2,6 +2,8 @@
 //
 //For more information, please visit https://github.com/pegasusTrader/PandoraTrader
 //
+//除对外销售，免费提供，欢迎合规使用
+//
 //Please use the platform with legal and regulatory permission.
 //This software is released into the public domain.You are free to use it in any way you like, except that you may not sell this source code.
 //This software is provided "as is" with no expressed or implied warranty.I accept no liability for any damage or loss of business that this software may cause.
@@ -15,6 +17,7 @@
 #include <string.h>
 #include "cwFtdMdSpi.h"
 #include "cwFtdTradeSpi.h"
+//#include "cwMarketDataReceiver.h"
 #ifdef EMPTYSTRATEGY
 #include "cwEmptyStrategy.h"
 #else
@@ -69,8 +72,8 @@ char					m_szTdDllPath[MAX_PATH];
 std::vector<std::string> m_SubscribeInstrument;
 
 std::string				m_strStrategyConfigFile;
+std::string				m_strHisDataFolder;
 
-std::set<std::string>	m_AuthorizeUserIDSet;
 
 #ifdef WIN32
 #define GetCharElement(Type, Name) const char * psz##Name = Element->Attribute(#Name);\
@@ -119,14 +122,14 @@ bool ReadXmlConfigFile()
 	strFullPath.append("/PandoraTraderConfig.xml");
 #endif // WIN32
 
-	std::cout << "Get Account Config File: " << strFullPath.c_str() << std::endl;
+	m_cwShow.AddLog("Get Account Config File : %s", strFullPath.c_str());
 
 	TiXmlDocument doc(strFullPath.c_str());
 	bool loadOkay = doc.LoadFile(TIXML_ENCODING_LEGACY);
 
 	if (!loadOkay)
 	{
-		std::cout << "Load Config File Failed ! " << std::endl;
+		m_cwShow.AddLog("Load PandoraTraderConfig File Failed ! ");
 		return false;
 	}
 
@@ -187,6 +190,18 @@ bool ReadXmlConfigFile()
 			if (pszTemp != NULL)
 			{
 				m_strStrategyConfigFile = pszTemp;
+			}
+		}
+
+		m_strHisDataFolder.clear();
+		ChildNode = RootNode->FirstChild("HisDataFolder");
+		if (ChildNode != nullptr)
+		{
+			TiXmlElement * Element = ChildNode->ToElement();
+			const char * pszTemp = Element->GetText();
+			if (pszTemp != NULL)
+			{
+				m_strHisDataFolder = pszTemp;
 			}
 		}
 	}
@@ -293,35 +308,33 @@ int main()
 		return 0;
 	}
 #endif // WIN32
+	std::string strStrategyName = m_cwStategy.GetStrategyName();
 
-	std::cout << "Welcome To Pandora Trader !!" << std::endl;
-	std::cout << GetPandoraTraderVersion() << std::endl;
-	std::cout << "Init Config From File!" << std::endl;
+	m_cwShow.AddLog("Welcome To Pandora Trader !!");
+	m_cwShow.AddLog("Powered By PandoraTrader:");
+	m_cwShow.AddLog("GitHub: https://github.com/pegasusTrader/PandoraTrader");
+	m_cwShow.AddLog("Gitee: https://gitee.com/wuchangsheng/PandoraTrader");
+
+	m_cwShow.AddLog("Current Version:%s", GetPandoraTraderVersion());
+	m_cwShow.AddLog("Init Config From File!");
+
 	if (!ReadXmlConfigFile())
 	{
-		std::cout << "Init Config Failed!!" << std::endl;
-		std::cout << "The Program will shut down in 5 seconds！" << std::endl;
-		
+		m_cwShow.AddLog("Init Config Failed!!");
+		m_cwShow.AddLog("The Program will shut down in 5s！");
+
 		int nCnt = 0;
 		while (nCnt < 6)
 		{
 			cwSleep(1000);
-			std::cout << nCnt << " . " << std::endl;
+			m_cwShow.AddLog("%d . ", nCnt);
 			nCnt++;
 		}
 
 		return -1;
 	}
-	std::cout << "User: " << m_szTdUserID << std::endl;
+	m_cwShow.AddLog("User: %s ProductInfo:%s", m_szTdUserID, m_szTdProductInfo);
 
-	if (m_strStrategyConfigFile.size() == 0)
-	{
-		m_cwStategy.InitialStrategy(NULL);
-	}
-	else
-	{
-		m_cwStategy.InitialStrategy(m_strStrategyConfigFile.c_str());
-	}
 
 	//设置mutex 防止一个程序开多个
 	std::string strAppMutexName;
@@ -339,8 +352,8 @@ int main()
 	m_hAppMutex = ::CreateMutex(NULL, TRUE, TAppMutexName);
 	if (m_hAppMutex == NULL || GetLastError() == ERROR_ALREADY_EXISTS)
 	{
-		std::cout << "已经检测到一样的策略程序在运行，请不要重复打开策略程序！" << std::endl;
-		std::cout << "程序将在5秒后自动退出！" << std::endl;
+		m_cwShow.AddLog("已经检测到一样的策略程序在运行，请不要重复打开策略程序！");
+		m_cwShow.AddLog("程序将在5秒后自动退出！！");
 		CloseHandle(m_hAppMutex);
 		m_hAppMutex = NULL;
 		delete [] TAppMutexName;
@@ -349,7 +362,7 @@ int main()
 		while (nCnt < 6)
 		{
 			cwSleep(1000);
-			std::cout << nCnt << " . " << std::endl;	
+			m_cwShow.AddLog("%d . ", nCnt);
 			nCnt++;
 		}
 		
@@ -359,7 +372,20 @@ int main()
 	delete [] TAppMutexName;
 #endif
 
-	std::string strStrategyName = m_cwStategy.GetStrategyName();
+	if (m_strHisDataFolder.size() > 0)
+	{
+		m_cwStategy.InitialHisKindleFromHisKindleFolder(m_strHisDataFolder.c_str());
+	}
+
+	if (m_strStrategyConfigFile.size() == 0)
+	{
+		m_cwStategy.InitialStrategy(NULL);
+	}
+	else
+	{
+		m_cwStategy.InitialStrategy(m_strStrategyConfigFile.c_str());
+	}
+
 
 	m_TradeChannel.RegisterBasicStrategy(dynamic_cast<cwBasicStrategy*>(&m_cwStategy));
 
@@ -374,44 +400,26 @@ int main()
 	int iCnt = 0;
 	while (1)
 	{
+		
 		iCnt++;
 		if (iCnt % 20 == 0)
 		{
 			if (iCnt % 80 == 0)
 			{
-				std::cout << m_szTdUserID << " " 
-					<< strStrategyName.c_str() << " "
-					<< m_mdCollector.GetCurrentStatusString()  << " "
-					<< m_TradeChannel.GetCurrentStatusString() << std::endl;
+				m_cwShow.AddLog("%s %s Md:%s Trade:%s",
+					m_szTdUserID, strStrategyName.c_str(), 
+					m_mdCollector.GetCurrentStatusString(),
+					m_TradeChannel.GetCurrentStatusString());
 			}
 			cwAccountPtr pAccount = m_TradeChannel.GetAccount();
 			if (pAccount.get() != NULL)
 			{
-				std::cout << m_cwStategy.m_strCurrentUpdateTime.c_str()
-					<< " Total：" << pAccount->Balance 
-					<< " Available：" << pAccount->Available
-					<< " PL："	<< pAccount->CloseProfit + pAccount->PositionProfit - pAccount->Commission 
-					<< " Fee：" << pAccount->Commission << std::endl;
+				m_cwShow.AddLog("%s Total:%.2f Available:%.2f PL:%.2f Fee:%.2f",
+					m_cwStategy.m_strCurrentUpdateTime.c_str(),
+					pAccount->Balance, pAccount->Available,
+					pAccount->CloseProfit + pAccount->PositionProfit - pAccount->Commission,
+					pAccount->Commission);
 			}
-
-			/*std::map<std::string, cwPositionPtr> PosMap = m_TradeChannel.GetPosition();
-			for (auto it = PosMap.begin(); it != PosMap.end(); it++)
-			{
-				if (it->second.get() != NULL
-					&& (it->second->GetLongTotalPosition() > 0
-						|| it->second->GetShortTotalPosition() > 0)) 
-				{
-					std::cout << it->first.c_str()
-						<< " Long:" << it->second->GetLongTotalPosition() << " "
-						<< it->second->GetLongTodayPosition() << " "
-						<< it->second->GetLongYdPosition() << " "
-						<< it->second->GetLongAveragePosPrice()
-						<< " Short:" << it->second->GetShortTotalPosition() << " "
-						<< it->second->GetShortTodayPosition() << " "
-						<< it->second->GetShortYdPosition() << " "
-						<< it->second->GetShortAveragePosPrice() << std::endl;
-				}
-			}*/
 		}
 		cwSleep(1000);
 	}

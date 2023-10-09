@@ -122,9 +122,18 @@ public:
 	//建议在回测的时候，使用同步模式
 	void					SetSynchronizeMode(bool bSynchronous);
 
+	//设置是否将用于指数计算的最新行情写入缓存文件，
+	//如果有单独指数计算进程，则设置为不需要（false）,如果只有自身进程，则设置为需要（true）
 	void					SetWriteIndexInfoCacheToFile(bool bNeedWriteToFile) { m_bNeedWriteCacheToFile = bNeedWriteToFile; };
+
+	//研究模式
+	void					SetResearchMode(bool bResearch, int iReserveTime = 5);
+
+
 	///系统自用接口信息，勿动
 	virtual void			_SetReady();
+	virtual void			_OnDisConnect();
+	virtual void			_OnSimulationBegin(int64_t timeStamp);
 	virtual void			_PriceUpdate(cwMarketDataPtr pPriceData);
 	virtual void			_OnRtnTrade(cwTradePtr pTrade);
 	virtual void			_OnRtnOrder(cwOrderPtr pOrder, cwOrderPtr pOriginOrder = cwOrderPtr());
@@ -158,6 +167,8 @@ protected:
 
 	const unsigned int		m_iDefaultWorkBenchId;				//默认工作区ID, 为0，自定义工作区ID,请大于0.
 
+	bool					m_bResearchMode = false;			//研究模式
+
 private:
 	bool					m_bSynchronizeMode;					//是否同步	true:同步， false:异步
 
@@ -172,6 +183,7 @@ private:
 	enum StrategyEventType
 	{
 		EventType_OnReady = 0							//系统Ready回调
+		, EventType_SimulationBegin						//回测开始
 		, EventType_OnTimer								//定时器回调
 		, EventType_PriceUpdate							//Tick行情更新
 		, EventType_OnBar								//K线更新
@@ -199,7 +211,7 @@ private:
 		cwRspInfoPtr			pRspInfo;				//回报信息
 
 		std::string				strInstrumentID;		//合约
-		int						iBarId;					//k线号
+		int64_t					iBarId;					//k线号
 		cwKindleSeriesPtr		pKindle;				//K线内容
 	};
 	typedef std::shared_ptr<EventTypeStruct>					EventTypeStructPtr;
@@ -266,7 +278,7 @@ private:
 	//指数计算工作线程
 	cwMUTEX										m_UpdateIndexPriceDequeMutex;
 	bool										m_bUpdateIndexPriceThreadRun = false;
-	bool										m_bNeedWriteCacheToFile = false;
+	bool										m_bNeedWriteCacheToFile = false;		//默认不需要将数据写入Cache文件，只有行情存储程序才需要。
 	void										_UpdateIndexPriceWorkingThread();
 	std::thread									m_UpdateIndexPriceWorkingThread;
 };

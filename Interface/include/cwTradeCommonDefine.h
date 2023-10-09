@@ -99,6 +99,14 @@ enum cwRangeOpenClose
 	cwLeftCloseRightClose								//[a,b]
 };
 
+enum cwRangeOpenClose
+{
+	cwLeftOpenRightOpen = 0,							//(a,b)
+	cwLeftOpenRightClose,								//(a,b]
+	cwLeftCloseRightOpen,								//[a,b)
+	cwLeftCloseRightClose								//[a,b]
+};
+
 ///--------------------Market Data---------------------------------------------
 
 #ifdef _MSC_VER
@@ -792,6 +800,61 @@ struct cwFtdcInstrumentField
 };
 typedef std::shared_ptr<cwFtdcInstrumentField> cwInstrumentDataPtr;
 
+///合约保证金率
+struct cwFtdcInstrumentMarginRateField
+{
+	///是否为查询值，0为默认值，1为查询值
+	cwFtdcBoolType		QryValue;
+	///经纪公司代码
+	cwFtdcBrokerIDType	BrokerID;
+	///投资者代码
+	cwFtdcInvestorIDType	InvestorID;
+	///投机套保标志
+	cwFtdcHedgeFlagType	HedgeFlag;
+	///多头保证金率
+	cwFtdcRatioType	LongMarginRatioByMoney;
+	///多头保证金费
+	cwFtdcMoneyType	LongMarginRatioByVolume;
+	///空头保证金率
+	cwFtdcRatioType	ShortMarginRatioByMoney;
+	///空头保证金费
+	cwFtdcMoneyType	ShortMarginRatioByVolume;
+	///是否相对交易所收取
+	cwFtdcBoolType	IsRelative;
+	///交易所代码
+	cwFtdcExchangeIDType	ExchangeID;
+	///合约代码
+	cwFtdcInstrumentIDType	InstrumentID;
+};
+typedef std::shared_ptr<cwFtdcInstrumentMarginRateField> cwMarginRateDataPtr;
+
+///合约手续费率
+struct cwFtdcInstrumentCommissionRateField
+{
+	///是否为查询值，0为默认值，1为查询值
+	cwFtdcBoolType		QryValue;
+	///经纪公司代码
+	cwFtdcBrokerIDType	BrokerID;
+	///投资者代码
+	cwFtdcInvestorIDType	InvestorID;
+	///开仓手续费率
+	cwFtdcRatioType	OpenRatioByMoney;
+	///开仓手续费
+	cwFtdcRatioType	OpenRatioByVolume;
+	///平仓手续费率
+	cwFtdcRatioType	CloseRatioByMoney;
+	///平仓手续费
+	cwFtdcRatioType	CloseRatioByVolume;
+	///平今手续费率
+	cwFtdcRatioType	CloseTodayRatioByMoney;
+	///平今手续费
+	cwFtdcRatioType	CloseTodayRatioByVolume;
+	///交易所代码
+	cwFtdcExchangeIDType	ExchangeID;
+	///合约代码
+	cwFtdcInstrumentIDType	InstrumentID;
+};
+typedef std::shared_ptr<cwFtdcInstrumentCommissionRateField> cwCommissionRateDataPtr;
 
 ///--------------------Trade---------------------------------------------
 ///Account
@@ -1196,3 +1259,17 @@ typedef std::shared_ptr<cwFtdcRspInfoField> cwRspInfoPtr;
 
 
 cwActiveOrderKey GenerateActiveKey(cwOrderPtr pOrder);
+
+namespace cwPandoraFs{
+// 获取当前执行文件的绝对路径,以.exe结尾
+// @return 文件路径分隔符，0 当前是windows系统'\\'，1 当前是linux系统'/'
+int GetExePath(std::string &exePath);
+
+// 获取当前执行文件的绝对路径,以分隔符结尾
+// @return 文件路径分隔符，0 当前是windows系统'\\'，1 当前是linux系统'/'
+int GetExeFolder(std::string& exeFolder);
+
+// 创建目录，路径分隔符参考GetExePath的返回值。
+// @return 0:目录已存在.  1:目录不存在，则创建.
+int MkDir(std::string &dirPath);
+}

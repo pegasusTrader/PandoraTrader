@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<Config Name="IF" Run="1" Generated_at="2022-05-10 12:21:47"> 
+  <ChasingRisingStrategy Manual="0" Portfolio="0">
+    <!--合约信息配置
+    ID为交易合约-->
+    <Instrument ID="IF2205" OpenClose="0"  OpenCancelLimit="400"  CloseCancelLimit="480"/>
+
+
+    <TotalPositionLimit value="8"/>
+    <OrderVolume value="1"/>
+
+  </ChasingRisingStrategy>
+
+</Config>
