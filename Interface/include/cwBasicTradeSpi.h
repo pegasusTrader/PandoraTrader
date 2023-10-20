@@ -155,9 +155,6 @@ public:
 	//查询手续费率
 	virtual cwCommissionRateDataPtr		GetCommissionRate(std::string InstrumentID) = 0;
 
-	//查询保证金率
-	virtual double		GetMarginRate(std::string InstrumentID) = 0;
-
 	//User Trader Method
 	//行情更新
 	virtual void PriceUpdate(cwMarketDataPtr pPriceData) = 0;

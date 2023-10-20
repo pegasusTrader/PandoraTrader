@@ -99,14 +99,6 @@ enum cwRangeOpenClose
 	cwLeftCloseRightClose								//[a,b]
 };
 
-enum cwRangeOpenClose
-{
-	cwLeftOpenRightOpen = 0,							//(a,b)
-	cwLeftOpenRightClose,								//(a,b]
-	cwLeftCloseRightOpen,								//[a,b)
-	cwLeftCloseRightClose								//[a,b]
-};
-
 ///--------------------Market Data---------------------------------------------
 
 #ifdef _MSC_VER

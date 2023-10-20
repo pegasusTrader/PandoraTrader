@@ -32,9 +32,6 @@ public:
 	virtual void OnRspQryInstrument(std::unordered_map<std::string, cwInstrumentDataPtr>& InstrumentData);
 
 
-	virtual void OnRspQryInstrument(std::unordered_map<std::string, cwInstrumentDataPtr>& InstrumentData);
-
-
 	//User Trader Method
 	//行情更新
 	virtual void PriceUpdate(cwMarketDataPtr pPriceData);
