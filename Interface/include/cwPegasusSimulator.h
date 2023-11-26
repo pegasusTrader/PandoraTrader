@@ -18,6 +18,7 @@
 #include "cwTickTradeManager.h"
 #include "cwProductTradeTime.h"
 #include "cwSettlement.h"
+#include "cwNetValueEvaluation.h"
 
 #include "tinyxml.h"
 
@@ -66,6 +67,7 @@ public:
 
 	volatile bool								m_bSimulationFinished;					//回测结束
 	cwSettlement								m_cwSettlement;							//回测引擎 结算模块
+	cwNetValueEvaluation                        m_cwEvaluator;							//策略评价器
 
 	//Custom Data interface return Data List Size
 	int					AddCustomData(cwMarketDataPtr pData, bool bSimulationPartEnd = false, bool bSimulationFinish = false);

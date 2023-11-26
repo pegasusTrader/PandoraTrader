@@ -42,7 +42,8 @@ public:
 	//初始化K线  不需根据品种交易时间进行
 	bool InitialKindleStickSeries(const char * szInstrumentID, cwKindleSeriesType type = cwKindleTypeMinute, uint32_t m_iTimeScale = 60);
 	//初始化K线  需根据品种交易时间进行
-	bool InitialKindleStickSeries(const char * szInstrumentID, const char * szProductID, cwKindleSeriesType type = cwKindleTypeMinute, uint32_t iTimeScale = 60);
+	bool InitialKindleStickSeries(const char * szInstrumentID, const char * szProductID, 
+		cwKindleSeriesType type = cwKindleTypeMinute, uint32_t iTimeScale = 60, const char * TradeTimeFile = "");
 
 	//行情更新，调用后会自动形成k线
 	void PriceUpdate(cwMarketDataPtr pPriceData);

@@ -78,7 +78,7 @@ public:
 	void			SetWriteLogMsgOnly(bool MsgOnly = false);
 private:
 	std::thread							m_LogWorkingThread;
-	volatile std::atomic<bool>			m_bLogWorkingThreadRun;
+	bool								m_bLogWorkingThreadRun;
 	void								LogWorkingThread();
 
 

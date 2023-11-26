@@ -159,10 +159,14 @@ private:
 	bool					_GetAgentWorking(std::string instrumentid);
 
 protected:
-	bool					m_bNightMode;						//是否为夜盘
-	std::string				m_strAppStartDay;					//当前日期
-	std::string				m_strAppStartNextDay;				//第二天日期
-	std::string				m_strNextTradingDay;				//下一个交易日（以当前日期计算，下一个交易日）
+	const int c_NightModeStartHour = 19;						//默认夜盘起始小时为19，即19点（含00分）到凌晨3点（含59分）
+	const int	c_NightModeEndHour = 3;							//默认夜盘结束小时为03，即19点（含00分）到凌晨3点（含59分）
+	bool					m_bNightMode;						//启动时候是否为夜盘
+	bool					m_bNightNextDay;					//启动时候是否为夜盘过12时
+
+	std::string				m_strAppStartDay;					//APP启动日期
+	std::string				m_strAppStartNextDay;				//APP启动第二天日期(自然日）
+	std::string				m_strAppStartNextTradingDay;				//下一个交易日（以APP启动日期计算，下一个交易日,如2023.11.8（周三）夜盘启动，该值为20231109）
 	std::string				m_strAppStartTime;					//程序开启时间
 
 	const unsigned int		m_iDefaultWorkBenchId;				//默认工作区ID, 为0，自定义工作区ID,请大于0.

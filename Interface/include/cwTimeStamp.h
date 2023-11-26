@@ -35,20 +35,20 @@ class cwTimeStamp
 public:
 	enum cwWeekday :int
 	{
-		Sunday = 0,
-		Monday = 1,
-		Tuesday = 2,
-		Wednesday = 3,
-		Thursday = 4,
-		Friday = 5,
-		Saturday = 6,
-		Sun = 0,
-		Mon = 1,
-		Tue = 2,
-		Wed = 3,
-		Thu = 4,
-		Fri = 5,
-		Sat = 6
+		Sunday = 0,			//周日
+		Monday = 1,			//周一
+		Tuesday = 2,		//周二
+		Wednesday = 3,		//周三
+		Thursday = 4,		//周四
+		Friday = 5,			//周五
+		Saturday = 6,		//周六
+		Sun = 0,			//周日
+		Mon = 1,			//周一
+		Tue = 2,			//周二
+		Wed = 3,			//周三
+		Thu = 4,			//周四
+		Fri = 5,			//周五
+		Sat = 6				//周六
 	};
 
 	enum enumMonth :int
@@ -83,9 +83,37 @@ public:
 	~cwTimeStamp();
 
 
-	inline void Set100Nanosecond(std::uint64_t NanosecondX100) { m_100nanosecond = NanosecondX100; }
+	inline void Set100Nanosecond(std::uint64_t NanosecondX100) 
+	{ 
+		m_100nanosecond = NanosecondX100;
 
-	inline void SetTotalMicrosecond(std::uint64_t totalMicrosecond) { m_100nanosecond = totalMicrosecond * 10; }
+#ifdef _DEBUG
+		__year = GetYear();
+		__month = GetMonth();
+		__day = GetDay();
+
+		__hour = GetHour();
+		__minute = GetMinute();
+		__second = GetSecond();
+		__microsecond = GetMicrosecond();
+#endif
+	}
+
+	inline void SetTotalMicrosecond(std::uint64_t totalMicrosecond) 
+	{ 
+		m_100nanosecond = totalMicrosecond * 10;
+
+#ifdef _DEBUG
+		__year = GetYear();
+		__month = GetMonth();
+		__day = GetDay();
+
+		__hour = GetHour();
+		__minute = GetMinute();
+		__second = GetSecond();
+		__microsecond = GetMicrosecond();
+#endif
+	}
 	std::uint64_t GetTotalMicrosecond() const { return m_100nanosecond / 10; }
 
 	void SetYear(std::uint32_t year);
@@ -133,6 +161,12 @@ public:
 	}
 
 	static const std::uint32_t s_MonthLengths[2][12];
+
+	//Debug Infor 
+#ifdef _DEBUG
+	int __year, __month, __day, __hour, __minute, __second, __microsecond;
+#endif
+
 private:
 	void SetSystemTime(SYSTEMTIME const* pSysTime);
 	void GetSystemTime(SYSTEMTIME * pSysTime) const;
