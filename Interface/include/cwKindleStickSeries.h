@@ -50,12 +50,15 @@ public:
 
 	//利用k线来更新K线序列。主要利用利用k线来合并数据,要求k线序列需要按顺序进行更新
 	void UpdateKindle(cwKindleStickPtr pKindle);
-	//替换现有k线序列
+	//替换现有k线序列中的k线，依据StartTime这个字段进行判断
 	void ReplaceKindle(cwKindleStickPtr pKindle);
 	//移除时间点之前的K线
 	void RemoveKinldeBeforeTime(uint64_t time);
+	void RemoveKinldeBeforeTime(const char* sztime);		//支持的时间字符串 (year_month_day_hour:minute:second,如2023_10_11:10:08:09)
 	//移除时间点以后的K线
 	void RemoveKinldeAfterTime(uint64_t time);
+	void RemoveKinldeAfterTime(const char* sztime);			//支持的时间字符串 (year_month_day_hour:minute:second,如2023_10_11:10:08:09)
+
 	//获取k线周期
 	inline uint32_t GetTimeScale() { return m_iTimeScale; }
 	//设置K线行情处理的数据精度，默认值为0.00001

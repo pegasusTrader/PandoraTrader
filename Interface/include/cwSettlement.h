@@ -86,6 +86,7 @@ public:
 	double													m_dCurMaxBalance;				//截止目前最高权益，计算最大回撤用
 	double													m_dMaxDropDown;					//最大回撤
 
+	double													m_dDefaultFeeRate = 0.0001;
 
 	void													Analysis();
 	///AnalysisResult
