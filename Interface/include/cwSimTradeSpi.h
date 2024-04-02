@@ -51,7 +51,7 @@ public:
 	///报单操作请求响应
 	virtual void OnRspOrderAction(cwOrderPtr pInputOrderAction, cwRspInfoPtr pRspInfo, int nRequestID, bool bIsLast);
 
-	virtual void OnSimulationPartEnd();
+	virtual void OnSimulationPartEnd(int iSimPartID = 0);
 	virtual void OnSimulationFinished();
 
 	void UpdateTradingDay(const char * szTradingDay);

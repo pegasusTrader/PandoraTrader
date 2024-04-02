@@ -1257,7 +1257,7 @@ namespace cwPandoraFs{
 // @return 文件路径分隔符，0 当前是windows系统'\\'，1 当前是linux系统'/'
 int GetExePath(std::string &exePath);
 
-// 获取当前执行文件的绝对路径,以分隔符结尾
+// 获取当前执行文件所在文件夹的绝对路径,以分隔符结尾
 // @return 文件路径分隔符，0 当前是windows系统'\\'，1 当前是linux系统'/'
 int GetExeFolder(std::string& exeFolder);
 

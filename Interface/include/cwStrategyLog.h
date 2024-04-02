@@ -34,6 +34,7 @@ public:
 	cwStrategyLog();
 	cwStrategyLog(const char * pFileName);
 	cwStrategyLog(const char * pFileName, const char * pFolder);
+	cwStrategyLog(const char* pFileName, const char* pFolder, bool bTimeInName);
 	~cwStrategyLog();
 
 	void AddLog(const char * pData, int LogType,  bool bForceWrite = false);

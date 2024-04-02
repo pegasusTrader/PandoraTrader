@@ -27,7 +27,7 @@
 #include "atomicops.h"
 #include "spscqueue.h"
 //#include "oneapi/tbb/concurrent_queue.h"
-#include "oneapi/tbb/concurrent_unordered_map.h"
+//#include "oneapi/tbb/concurrent_unordered_map.h"
 #endif // CW_USING_TBB_LIB
 
 #ifdef USING_CW_MEMORY_POOL
@@ -40,7 +40,10 @@
 #include "cwBasicCout.h"
 #endif
 
+#ifndef CW_TURBO_MODE
 #define CV_NOTIFY
+#endif // !CW_TURBO_MODE
+
 
 class cwBasicMdSpi
 {
@@ -89,9 +92,8 @@ public:
 
 	inline cwMarketDataPtr	GetLastestMarketData(std::string InstrumentID)
 	{
-#ifndef CW_USING_TBB_LIB
 		cwAUTOMUTEX mt(m_MarketDataUpdateMutex, true);
-#endif // CW_USING_TBB_LIB
+
 		auto it = m_LastestMarketDataMap.find(InstrumentID);
 		if (it != m_LastestMarketDataMap.end()
 			&& it->second.get() != NULL)
@@ -118,10 +120,9 @@ public:
 #ifdef CW_USING_TBB_LIB
 	spsc_queue<cwMarketDataPtr>						m_DepthMarketDataDeque;
 #else
-	cwMUTEX											m_MarketDataUpdateMutex;
 	std::deque <cwMarketDataPtr>					m_DepthMarketDataDeque;
 #endif // CW_USING_TBB_LIB
-
+	cwMUTEX											m_MarketDataUpdateMutex;
 
 	cwBasicStrategy*								m_pBasicStrategy;
 
@@ -205,11 +206,7 @@ ORIGIN->MEMBER = 0;\
 
 	cwBasicTradeSpi*	m_pTradeSpi;
 
-#ifdef CW_USING_TBB_LIB
-	tbb::concurrent_unordered_map<std::string, cwMarketDataPtr>		m_LastestMarketDataMap;
-#else
 	std::unordered_map<std::string, cwMarketDataPtr>				m_LastestMarketDataMap;
-#endif // CW_USING_TBB_LIB
 
 	static	int			m_iMdApiCount;
 

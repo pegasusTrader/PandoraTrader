@@ -1,3 +1,14 @@
+//////////////////////////////////////////////////////////////////////////////////
+//*******************************************************************************
+//---
+//---	author: Wu Chang Sheng
+//---
+//--	Copyright (c) by Wu Chang Sheng. All rights reserved.
+//--    Consult your license regarding permissions and restrictions.
+//--
+//*******************************************************************************
+//////////////////////////////////////////////////////////////////////////////////
+
 #pragma once
 #include <cstdint>
 #include <float.h>
@@ -9,14 +20,14 @@ public:
 	cwKindleStick();
 	~cwKindleStick();
 
+	char				szStartTime[20];	//开始时间
+	char				szEndTime[20];		//结束时间
+	
+	//时间戳为cwTimeStamp
 	std::uint64_t		StartTime;			//开始时间戳
 	std::uint64_t		EndTime;			//结束时间戳
 	std::uint64_t		HighTime;			//最高价时间
 	std::uint64_t		LowTime;			//最低价时间
-
-	char				szStartTime[16];
-	char				szEndTime[16];
-
 
 	double				Open;				//开盘价
 	double				Close;				//收盘收
@@ -29,17 +40,10 @@ public:
 	double				TotalTurnOver;		//总成交额
 	double				LastTurnOver;		//K线成交额
 
-#ifdef WIN32
 	static size_t GetLength()
 	{
-		return sizeof(std::uint64_t) * 4 + sizeof(double) * 7;
+		return sizeof(cwKindleStick);
 	}
-#else
-	static std::size_t GetLength()
-	{
-		return sizeof(std::uint64_t) * 4 + sizeof(double) * 7;
-	}
-#endif // WIN32
 
 	void clear()
 	{
