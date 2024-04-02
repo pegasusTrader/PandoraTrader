@@ -80,6 +80,9 @@ public:
 
 public:
 	cwTimeStamp(uint64_t totalMicrosecond = 0L);
+	cwTimeStamp(std::uint32_t year, std::uint32_t month, std::uint32_t day,
+		std::uint32_t hour = 0, std::uint32_t minute = 0,
+		std::uint32_t second = 0, std::uint32_t microsecond = 0);
 	~cwTimeStamp();
 
 
@@ -129,7 +132,7 @@ public:
 	static std::uint32_t GetDayofWeek(std::uint32_t year, std::uint32_t month, std::uint32_t day);
 
 	void SetHour(std::uint32_t hour);
-	std::uint32_t GetHour() const;  //0-24
+	std::uint32_t GetHour() const;  //0-23
 
 	void SetMinute(std::uint32_t minute);
 	std::uint32_t GetMinute() const; //0-60

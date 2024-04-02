@@ -81,7 +81,7 @@ public:
 	/// 按回测开始第一个行情过来前回调（稍晚于OnReady），如删除读入过多的k线
 	virtual void OnSimulationBegin(int64_t timeStamp) {};
 	//回测部分结束（夜盘结束和日盘结束）将被调用
-	virtual void OnSimulationPartEnd() {};
+	virtual void OnSimulationPartEnd(int iSimPartID = 0) {};
 	//整个回测结束将被调用
 	virtual void OnSimulationFinished() {};
 

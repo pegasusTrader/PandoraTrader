@@ -18,7 +18,6 @@
 #include "cwTickTradeManager.h"
 #include "cwProductTradeTime.h"
 #include "cwSettlement.h"
-#include "cwNetValueEvaluation.h"
 
 #include "tinyxml.h"
 
@@ -67,10 +66,9 @@ public:
 
 	volatile bool								m_bSimulationFinished;					//回测结束
 	cwSettlement								m_cwSettlement;							//回测引擎 结算模块
-	cwNetValueEvaluation                        m_cwEvaluator;							//策略评价器
 
 	//Custom Data interface return Data List Size
-	int					AddCustomData(cwMarketDataPtr pData, bool bSimulationPartEnd = false, bool bSimulationFinish = false);
+	int					AddCustomData(cwMarketDataPtr pData, bool bSimulationPartEnd = false, bool bSimulationFinish = false, int SimPartID = 0);
 	int					GetCustomDataDequeSize() { return m_iCustomDataDequeSize; }
 
 	std::string									m_strSimulatorName;
@@ -106,7 +104,7 @@ private:
 	void				RealTimeMarketDataUpdate();
 	void				CustomMarketDataUpdate();
 
-	std::map<std::string, std::string>			m_MarketDataFileMap;
+	std::map<int, std::string>			m_MarketDataFileMap;
 
 	std::unordered_map<std::string, cwInstrumentDataPtr>	m_InstrumentMap;
 
@@ -155,6 +153,7 @@ private:
 	cwMUTEX													m_MDCacheMutex;
 	volatile std::atomic<bool>								m_bMDCacheMutexReady;
 	volatile std::atomic<bool>								m_bSimulationPartEnd;
+	int														m_iSimulationPartID;
 
 	cwAccountPtr											m_pAccount;
 
@@ -166,9 +165,9 @@ private:
 	std::string												m_strCacheFilePath;
 
 	cwMUTEX													m_CacheWorkingMutex;
-	std::deque<std::string>									m_CacheWorkingList;
+	std::deque<int>											m_CacheWorkingList;
 	std::set<std::string>									m_CacheInstrumentSet;
-	std::map<std::string, std::string>						m_MarketDataCacheFileMap;
+	std::map<int, std::string>								m_MarketDataCacheFileMap;
 
 	//Result 
 	//Balance Data
@@ -191,6 +190,7 @@ private:
 		cwMarketDataPtr pData;
 		bool			bSimulationPartEnd;
 		bool			bSimulationFinish;
+		int				iSimulationPartId;
 	};
 	typedef	std::shared_ptr<CustomDataStruct>				CustomDataPtr;
 	std::deque<CustomDataPtr>								m_CustomDataDeque;

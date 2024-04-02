@@ -78,6 +78,7 @@ public:
 	double													m_dPreBalance;					//初始权益
 	double													m_dBalance;						//当前权益
 	double													m_dMaxFundOccupied;				//最大资金占用
+	double													m_dCurFundOccupied;				//当前资金占用
 
 	double													m_dPositionProfit;				//持仓盈亏
 	double													m_dCloseProfit;					//平仓盈亏
@@ -86,7 +87,7 @@ public:
 	double													m_dCurMaxBalance;				//截止目前最高权益，计算最大回撤用
 	double													m_dMaxDropDown;					//最大回撤
 
-	double													m_dDefaultFeeRate = 0.0001;
+	double													m_dDefaultFeeRate = 0.0001;		//0.0001;
 
 	void													Analysis();
 	///AnalysisResult

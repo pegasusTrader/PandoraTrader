@@ -72,6 +72,7 @@ public:
 	bool					InitialHisKindleFromIndexFile(const char * szTickFile);
 
 	bool					InitialHisKindleFromHisKindleFolder(const char* szHisFolder);
+	bool					LoadHisKindleFromHisKindleFile(const char* KindleFilePath, std::deque<cwKindleStickPtr>& KindleList, int iTimeScale = 60);
 	//
 	void					GetKindleFromPublicBus();
 
@@ -173,6 +174,8 @@ protected:
 
 	bool					m_bResearchMode = false;			//研究模式
 
+	std::string				m_strHisDataPath;
+
 private:
 	bool					m_bSynchronizeMode;					//是否同步	true:同步， false:异步
 
@@ -247,7 +250,7 @@ private:
 	PortfolioWorkBenchPtr										m_pDefaultWorkBench;			//默认工作区
 
 	//创建工作区
-	PortfolioWorkBenchPtr						CreateWorkBench(unsigned int iBenchId, const char * pBenchName = NULL);
+	PortfolioWorkBenchPtr						CreateWorkBench(unsigned int iBenchId, const char * pBenchName = "");
 	//获取工作区
 	PortfolioWorkBenchPtr						GetWorkBench(std::string instrumentid);
 
@@ -272,7 +275,6 @@ private:
 
 
 	///Index Price and Kindle Update;
-	std::string									m_strHisDataPath;
 	bool										m_bNeedIndexKindle = false;
 
 	std::unordered_map<std::string, cwMarketDataPtr>									m_FileLastMDCacheMap;
