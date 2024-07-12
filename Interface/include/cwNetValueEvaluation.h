@@ -76,9 +76,6 @@ public:
 	/// <summary>
 	/// 更新净值
 	/// </summary>
-	/// <param name="timestamp"></param>
-	/// <param name="totalPNL"></param>
-	/// <param name="fundUsed"></param>
 	void UpdateNetValueByTotalPNL(std::uint64_t timestamp, double totalPNL, double fundUsed);
 
 	//设置预期收益

@@ -20,6 +20,14 @@ public:
 	cwKindleStick();
 	~cwKindleStick();
 
+	enum KindlePriceType
+	{
+		en_Open,
+		en_High,
+		en_Low,
+		en_Close
+	};
+
 	char				szStartTime[20];	//开始时间
 	char				szEndTime[20];		//结束时间
 	
@@ -43,6 +51,29 @@ public:
 	static size_t GetLength()
 	{
 		return sizeof(cwKindleStick);
+	}
+
+	inline double GetPriceByType(KindlePriceType type)
+	{
+		double price = Close;
+		switch (type)
+		{
+		case cwKindleStick::en_Open:
+			price = Open;
+			break;
+		case cwKindleStick::en_High:
+			price = High;
+			break;
+		case cwKindleStick::en_Low:
+			price = Low;
+			break;
+		case cwKindleStick::en_Close:
+			price = Close;
+			break;
+		default:
+			break;
+		}
+		return price;
 	}
 
 	void clear()

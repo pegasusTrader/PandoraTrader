@@ -90,6 +90,8 @@ public:
 	*/
 	inline size_t			GetKindleSize() { return m_KindleStickDeque.size(); }
 
+	///特别说明：编号从零开始，后续Begin,end等属于闭区间，如GetHighest(1,3,high)指的是获取第二根K线，第三根，第四根k线的最大值
+
 	/*函数功能：获取K线最高的k线，如果有多个一样高的，返回最近的一根
 	* 参数描述：
 	*     [in] nBegin	- K线范围开始编号；
@@ -123,6 +125,10 @@ public:
 	bool GetHighest(double &High);
 	bool GetHighest(unsigned int nBegin, unsigned int nEnd, double &High);
 	bool GetHighest(unsigned int nCount, double &High);
+
+	bool GetHighest(double& High, cwKindleStick::KindlePriceType type);
+	bool GetHighest(unsigned int nBegin, unsigned int nEnd, double& High, cwKindleStick::KindlePriceType type);
+	bool GetHighest(unsigned int nCount, double& High, cwKindleStick::KindlePriceType type);
 
 	/*函数功能：获取下一个（最近一个,包括nBegin）比指定值更高的K线
 	* 参数描述：
@@ -167,6 +173,10 @@ public:
 	bool GetLowest(double &Low);
 	bool GetLowest(unsigned int nBegin, unsigned int nEnd, double &Low);
 	bool GetLowest(unsigned int nCount, double &Low);
+
+	bool GetLowest(double& Low, cwKindleStick::KindlePriceType type);
+	bool GetLowest(unsigned int nBegin, unsigned int nEnd, double& Low, cwKindleStick::KindlePriceType type);
+	bool GetLowest(unsigned int nCount, double& Low, cwKindleStick::KindlePriceType type);
 
 	/*函数功能：获取下一个（最近一个,包括nBegin）比指定值更低的K线
 * 参数描述：
