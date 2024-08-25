@@ -35,15 +35,22 @@ public:
 		cwKindleTypeDaily,								//日线，				按交易日来记k线
 	};
 
+	static const uint32_t	c_1_minute{ 60 };
+	static const uint32_t	c_5_minute{ 60 * 5 };
+	static const uint32_t	c_15_minute{ 60 * 15 };
+	static const uint32_t	c_30_minute{ 60 * 30 };
+	static const uint32_t	c_1_hour{ 60 * 60 };
+	static const uint32_t   c_daily{ 24 * 60 * 60 };
+
 public:
 	cwKindleStickSeries();
 	~cwKindleStickSeries();
 
 	//初始化K线  不需根据品种交易时间进行
-	bool InitialKindleStickSeries(const char * szInstrumentID, cwKindleSeriesType type = cwKindleTypeMinute, uint32_t m_iTimeScale = 60);
+	bool InitialKindleStickSeries(const char * szInstrumentID, cwKindleSeriesType type = cwKindleTypeMinute, uint32_t m_iTimeScale = c_1_minute);
 	//初始化K线  需根据品种交易时间进行
 	bool InitialKindleStickSeries(const char * szInstrumentID, const char * szProductID, 
-		cwKindleSeriesType type = cwKindleTypeMinute, uint32_t iTimeScale = 60, const char * TradeTimeFile = "");
+		cwKindleSeriesType type = cwKindleTypeMinute, uint32_t iTimeScale = c_1_minute, const char * TradeTimeFile = "");
 
 	//行情更新，调用后会自动形成k线
 	void PriceUpdate(cwMarketDataPtr pPriceData);

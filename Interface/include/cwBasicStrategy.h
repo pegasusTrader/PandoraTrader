@@ -155,6 +155,10 @@ public:
 	//参数：合约名，行情时间（102835->10:28:35),交易阶段， 距该交易时段开盘多少秒，距收盘多少秒
 	bool	  GetTradeTimeSpace(const char * szInstrumentID, const char * updatetime,
 		cwProductTradeTime::cwTradeTimeSpace& iTradeIndex, int& iOpen, int& iClose);
+	//参数：合约名，行情时间（102835->10:28:35),交易阶段， 距该交易时段开盘多少秒，距收盘多少秒
+	bool	  GetTradeTimeSpaceByProduct(const char* szProductId, const char* updatetime,
+		cwProductTradeTime::cwTradeTimeSpace& iTradeIndex, int& iOpen, int& iClose);
+
 	//获取前一个交易时段到当前交易时段开盘时间间隔
 	int		  GetPreTimeSpaceInterval(const char * szInstrumentID, cwProductTradeTime::cwTradeTimeSpace iTradeIndex);
 	//获取指定交易时段

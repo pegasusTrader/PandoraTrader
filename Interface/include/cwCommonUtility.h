@@ -19,7 +19,7 @@ namespace cwCommonUtility
 
 	double cwfloor(double dValue, double dTickSize = 1);
 
-	int    cwDouble2Int(double dValue, double dMultiple = 1, double dTickSize = 1);
+	int    cwDouble2Int(double dValue, double dTickSize = 1);
 
 	// TOOLs
 
