@@ -11,7 +11,7 @@
 -->
   </Subscription>
     <StrategyConfigFile>
-      .\StrategyTest.xml
+
     </StrategyConfigFile>
  <Result>
   	<TotalResult bSave="1" Interval="10" />
