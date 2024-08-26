@@ -76,6 +76,8 @@ public:
 	void			SetNoWorkRequired(bool NoWork = false);
 	void			SetKeepFileOpen(bool FileOpen = false);
 	void			SetWriteLogMsgOnly(bool MsgOnly = false);
+
+	inline bool		GetHasAddTitle() { return m_bHasAddTitle; }
 private:
 	std::thread							m_LogWorkingThread;
 	bool								m_bLogWorkingThreadRun;
@@ -96,6 +98,8 @@ private:
 	std::string							m_LogFileName;
 
 private:
+	bool								m_bHasAddTitle;
+
 	//不需要工作
 	bool								m_bNoWorkRequired;
 	bool								m_bKeepFileOpen;

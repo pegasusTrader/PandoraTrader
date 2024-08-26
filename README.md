@@ -7,6 +7,10 @@
 古希腊语中，潘是所有的意思，多拉则是礼物。“潘多拉”即为“拥有一切天赋的女人”，在此，则寓意为“拥有一切技能的交易平台”。  
 我们设计这样一个交易平台拥有设计者赋予各种技能，唯独不携带智慧；这个智慧是属于策略设计者的，期待策略设计者设计优秀的策略给予交易软件足够的智慧，能够在飘荡的市场上乘风破浪，挂云帆济沧海。
 
+### Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=pegasusTrader/PandoraTrader&type=Date)](https://star-history.com/#pegasusTrader/PandoraTrader&Date)
+
 ### 平台特色：
 基于c++开发，支持多种交易API，跨平台的高频量化交易平台
 
@@ -254,6 +258,7 @@ cwMarketDataReceiver存下csv文件，cwMarketDataBinaryReceiver存下的是bin�
 可以是一个配对交易策略（Pairs Trading)；    
 甚至可以是一个做市商策略。    
 可以套利套保，可以做波段，甚至是高频做市商。
+可以做一个趋势策略，如示例DualTrust
 
 ### 核心开放计划
 核心库代码采用邀请授权机制开放，有C++开发功底的朋友，可以简要描述您自身情况以及参与项目意愿发送邮件到pandoratrader@163.com, 会尽快回复您的诉求。
@@ -265,8 +270,8 @@ cwMarketDataReceiver存下csv文件，cwMarketDataBinaryReceiver存下的是bin�
 如果有什么疑问和建议，您可以发送有邮件给pandoratrader@163.com与作者取得联系。    
 欢迎加入QQ群（615093081）参与讨论。
 
-### 捐赠
-如果您喜欢这个项目，您可以在您经济允许情况下对该项目进行捐赠，以帮助和激励作者们更好地维护此项目。    
+### AI技术与量化
+作者目前在尝试引入AI技术相关内容，如果您在这方面有什么想法，不论是策略还是平台，可以发送有邮件给pandoratrader@163.com与作者取得联系，进一步沟通交流。    
 
 ### 使用授权：
 请在法律和监管允许下使用该平台。

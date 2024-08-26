@@ -108,6 +108,16 @@ public:
 	//按指定合约和方向全部撤单
 	int						CancelAll(const char * szInstrumentID, cwFtdcDirectionType direction);
 
+	//设置定时器 iTimerId定时器id，在OnStrategyTimer回调依据此id判定是哪个定时器触发, iElapse 触发间隔（毫秒）
+	//目前最大支持100个定时器，定时器内回调函数请勿处理耗时逻辑。
+	//同个id下，触发间隔将会被覆盖
+	// 
+	//特别注意：
+	//szInstrumentID 是定时器关联的合约信息，该定时器回调时将绑定在该合约对应的资产组合ID下，
+	//即该回调将和这个portfolio下的回调信息在同个线程处理OnStrategyTimer回调
+	//可以不指定关联的合约信息，可以填nullptr,将由默认的工作线程处理OnStrategyTimer回调
+	bool					SetTimer(int iTimerId, int iElapse, const char* szInstrumentID = nullptr);
+
 	//委托交易，PositionAgency代理机构将会按需求管理好持仓
 	//注意，当启用PositionAgency功能之后，请勿做下单或者撤单操作，以免产生冲突。
 	virtual void			SetAgentManager(void * pAgentMgr);

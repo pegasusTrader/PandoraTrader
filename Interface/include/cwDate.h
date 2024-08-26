@@ -76,8 +76,11 @@ namespace cwPandoraTrader
 
 		//Traditional Constructor
 		cwDate(int day, enumMonth month, int year);
+		cwDate(int day, int month, int year);
 
 		bool Reset(int day, enumMonth month, int year);
+		bool Reset(int day, int month, int year);
+
 		bool IncreaseByMonth(int months);
 		bool DecreaseByMonth(int months);
 

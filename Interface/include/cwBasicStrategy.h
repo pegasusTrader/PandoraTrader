@@ -72,7 +72,7 @@ public:
 	virtual void OnRspOrderCancel(cwOrderPtr pOrder, cwRspInfoPtr pRspInfo) {};
 
 	///Strategy Timer
-	virtual void OnStrategyTimer(int iTimerId, const char * szInstrumentID) {};
+	virtual void OnStrategyTimer(int iTimerId, const char * szMsg) {};
 	//当策略交易初始化完成时会调用OnReady, 可以在此函数做策略的初始化操作
 	virtual void OnReady() {};
 
@@ -155,6 +155,10 @@ public:
 	//参数：合约名，行情时间（102835->10:28:35),交易阶段， 距该交易时段开盘多少秒，距收盘多少秒
 	bool	  GetTradeTimeSpace(const char * szInstrumentID, const char * updatetime,
 		cwProductTradeTime::cwTradeTimeSpace& iTradeIndex, int& iOpen, int& iClose);
+	//参数：合约名，行情时间（102835->10:28:35),交易阶段， 距该交易时段开盘多少秒，距收盘多少秒
+	bool	  GetTradeTimeSpaceByProduct(const char* szProductId, const char* updatetime,
+		cwProductTradeTime::cwTradeTimeSpace& iTradeIndex, int& iOpen, int& iClose);
+
 	//获取前一个交易时段到当前交易时段开盘时间间隔
 	int		  GetPreTimeSpaceInterval(const char * szInstrumentID, cwProductTradeTime::cwTradeTimeSpace iTradeIndex);
 	//获取指定交易时段
@@ -179,14 +183,11 @@ public:
 	//获取当前状态是否为回测模拟情况 如果回测模式下返回true，否则false
 	inline bool GetIsSimulation() { return m_bIsSimulation; }
 
-	//设置定时器 iTimerId定时器id，在OnStrategyTimer回调依据此id判定是哪个定时器触发, iElapse 触发间隔（毫秒）
-	//目前仅支持100个定时器，定时器内回调函数请勿处理复杂逻辑，所有定时器回调共用一个线程。
-	//同个id下，触发间隔将会被覆盖
-	//InstrumentID 是定时器关联的合约，如果无需关联，可以填NULL
-	bool	  SetTimer(int iTimerId, int iElapse, const char * szInstrumentID = nullptr);
 	void	  RemoveTimer(int iTimerId);
 
 	///系统自用接口信息，勿动
+	bool					_SetTimer(int iTimerId, int iElapse, const char* szMsg = nullptr);
+
 	void					_SetMdSpi(cwMDAPIType apiType, void * pSpi);
 	void					_SetTradeSpi(cwTradeAPIType apiType, void *pSpi);
 	void					_SetIsSimulation(bool IsSimulation = false) { m_bIsSimulation = IsSimulation; };
@@ -201,7 +202,7 @@ public:
 	virtual void			_OnOrderCanceled(cwOrderPtr pOrder) = 0;
 	virtual void			_OnRspOrderInsert(cwOrderPtr pOrder, cwRspInfoPtr pRspInfo) = 0;
 	virtual void			_OnRspOrderCancel(cwOrderPtr pOrder, cwRspInfoPtr pRspInfo) = 0;
-	virtual void			_OnTimer(int iTimerId, const char * szInstrumentID) = 0;
+	virtual void			_OnTimer(int iTimerId, const char * szMsg) = 0;
 protected:
 	///输出显示
 	cwBasicCout				m_cwShow;						
@@ -227,7 +228,7 @@ protected:
 	bool					_CancelOrder(cwOrderPtr pOrder);
 
 private:	
-	///系统自用接口信息，勿动
+	///系统自用接口信息，请勿操作
 	bool									m_bIsSimulation;
 
 	void *									m_pTradeSpi;
@@ -243,7 +244,7 @@ private:
 	//Timer	key:TimerID, value:Elapse in ms
 	std::unordered_map<int, int>			m_cwTimerElapseMap;
 	//Timer Key:TimerID, value:InstrumentID
-	std::unordered_map<int, std::string>	m_cwTimerId2InstrumentMap;
+	std::unordered_map<int, std::string>	m_cwTimerId2MsgMap;
 
 	std::thread								m_StrategyTimerWorkingThread;
 	volatile bool							m_bStrategyTimerWorkingThreadRun;
