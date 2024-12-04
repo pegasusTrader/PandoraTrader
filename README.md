@@ -269,9 +269,9 @@ cwMarketDataReceiver存下csv文件，cwMarketDataBinaryReceiver存下的是bin�
 ### 致谢
 工程开放中使用了第三方库提供代码，降低相关功能开发难度，在此表示衷心的感谢。
    - tinyxml2 --   https://github.com/pegasusTrader/tinyxml2
-     forked form:  https://github.com/leethomason/tinyxml2
+forked form:  https://github.com/leethomason/tinyxml2
    - ThreadPool -- https://github.com/pegasusTrader/ThreadPool
-     forked form:  https://github.com/progschj/ThreadPool
+forked form:  https://github.com/progschj/ThreadPool
 
 ### 建议反馈：
 如果有什么疑问和建议，您可以发送有邮件给pandoratrader@163.com与作者取得联系。    
