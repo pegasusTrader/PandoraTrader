@@ -21,7 +21,7 @@
 #define CWDeclarationFeeRISK		//针对申报费的风控管理
 
 #define TRADELOG					//交易日志
-//#define UPDATE_ORDERRANKED		//更新管理订单排队位置
+#define UPDATE_ORDERRANKED			//更新管理订单排队位置
 #define	NoCancelTooMuchPerTick		//在极短时间内不得多次撤单以减少错单
 
 #ifdef UPDATE_ORDERRANKED

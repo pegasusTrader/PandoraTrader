@@ -149,7 +149,9 @@ public:
 	//获取手续费率，会从柜台中查询，在未查询到之前默认返回0，即不收手续费
 	cwCommissionRateDataPtr		GetCommissionRate(const char * szInstrumentID);
 	//获取产品ID 
-	char *    GetProductID(const char * szInstrumentID);
+	char *						GetProductID(const char * szInstrumentID);
+	//获取交易所ID
+	char*						GetExchangeID(const char* szInstrumentID);
 
 	//获取交易时间段，距开盘多少秒和距收盘多少秒
 	//参数：合约名，行情时间（102835->10:28:35),交易阶段， 距该交易时段开盘多少秒，距收盘多少秒

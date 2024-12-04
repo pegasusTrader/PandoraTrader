@@ -61,15 +61,33 @@ public:
 
 	//订阅k线， iTimeScale是k线周期，秒数（如5分钟为300）
 	cwKindleSeriesPtr		SubcribeKindle(const char * szInstrumentID, int iTimeScale, int HisKindleCount = 0);
+	//pParserHisKindle 是个函数指针用于读取历史数据
+	//szFilePath会传入历史数据文件夹路径，其值InitialHisKindleFromHisKindleFolder传入，该函数将K线数据按时间顺序从0-n存放在KindleList中
+	//历史k线处理正常则返回true，遇到问题，则返回false.
+	cwKindleSeriesPtr		SubcribeKindle(const char * szInstrumentID, int iTimeScale,
+		bool(*pParserHisKindle)(const char* szFilePath,
+			const char* szInstrumentID, 
+			const char* szProductID,
+			const char* szExchangeID,
+			std::deque<cwKindleStickPtr>& KindleList));
+	//订阅日线K线
 	cwKindleSeriesPtr		SubcribeDailyKindle(const char * szInstrumentID);
-	//需要合约信息支持
+	cwKindleSeriesPtr		SubcribeDailyKindle(const char* szInstrumentID,
+		bool(*pParserHisKindle)(const char* szFilePath,
+			const char* szInstrumentID,
+			const char* szProductID,
+			const char* szExchangeID,
+			std::deque<cwKindleStickPtr>& KindleList));
+	//订阅指数K线
 	cwKindleSeriesPtr		SubcribeIndexKindle(const char* szProductId, int iTimeScale, int HisKindleCount = 0);
-
+	cwKindleSeriesPtr		SubcribeIndexKindle(const char* szProductId, int iTimeScale, 
+		bool(*pParserHisKindle)(const char* szFilePath,
+			const char* szInstrumentID,
+			const char* szProductID,
+			const char* szExchangeID,
+			std::deque<cwKindleStickPtr>& KindleList));
 	std::string				GetIndexName(const char* szProductId);
 
-	//从tick数据构建历史数据
-	bool					InitialHisKindleFromKinldeFile(const char * szFilePath);
-	bool					InitialHisKindleFromIndexFile(const char * szTickFile);
 
 	bool					InitialHisKindleFromHisKindleFolder(const char* szHisFolder);
 	bool					LoadHisKindleFromHisKindleFile(const char* KindleFilePath, std::deque<cwKindleStickPtr>& KindleList, int iTimeScale = 60);

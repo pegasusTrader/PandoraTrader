@@ -165,9 +165,9 @@ private:
 	std::string												m_strCacheFilePath;
 
 	cwMUTEX													m_CacheWorkingMutex;
-	std::deque<int>											m_CacheWorkingList;
 	std::set<std::string>									m_CacheInstrumentSet;
-	std::map<int, std::string>								m_MarketDataCacheFileMap;
+	//std::map<int, std::string>								m_MarketDataCacheFileMap;
+	//std::deque<int>											m_CacheWorkingList;
 
 	//Result 
 	//Balance Data

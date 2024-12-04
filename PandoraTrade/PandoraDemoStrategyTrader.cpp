@@ -312,8 +312,10 @@ int main()
 
 	m_cwShow.AddLog("Welcome To Pandora Trader !!");
 	m_cwShow.AddLog("Powered By PandoraTrader:");
+	m_cwShow.AddLog("PandoraTrader is FREE software: you are free to build your own strategy.");
+	m_cwShow.AddLog("There is NO WARRANTY, to the extent permitted by law.");
 	m_cwShow.AddLog("GitHub: https://github.com/pegasusTrader/PandoraTrader");
-	m_cwShow.AddLog("Gitee: https://gitee.com/wuchangsheng/PandoraTrader");
+	m_cwShow.AddLog("Gitee: https://gitee.com/wuchangsheng/PandoraTrader\n");
 
 	m_cwShow.AddLog("Current Version:%s", GetPandoraTraderVersion());
 	m_cwShow.AddLog("Init Config From File!");

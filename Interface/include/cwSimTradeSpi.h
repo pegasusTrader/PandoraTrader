@@ -13,6 +13,10 @@
 #include "cwBasicTradeSpi.h"
 #include "cwBasicSimulator.h"
 #include "cwBasicCout.h"
+#ifdef  UPDATE_ORDERRANKED
+#include "cwTickTradeManager.h"
+#endif //  UPDATE_ORDERRANKED
+
 
 class cwSimTradeSpi
 	: public cwBasicTradeSpi
@@ -102,5 +106,10 @@ private:
 #ifdef CWCOUTINFO
 	cwBasicCout					m_cwShow;
 #endif
+
+	//UPDATE_ORDERRANKED
+#ifdef  UPDATE_ORDERRANKED
+	cwTickTradeManager			m_TickTradeManger;
+#endif //  UPDATE_ORDERRANKED
 };
 

@@ -81,6 +81,13 @@ unsigned int PriceServerThread()
 
 int main()
 {
+	m_cwShow.AddLog("Welcome To Pandora Simulator !!");
+	m_cwShow.AddLog("Powered By PandoraTrader:");
+	m_cwShow.AddLog("PandoraTrader is FREE software: you are free to build your own strategy.");
+	m_cwShow.AddLog("There is NO WARRANTY, to the extent permitted by law.");
+	m_cwShow.AddLog("GitHub: https://github.com/pegasusTrader/PandoraTrader");
+	m_cwShow.AddLog("Gitee: https://gitee.com/wuchangsheng/PandoraTrader\n");
+
 	char exeFullPath[MAX_PATH];
 	memset(exeFullPath, 0, MAX_PATH);
 	std::string strFullPath;

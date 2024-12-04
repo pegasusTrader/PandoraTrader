@@ -79,6 +79,10 @@ public:
 	bool							m_bIsNewKindle;
 	bool							m_bThisFinished;
 
+private:
+	//UpdateKindle	上一次更新K线的数据，是临时信息
+	cwKindleStickPtr				_pTmpPreKindleStick;
+
 public:
 	//获取K线序列
 	bool			 GetKindleSerise(std::deque<cwKindleStickPtr> &	KindleStickDeque);
