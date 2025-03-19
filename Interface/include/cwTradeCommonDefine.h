@@ -288,6 +288,10 @@ typedef char cwFtdcDirectionType;
 #define CW_FTDC_HF_Hedge '3'
 //做市商
 #define CW_FTDC_HF_MarketMaker '5'
+///第一腿投机第二腿套保
+#define CW_FTDC_HF_SpecHedge '6'
+///第一腿套保第二腿投机
+#define CW_FTDC_HF_HedgeSpec '7'
 
 typedef char cwFtdcHedgeFlagType;
 
@@ -428,7 +432,14 @@ typedef char cwFtdcContingentConditionType;
 #define CW_FTDC_FCC_Other '6'
 ///自然人临近交割
 #define CW_FTDC_FCC_PersonDeliv '7'
-
+///本地强平资金不足忽略敞口
+#define CW_FTDC_FCC_Notverifycapital '8'
+///本地强平资金不足
+#define CW_FTDC_FCC_LocalLackDeposit '9'
+///本地强平违规持仓忽略敞口
+#define CW_FTDC_FCC_LocalViolationNocheck 'a'
+///本地强平违规持仓
+#define CW_FTDC_FCC_LocalViolation 'b'
 typedef char cwFtdcForceCloseReasonType;
 
 /////////////////////////////////////////////////////////////////////////
@@ -594,6 +605,8 @@ typedef char cwFtdcTradeSourceType;
 #define CW_FTDC_IS_AuctionMatch '5'
 ///收盘
 #define CW_FTDC_IS_Closed '6'
+///交易业务处理
+#define CW_FTDC_IS_TransactionProcessing '7'
 ///金交所交割申报
 #define CW_FTDC_IS_SGE_Dery_App '7'
 ///金交所交割申报结束

@@ -34,29 +34,29 @@ public:
 
 	///MarketData SPI
 	//行情更新（OnBar会先于PriceUpdate回调， 在PriceUpdate已经可以获取更新好的K线）
-	virtual void			PriceUpdate(cwMarketDataPtr pPriceData) {};
+	void					PriceUpdate(cwMarketDataPtr pPriceData) override {};
 	//当生成一根新K线的时候，会调用该回调
 	virtual void			OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKindleStrategy::cwKindleSeriesPtr pKindleSeries) {};
 
 	///Trade SPI
 	//成交回报
-	virtual void			OnRtnTrade(cwTradePtr pTrade) {};
+	void					OnRtnTrade(cwTradePtr pTrade) override {};
 	//报单回报, pOrder为最新报单，pOriginOrder为上一次更新报单结构体，有可能为NULL
-	virtual void			OnRtnOrder(cwOrderPtr pOrder, cwOrderPtr pOriginOrder = cwOrderPtr()) {};
+	void					OnRtnOrder(cwOrderPtr pOrder, cwOrderPtr pOriginOrder = cwOrderPtr()) override {};
 	//撤单成功
-	virtual void			OnOrderCanceled(cwOrderPtr pOrder) {};
+	void					OnOrderCanceled(cwOrderPtr pOrder) override {};
 	//报单录入请求响应
-	virtual void			OnRspOrderInsert(cwOrderPtr pOrder, cwRspInfoPtr pRspInfo) {};
+	void					OnRspOrderInsert(cwOrderPtr pOrder, cwRspInfoPtr pRspInfo) override {};
 	//报单操作请求响应
-	virtual void			OnRspOrderCancel(cwOrderPtr pOrder, cwRspInfoPtr pRspInfo) {};
+	void					OnRspOrderCancel(cwOrderPtr pOrder, cwRspInfoPtr pRspInfo) override {};
 
 	///System Call Back
 	//定时器响应
 	//定时器ID, 在SetTimer的时候传给系统，如果InstrumentID传NULL,在回调的时候szInstrumentID为空字符串（“”），
 	//否则传什么合约和TimerId，OnStrategyTimer的szInstrumentID就是那个合约信息
-	virtual void			OnStrategyTimer(int iTimerId, const char * szInstrumentID) {};
+	void					OnStrategyTimer(int iTimerId, const char * szInstrumentID) override {};
 	//当策略交易初始化完成时会调用OnReady, 可以在此函数做策略的初始化操作
-	virtual void			OnReady() {};
+	void					OnReady() override {};
 
 
 	//订阅k线， iTimeScale是k线周期，秒数（如5分钟为300）
@@ -160,16 +160,16 @@ public:
 
 
 	///系统自用接口信息，勿动
-	virtual void			_SetReady();
-	virtual void			_OnDisConnect();
-	virtual void			_OnSimulationBegin(int64_t timeStamp);
-	virtual void			_PriceUpdate(cwMarketDataPtr pPriceData);
-	virtual void			_OnRtnTrade(cwTradePtr pTrade);
-	virtual void			_OnRtnOrder(cwOrderPtr pOrder, cwOrderPtr pOriginOrder = cwOrderPtr());
-	virtual void			_OnOrderCanceled(cwOrderPtr pOrder);
-	virtual void			_OnRspOrderInsert(cwOrderPtr pOrder, cwRspInfoPtr pRspInfo);
-	virtual void			_OnRspOrderCancel(cwOrderPtr pOrder, cwRspInfoPtr pRspInfo);
-	virtual void			_OnTimer(int iTimerId, const char * szInstrumentID);
+	void					_SetReady() override;
+	void					_OnDisConnect() override;
+	void					_OnSimulationBegin(int64_t timeStamp) override;
+	void					_PriceUpdate(cwMarketDataPtr& pPriceData) override;
+	void					_OnRtnTrade(cwTradePtr& pTrade) override;
+	void					_OnRtnOrder(cwOrderPtr& pOrder, cwOrderPtr& pOriginOrder) override;
+	void					_OnOrderCanceled(cwOrderPtr& pOrder) override;
+	void					_OnRspOrderInsert(cwOrderPtr& pOrder, cwRspInfoPtr& pRspInfo) override;
+	void					_OnRspOrderCancel(cwOrderPtr& pOrder, cwRspInfoPtr& pRspInfo) override;
+	void					_OnTimer(int iTimerId, const char * szInstrumentID) override;
 
 	enum cwKINDLE_TIMESCALE:int
 	{
@@ -179,7 +179,7 @@ public:
 		cwKINDLE_TIMESCALE_15MIN = cwKINDLE_TIMESCALE_1MIN * 15,
 		cwKINDLE_TIMESCALE_30MIN = cwKINDLE_TIMESCALE_1MIN * 30,
 		cwKINDLE_TIMESCALE_1HOUR = cwKINDLE_TIMESCALE_1MIN * 60,
-		cwKINDLE_TIMESCALE_DAILY
+		cwKINDLE_TIMESCALE_DAILY = 86400
 	};
 private:
 	///系统自用接口信息，勿动

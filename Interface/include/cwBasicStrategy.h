@@ -198,12 +198,12 @@ public:
 
 	virtual void			_SetReady() = 0;
 	virtual void			_OnDisConnect() = 0;
-	virtual void			_PriceUpdate(cwMarketDataPtr pPriceData) = 0;
-	virtual void			_OnRtnTrade(cwTradePtr pTrade) = 0;
-	virtual void			_OnRtnOrder(cwOrderPtr pOrder, cwOrderPtr pOriginOrder = cwOrderPtr()) = 0;
-	virtual void			_OnOrderCanceled(cwOrderPtr pOrder) = 0;
-	virtual void			_OnRspOrderInsert(cwOrderPtr pOrder, cwRspInfoPtr pRspInfo) = 0;
-	virtual void			_OnRspOrderCancel(cwOrderPtr pOrder, cwRspInfoPtr pRspInfo) = 0;
+	virtual void			_PriceUpdate(cwMarketDataPtr& pPriceData) = 0;
+	virtual void			_OnRtnTrade(cwTradePtr& pTrade) = 0;
+	virtual void			_OnRtnOrder(cwOrderPtr& pOrder, cwOrderPtr& pOriginOrder) = 0;
+	virtual void			_OnOrderCanceled(cwOrderPtr& pOrder) = 0;
+	virtual void			_OnRspOrderInsert(cwOrderPtr& pOrder, cwRspInfoPtr& pRspInfo) = 0;
+	virtual void			_OnRspOrderCancel(cwOrderPtr& pOrder, cwRspInfoPtr& pRspInfo) = 0;
 	virtual void			_OnTimer(int iTimerId, const char * szMsg) = 0;
 protected:
 	///输出显示
@@ -227,7 +227,7 @@ protected:
 		cwOpenCloseMode openclosemode = cwOpenCloseMode::CloseTodayThenYd,
 		cwInsertOrderType insertordertype = cwInsertOrderType::cwInsertLimitOrder);
 
-	bool					_CancelOrder(cwOrderPtr pOrder);
+	bool					_CancelOrder(cwOrderPtr& pOrder);
 
 private:	
 	///系统自用接口信息，请勿操作

@@ -23,6 +23,12 @@
 
 #include "cwBasicCout.h"
 
+#ifdef CW_NEW_CSVPARSER
+#include "csv.hpp"
+#else
+#include "csvparser.h"
+#endif
+
 class cwPegasusSimulator :
 	public cwBasicSimulator
 {
@@ -32,7 +38,11 @@ public:
 	~cwPegasusSimulator();
 
 	//初始化模拟器，读取配置和合约信息
-	virtual void		InitialSimulator(const char * pConfigFilePath);
+	void		InitialSimulator(const char * pConfigFilePath) override;
+	//pParserTickDataRow, Only used for cache file
+	void		InitialSimulator(const char* pConfigFilePath,
+		bool(*pParserTickDataRow)(CsvRow* pRow, cwMarketDataPtr& pData));
+
 	//读取配置信息
 	bool				ReadXmlConfigFile();
 
