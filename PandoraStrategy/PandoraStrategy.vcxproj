@@ -123,28 +123,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="cwBasicCTAStrategy.cpp" />
-    <ClCompile Include="cwChasingRisingStrategy.cpp" />
-    <ClCompile Include="cwCTAPlatform.cpp" />
-    <ClCompile Include="cwDualTrust.cpp" />
-    <ClCompile Include="cwEmptyStrategy.cpp" />
-    <ClCompile Include="cwMarketDataReceiver.cpp" />
-    <ClCompile Include="cwPandoraAgentManager.cpp" />
-    <ClCompile Include="cwPandoraPairTrading.cpp" />
-    <ClCompile Include="cwPandoraPositionAgent.cpp" />
     <ClCompile Include="cwStrategyDemo.cpp" />
+    <ClCompile Include="SqlliteHelp.cpp" />
+    <ClCompile Include="Strformatdate.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="cwBasicCTAStrategy.h" />
-    <ClInclude Include="cwChasingRisingStrategy.h" />
-    <ClInclude Include="cwCTAPlatform.h" />
-    <ClInclude Include="cwDualTrust.h" />
-    <ClInclude Include="cwEmptyStrategy.h" />
-    <ClInclude Include="cwMarketDataReceiver.h" />
-    <ClInclude Include="cwPandoraAgentManager.h" />
-    <ClInclude Include="cwPandoraPairTrading.h" />
-    <ClInclude Include="cwPandoraPositionAgent.h" />
     <ClInclude Include="cwStrategyDemo.h" />
+    <ClInclude Include="sqlite3.h" />
+    <ClInclude Include="SqlliteHelp.h" />
+    <ClInclude Include="Strformatdate.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="CTAPlatformConfig.xml" />
