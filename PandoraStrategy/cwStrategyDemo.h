@@ -1,5 +1,7 @@
 #pragma once
 #include "cwBasicKindleStrategy.h"
+#include "sqlite3.h"
+#include "My_structs.h"
 
 class cwStrategyDemo :
 	public cwBasicKindleStrategy
@@ -46,6 +48,12 @@ public:
 	static std::vector<std::string> tarCateList;
 
 	static std::string cursor_str; // 交易当天日期
+
+	static std::unordered_map<std::string, PositionFieldPtr> curPos;//这是持仓信息
+	static std::unordered_map<cwFtdcInstrumentIDType, cwMarketDataPtr> code2data;//这是行情信息
+	static std::unordered_map<cwFtdcInstrumentIDType, cwInstrumentDataPtr> futInfTable;//这是合约信息
+
+	static int sendCount;
 
 	static double ArithmeticMean(const std::vector<double>& arr); //计算简单算数平均值
 
