@@ -138,11 +138,11 @@ namespace MyTrade {
 				std::string prefix = reinterpret_cast<const char*>(sqlite3_column_text(stmt4, 1));
 				if (find(tarCateList.begin(), tarCateList.end(), prefix) != tarCateList.end()) {
 					mainCtrKeys key = { tradeSftDict[reinterpret_cast<const char*>(sqlite3_column_text(stmt4, 0))], prefix };
-					cwFtdcInstrumentIDType arsdr[] = {'3','5'};
+					cwFtdcInstrumentIDType arsdr[] = { '3','5' };
 					//*reinterpret_cast<const cwFtdcInstrumentIDType*>(sqlite3_column_text(stmt4, 2));
 					char arr[56];
 					std::strcpy(arr, *reinterpret_cast<const cwFtdcInstrumentIDType*>(sqlite3_column_text(stmt4, 2)));
-					mainCtrValues value = { 
+					mainCtrValues value = {
 						*arr,
 						std::stod(reinterpret_cast<const char*>(sqlite3_column_text(stmt4, 3))),
 						std::stod(reinterpret_cast<const char*>(sqlite3_column_text(stmt4, 4))) };
@@ -288,12 +288,12 @@ namespace MyTrade {
 		// 用 code2data 最新的切片行情数据更新 barFlowCur & queueBar & retBar 
 	/*	for (const auto& [key, value] : (*factorDictCur)){
 			cwFtdcInstrumentIDType code =  *key ;*/
-		
-		//}
+
+			//}
 		for (const auto& pair : *factorDictCur) {
 			cwFtdcInstrumentIDType code = { *pair.first };
 			double factor = pair.second;
-			if (code2data.count(code)>0) {
+			if (code2data.count(code) > 0) {
 				std::string contract = std::regex_replace(code, std::regex("\\d"), "");
 				(*barFlowCur)[contract].push_back(barFuture{
 					code2data[code]->InstrumentID,
@@ -490,7 +490,7 @@ namespace MyTrade {
 		std::vector<cwFtdcInstrumentIDType> ff;
 		for (const auto& pair : (*codeTractCur)) {
 			std::string key = pair.first;
-			cwFtdcInstrumentIDType value = { *pair.second.c_str()};
+			cwFtdcInstrumentIDType value = { *pair.second.c_str() };
 			auto it = find((*tarCateList).begin(), (*tarCateList).end(), key);
 			if (it != (*tarCateList).end()) {
 				ff.push_back(value);
@@ -573,3 +573,6 @@ namespace MyTrade {
 		}
 		return ordersTar;
 	}
+
+
+}

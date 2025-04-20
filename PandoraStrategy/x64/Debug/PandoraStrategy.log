@@ -1,2 +1,140 @@
-﻿  cwStrategyDemo.cpp
-  PandoraStrategy.vcxproj -> D:\Users\13191\source\repos\shibusama\PandoraTrader\x64\Debug\PandoraStrategy.lib
+﻿  Class1.cpp
+D:\Users\13191\source\repos\shibusama\PandoraTrader\PandoraStrategy\Class1.cpp(147,16): warning C4838: 从“double”转换到“char”需要收缩转换
+D:\Users\13191\source\repos\shibusama\PandoraTrader\PandoraStrategy\Class1.cpp(147,16): warning C4244: “初始化”: 从“double”转换到“char”，可能丢失数据
+D:\Users\13191\source\repos\shibusama\PandoraTrader\PandoraStrategy\Class1.cpp(148,16): warning C4838: 从“double”转换到“char”需要收缩转换
+D:\Users\13191\source\repos\shibusama\PandoraTrader\PandoraStrategy\Class1.cpp(148,16): warning C4244: “初始化”: 从“double”转换到“char”，可能丢失数据
+D:\Users\13191\source\repos\shibusama\PandoraTrader\PandoraStrategy\Class1.cpp(548,33): warning C4101: “e”: 未引用的局部变量
+D:\Users\13191\source\repos\shibusama\PandoraTrader\PandoraStrategy\Class1.cpp(569,33): warning C4101: “e”: 未引用的局部变量
+D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\xhash(125,62): error C2064: 项不会计算为接受 1 个参数的函数
+  (编译源文件“Class1.cpp”)
+      D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\xhash(125,62):
+      模板实例化上下文(最早的实例化上下文)为
+          D:\Users\13191\source\repos\shibusama\PandoraTrader\PandoraStrategy\Class1.cpp(259,15):
+          查看对正在编译的 类 模板 实例化“std::unordered_map<cwFtdcInstrumentIDType,cwMarketDataPtr,std::hash<cwFtdcInstrumentIDType>,std::equal_to<cwFtdcInstrumentIDType>,std::allocator<std::pair<const cwFtdcInstrumentIDType,cwMarketDataPtr>>>”的引用
+          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\unordered_map(436,29):
+          在编译 类 模板 成员函数“std::shared_ptr<cwFtdcDepthMarketDataField> &std::unordered_map<cwFtdcInstrumentIDType,cwMarketDataPtr,std::hash<cwFtdcInstrumentIDType>,std::equal_to<cwFtdcInstrumentIDType>,std::allocator<std::pair<const cwFtdcInstrumentIDType,cwMarketDataPtr>>>::at(const char (&)[82])”时
+              D:\Users\13191\source\repos\shibusama\PandoraTrader\PandoraStrategy\Class1.cpp(339,28):
+              请参阅 "MyTrade::Class1::StrategyTick" 中对 "std::unordered_map<cwFtdcInstrumentIDType,cwMarketDataPtr,std::hash<cwFtdcInstrumentIDType>,std::equal_to<cwFtdcInstrumentIDType>,std::allocator<std::pair<const cwFtdcInstrumentIDType,cwMarketDataPtr>>>::at" 的第一个引用
+          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\unordered_map(437,60):
+          在编译 类 模板 成员函数“size_t std::_Uhash_compare<_Kty,_Hasher,_Keyeq>::operator ()<char[82]>(const _Keyty (&)) noexcept(<expr>) const”时
+          with
+          [
+              _Kty=cwFtdcInstrumentIDType,
+              _Hasher=std::hash<cwFtdcInstrumentIDType>,
+              _Keyeq=std::equal_to<cwFtdcInstrumentIDType>,
+              _Keyty=char [82]
+          ]
+          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\xhash(148,72):
+          查看指向正在编译的变量模板“const bool _Nothrow_hash<std::hash<char [82]>,char [82]>”的引用
+  
+D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\xhash(125,5): error C2056: 非法表达式
+  (编译源文件“Class1.cpp”)
+  
+  cwStrategyDemo.cpp
+D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\unordered_map(49,99): error C2280: “std::_Uhash_compare<_Kty,_Hasher,_Keyeq>::_Uhash_compare(const std::_Uhash_compare<_Kty,_Hasher,_Keyeq> &)”: 尝试引用已删除的函数
+D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\unordered_map(49,99): error C2280:         with
+D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\unordered_map(49,99): error C2280:         [
+D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\unordered_map(49,99): error C2280:             _Kty=cwFtdcInstrumentIDType,
+D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\unordered_map(49,99): error C2280:             _Hasher=std::hash<cwFtdcInstrumentIDType>,
+D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\unordered_map(49,99): error C2280:             _Keyeq=std::equal_to<cwFtdcInstrumentIDType>
+D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\unordered_map(49,99): error C2280:         ]
+  (编译源文件“cwStrategyDemo.cpp”)
+      D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\xhash(179,1):
+      编译器已在此处生成“std::_Uhash_compare<_Kty,_Hasher,_Keyeq>::_Uhash_compare”
+          with
+          [
+              _Kty=cwFtdcInstrumentIDType,
+              _Hasher=std::hash<cwFtdcInstrumentIDType>,
+              _Keyeq=std::equal_to<cwFtdcInstrumentIDType>
+          ]
+      D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\xhash(179,1):
+      “std::_Uhash_compare<_Kty,_Hasher,_Keyeq>::_Uhash_compare(const std::_Uhash_compare<_Kty,_Hasher,_Keyeq> &)”: 由于 数据成员 调用已删除或不可访问的函数“std::_Compressed_pair<_Hasher,std::_Compressed_pair<_Keyeq,float,true>,true>::_Compressed_pair(const std::_Compressed_pair<_Hasher,std::_Compressed_pair<_Keyeq,float,true>,true> &)”，因此已隐式删除函数
+          with
+          [
+              _Kty=cwFtdcInstrumentIDType,
+              _Hasher=std::hash<cwFtdcInstrumentIDType>,
+              _Keyeq=std::equal_to<cwFtdcInstrumentIDType>
+          ]
+          and
+          [
+              _Hasher=std::hash<cwFtdcInstrumentIDType>,
+              _Keyeq=std::equal_to<cwFtdcInstrumentIDType>
+          ]
+      D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\xmemory(1541,1):
+      “std::_Compressed_pair<_Hasher,std::_Compressed_pair<_Keyeq,float,true>,true>::_Compressed_pair(const std::_Compressed_pair<_Hasher,std::_Compressed_pair<_Keyeq,float,true>,true> &)”: 由于 基类 调用已删除或不可访问的函数“std::hash<cwFtdcInstrumentIDType>::hash(const std::hash<cwFtdcInstrumentIDType> &)”，因此已隐式删除函数
+          with
+          [
+              _Hasher=std::hash<cwFtdcInstrumentIDType>,
+              _Keyeq=std::equal_to<cwFtdcInstrumentIDType>
+          ]
+      D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\type_traits(2358,1):
+      “std::hash<cwFtdcInstrumentIDType>::hash(const std::hash<cwFtdcInstrumentIDType> &)”: 由于 基类 调用已删除或不可访问的函数“std::_Conditionally_enabled_hash<_Kty,false>::_Conditionally_enabled_hash(const std::_Conditionally_enabled_hash<_Kty,false> &)”，因此已隐式删除函数
+          with
+          [
+              _Kty=cwFtdcInstrumentIDType
+          ]
+      D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\type_traits(2345,5):
+      “std::_Conditionally_enabled_hash<_Kty,false>::_Conditionally_enabled_hash(const std::_Conditionally_enabled_hash<_Kty,false> &)”: 已隐式删除函数
+          with
+          [
+              _Kty=cwFtdcInstrumentIDType
+          ]
+      D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\unordered_map(49,99):
+      模板实例化上下文(最早的实例化上下文)为
+          D:\Users\13191\source\repos\shibusama\PandoraTrader\PandoraStrategy\cwStrategyDemo.cpp(29,73):
+          查看对正在编译的 类 模板 实例化“std::unordered_map<cwFtdcInstrumentIDType,cwInstrumentDataPtr,std::hash<cwFtdcInstrumentIDType>,std::equal_to<cwFtdcInstrumentIDType>,std::allocator<std::pair<const cwFtdcInstrumentIDType,cwInstrumentDataPtr>>>”的引用
+          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\unordered_map(61,30):
+          查看对正在编译的 类 模板 实例化“std::_Hash<std::_Umap_traits<_Kty,_Ty,std::_Uhash_compare<_Kty,_Hasher,_Keyeq>,_Alloc,false>>”的引用
+          with
+          [
+              _Kty=cwFtdcInstrumentIDType,
+              _Ty=cwInstrumentDataPtr,
+              _Hasher=std::hash<cwFtdcInstrumentIDType>,
+              _Keyeq=std::equal_to<cwFtdcInstrumentIDType>,
+              _Alloc=std::allocator<std::pair<const cwFtdcInstrumentIDType,cwInstrumentDataPtr>>
+          ]
+          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\xhash(337,56):
+          查看对正在编译的 类 模板 实例化“std::_Umap_traits<_Kty,_Ty,std::_Uhash_compare<_Kty,_Hasher,_Keyeq>,_Alloc,false>”的引用
+          with
+          [
+              _Kty=cwFtdcInstrumentIDType,
+              _Ty=cwInstrumentDataPtr,
+              _Hasher=std::hash<cwFtdcInstrumentIDType>,
+              _Keyeq=std::equal_to<cwFtdcInstrumentIDType>,
+              _Alloc=std::allocator<std::pair<const cwFtdcInstrumentIDType,cwInstrumentDataPtr>>
+          ]
+          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\unordered_map(49,5):
+          在编译 类 模板 成员函数“std::_Umap_traits<_Kty,_Ty,std::_Uhash_compare<_Kty,_Hasher,_Keyeq>,_Alloc,false>::_Umap_traits(const _Tr &) noexcept(false)”时
+          with
+          [
+              _Kty=cwFtdcInstrumentIDType,
+              _Ty=cwInstrumentDataPtr,
+              _Hasher=std::hash<cwFtdcInstrumentIDType>,
+              _Keyeq=std::equal_to<cwFtdcInstrumentIDType>,
+              _Alloc=std::allocator<std::pair<const cwFtdcInstrumentIDType,cwInstrumentDataPtr>>,
+              _Tr=std::_Uhash_compare<cwFtdcInstrumentIDType ,std::hash<cwFtdcInstrumentIDType>,std::equal_to<cwFtdcInstrumentIDType>>
+          ]
+              D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\xhash(378,21):
+              请参阅 "std::_Hash<std::_Umap_traits<_Kty,_Ty,std::_Uhash_compare<_Kty,_Hasher,_Keyeq>,_Alloc,false>>::_Hash" 中对 "std::_Umap_traits<_Kty,_Ty,std::_Uhash_compare<_Kty,_Hasher,_Keyeq>,_Alloc,false>::_Umap_traits" 的第一个引用
+          with
+          [
+              _Kty=cwFtdcInstrumentIDType,
+              _Ty=cwInstrumentDataPtr,
+              _Hasher=std::hash<cwFtdcInstrumentIDType>,
+              _Keyeq=std::equal_to<cwFtdcInstrumentIDType>,
+              _Alloc=std::allocator<std::pair<const cwFtdcInstrumentIDType,cwInstrumentDataPtr>>
+          ]
+              D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\unordered_map(101,30):
+              请参阅 "std::unordered_map<cwFtdcInstrumentIDType,cwInstrumentDataPtr,std::hash<cwFtdcInstrumentIDType>,std::equal_to<cwFtdcInstrumentIDType>,std::allocator<std::pair<const cwFtdcInstrumentIDType,cwInstrumentDataPtr>>>::unordered_map" 中对 "std::_Hash<std::_Umap_traits<_Kty,_Ty,std::_Uhash_compare<_Kty,_Hasher,_Keyeq>,_Alloc,false>>::_Hash" 的第一个引用
+          with
+          [
+              _Kty=cwFtdcInstrumentIDType,
+              _Ty=cwInstrumentDataPtr,
+              _Hasher=std::hash<cwFtdcInstrumentIDType>,
+              _Keyeq=std::equal_to<cwFtdcInstrumentIDType>,
+              _Alloc=std::allocator<std::pair<const cwFtdcInstrumentIDType,cwInstrumentDataPtr>>
+          ]
+              D:\Users\13191\source\repos\shibusama\PandoraTrader\PandoraStrategy\cwStrategyDemo.cpp(29,73):
+              请参阅 "cwStrategyDemo::PriceUpdate" 中对 "std::unordered_map<cwFtdcInstrumentIDType,cwInstrumentDataPtr,std::hash<cwFtdcInstrumentIDType>,std::equal_to<cwFtdcInstrumentIDType>,std::allocator<std::pair<const cwFtdcInstrumentIDType,cwInstrumentDataPtr>>>::unordered_map" 的第一个引用
+  
+  正在生成代码...
