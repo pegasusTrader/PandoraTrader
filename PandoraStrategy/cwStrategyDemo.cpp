@@ -232,15 +232,11 @@ void cwStrategyDemo::UpdateBarData() {
 			std::string prefix = reinterpret_cast<const char*>(sqlite3_column_text(stmt4, 1));
 			if (find(tarCateList.begin(), tarCateList.end(), prefix) != tarCateList.end()) {
 				mainCtrKeys key = { tradeSftDict[reinterpret_cast<const char*>(sqlite3_column_text(stmt4, 0))], prefix };
-				cwFtdcInstrumentIDType arsdr[] = { '3','5' };
-				//*reinterpret_cast<const cwFtdcInstrumentIDType*>(sqlite3_column_text(stmt4, 2));
-				char arr[56];
-				std::strcpy(arr, *reinterpret_cast<const cwFtdcInstrumentIDType*>(sqlite3_column_text(stmt4, 2)));
 				mainCtrValues value = {
-					arr,
+					reinterpret_cast<const char*>(sqlite3_column_text(stmt4, 2)),
 					std::stod(reinterpret_cast<const char*>(sqlite3_column_text(stmt4, 3))),
 					std::stod(reinterpret_cast<const char*>(sqlite3_column_text(stmt4, 4))) };
-				(MainInf)[key] = value;
+				MainInf[key] = value;
 			}
 		}
 	}
@@ -581,7 +577,7 @@ std::vector<cwOrderPtr> cwStrategyDemo::StrategyPosSpeC(std::string contract, cw
 // 核心函数
 std::vector<cwOrderPtr> cwStrategyDemo::HandBar(std::unordered_map<std::string, cwMarketDataPtr> code2data/*昨仓数据*/, std::unordered_map<std::string, PositionFieldPtr> curPos) {
 	auto sTime = std::chrono::system_clock::now();
-	std::vector<cwFtdcInstrumentIDType> ff;
+	std::vector<std::string> ff;
 	for (const auto& pair : (codeTractCur)) {
 		std::string key = pair.first;
 		cwFtdcInstrumentIDType value = { *pair.second.c_str() };

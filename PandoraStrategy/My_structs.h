@@ -21,6 +21,7 @@ struct marginovk {
 struct mainCtrKeys {
 	std::string date; // 日期
 	std::string contract; // 合约
+
 };
 
 // 主力合约值结构体

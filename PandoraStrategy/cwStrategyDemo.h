@@ -30,7 +30,7 @@ public:
 	static sqlite3* cnnSys;
 
 	//全局变量
-	static std::map<mainCtrKeys, mainCtrValues> MainInf;//交易的主力合约对应信息
+	static std::unordered_map<mainCtrKeys, mainCtrValues> MainInf;//交易的主力合约对应信息
 	static std::map<std::string, std::vector<barFuture>> barFlow;// 历史行情数据，键为string类型，值为barFuture结构体的vector（相当于C#中的List）
 
 	static std::map<std::string, std::vector<barFuture>> barFlowCur; // 新增行情数据

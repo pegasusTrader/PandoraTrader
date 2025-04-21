@@ -1,277 +1,39 @@
 ﻿  cwStrategyDemo.cpp
-D:\Users\13191\source\repos\shibusama\PandoraTrader\PandoraStrategy\cwStrategyDemo.cpp(642,32): warning C4101: “e”: 未引用的局部变量
-D:\Users\13191\source\repos\shibusama\PandoraTrader\PandoraStrategy\cwStrategyDemo.cpp(663,32): warning C4101: “e”: 未引用的局部变量
-D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\type_traits(2411,54): error C2678: 二进制“<”: 没有找到接受“const _Ty”类型的左操作数的运算符(或没有可接受的转换)
-D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\type_traits(2411,54): error C2678:         with
-D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\type_traits(2411,54): error C2678:         [
-D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\type_traits(2411,54): error C2678:             _Ty=mainCtrKeys
-D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\type_traits(2411,54): error C2678:         ]
+D:\Users\13191\source\repos\shibusama\PandoraTrader\PandoraStrategy\cwStrategyDemo.cpp(638,32): warning C4101: “e”: 未引用的局部变量
+D:\Users\13191\source\repos\shibusama\PandoraTrader\PandoraStrategy\cwStrategyDemo.cpp(659,32): warning C4101: “e”: 未引用的局部变量
+D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\xhash(125,62): error C2064: 项不会计算为接受 1 个参数的函数
   (编译源文件“cwStrategyDemo.cpp”)
-      D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\thread(280,24):
-      可能是“bool std::operator <(std::thread::id,std::thread::id) noexcept”
-          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\type_traits(2411,54):
-          “bool std::operator <(std::thread::id,std::thread::id) noexcept”: 无法将参数 1 从“const _Ty”转换为“std::thread::id”
-          with
-          [
-              _Ty=mainCtrKeys
-          ]
-              D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\type_traits(2411,54):
-              没有可用于执行该转换的用户定义的转换运算符，或者无法调用该运算符
-      D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\regex(945,17):
-      或    “bool std::operator <(const std::sub_match<_BidIt> &,const std::basic_string<iterator_traits<_Iter>::value_type,_Traits,_Alloc> &)”
-          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\type_traits(2411,54):
-          “bool std::operator <(const std::sub_match<_BidIt> &,const std::basic_string<iterator_traits<_Iter>::value_type,_Traits,_Alloc> &)”: 无法从“const _Ty”推导出“const std::sub_match<_BidIt> &”的 模板 参数
-          with
-          [
-              _Ty=mainCtrKeys
-          ]
-      D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\regex(915,17):
-      或    “bool std::operator <(const std::basic_string<iterator_traits<_Iter>::value_type,_Traits,_Alloc> &,const std::sub_match<_BidIt> &)”
-          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\type_traits(2411,54):
-          “bool std::operator <(const std::basic_string<iterator_traits<_Iter>::value_type,_Traits,_Alloc> &,const std::sub_match<_BidIt> &)”: 无法从“const _Ty”推导出“const std::basic_string<iterator_traits<_Iter>::value_type,_Traits,_Alloc> &”的 模板 参数
-          with
-          [
-              _Ty=mainCtrKeys
-          ]
-      D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\regex(868,17):
-      或    “bool std::operator <(const std::sub_match<_BidIt> &,const iterator_traits<_Iter>::value_type &)”
-          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\type_traits(2411,54):
-          “bool std::operator <(const std::sub_match<_BidIt> &,const iterator_traits<_Iter>::value_type &)”: 无法从“const _Ty”推导出“const std::sub_match<_BidIt> &”的 模板 参数
-          with
-          [
-              _Ty=mainCtrKeys
-          ]
-      D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\regex(843,17):
-      或    “bool std::operator <(const iterator_traits<_Iter>::value_type &,const std::sub_match<_BidIt> &)”
-          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\type_traits(2411,54):
-          “bool std::operator <(const iterator_traits<_Iter>::value_type &,const std::sub_match<_BidIt> &)”: 无法从“const _Ty”推导出“const std::sub_match<_BidIt> &”的 模板 参数
-          with
-          [
-              _Ty=mainCtrKeys
-          ]
-      D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\regex(800,17):
-      或    “bool std::operator <(const std::sub_match<_BidIt> &,const iterator_traits<_Iter>::value_type *)”
-          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\type_traits(2411,54):
-          “bool std::operator <(const std::sub_match<_BidIt> &,const iterator_traits<_Iter>::value_type *)”: 无法从“const _Ty”推导出“const std::sub_match<_BidIt> &”的 模板 参数
-          with
-          [
-              _Ty=mainCtrKeys
-          ]
-      D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\regex(775,17):
-      或    “bool std::operator <(const iterator_traits<_Iter>::value_type *,const std::sub_match<_BidIt> &)”
-          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\type_traits(2411,54):
-          “bool std::operator <(const iterator_traits<_Iter>::value_type *,const std::sub_match<_BidIt> &)”: 无法从“const _Ty”推导出“const std::sub_match<_BidIt> &”的 模板 参数
-          with
-          [
-              _Ty=mainCtrKeys
-          ]
-      D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\regex(732,17):
-      或    “bool std::operator <(const std::sub_match<_BidIt> &,const std::sub_match<_BidIt> &)”
-          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\type_traits(2411,54):
-          “bool std::operator <(const std::sub_match<_BidIt> &,const std::sub_match<_BidIt> &)”: 无法从“const _Ty”推导出“const std::sub_match<_BidIt> &”的 模板 参数
-          with
-          [
-              _Ty=mainCtrKeys
-          ]
-      D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\deque(1812,17):
-      或    “bool std::operator <(const std::deque<_Ty,_Alloc> &,const std::deque<_Ty,_Alloc> &)”
-          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\type_traits(2411,54):
-          “bool std::operator <(const std::deque<_Ty,_Alloc> &,const std::deque<_Ty,_Alloc> &)”: 无法从“const _Ty”推导出“const std::deque<_Ty,_Alloc> &”的 模板 参数
-          with
-          [
-              _Ty=mainCtrKeys
-          ]
-      D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\memory(3704,30):
-      或    “bool std::operator <(std::nullptr_t,const std::unique_ptr<_Ty,_Dx> &)”
-          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\type_traits(2411,54):
-          “bool std::operator <(std::nullptr_t,const std::unique_ptr<_Ty,_Dx> &)”: 无法从“const _Ty”推导出“const std::unique_ptr<_Ty,_Dx> &”的 模板 参数
-          with
-          [
-              _Ty=mainCtrKeys
-          ]
-      D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\memory(3698,30):
-      或    “bool std::operator <(const std::unique_ptr<_Ty,_Dx> &,std::nullptr_t)”
-          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\type_traits(2411,54):
-          “bool std::operator <(const std::unique_ptr<_Ty,_Dx> &,std::nullptr_t)”: 无法从“const _Ty”推导出“const std::unique_ptr<_Ty,_Dx> &”的 模板 参数
-          with
-          [
-              _Ty=mainCtrKeys
-          ]
-      D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\memory(3642,17):
-      或    “bool std::operator <(const std::unique_ptr<_Ty,_Dx> &,const std::unique_ptr<_Ty2,_Dx2> &)”
-          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\type_traits(2411,54):
-          “bool std::operator <(const std::unique_ptr<_Ty,_Dx> &,const std::unique_ptr<_Ty2,_Dx2> &)”: 无法从“const _Ty”推导出“const std::unique_ptr<_Ty,_Dx> &”的 模板 参数
-          with
-          [
-              _Ty=mainCtrKeys
-          ]
-      D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\memory(1940,17):
-      或    “bool std::operator <(std::nullptr_t,const std::shared_ptr<_Ty> &) noexcept”
-          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\type_traits(2411,54):
-          “bool std::operator <(std::nullptr_t,const std::shared_ptr<_Ty> &) noexcept”: 无法从“const _Ty”推导出“const std::shared_ptr<_Ty> &”的 模板 参数
-          with
-          [
-              _Ty=mainCtrKeys
-          ]
-      D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\memory(1935,17):
-      或    “bool std::operator <(const std::shared_ptr<_Ty> &,std::nullptr_t) noexcept”
-          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\type_traits(2411,54):
-          “bool std::operator <(const std::shared_ptr<_Ty> &,std::nullptr_t) noexcept”: 无法从“const _Ty”推导出“const std::shared_ptr<_Ty> &”的 模板 参数
-          with
-          [
-              _Ty=mainCtrKeys
-          ]
-      D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\memory(1888,17):
-      或    “bool std::operator <(const std::shared_ptr<_Ty> &,const std::shared_ptr<_Ty0> &) noexcept”
-          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\type_traits(2411,54):
-          “bool std::operator <(const std::shared_ptr<_Ty> &,const std::shared_ptr<_Ty0> &) noexcept”: 无法从“const _Ty”推导出“const std::shared_ptr<_Ty> &”的 模板 参数
-          with
-          [
-              _Ty=mainCtrKeys
-          ]
-      D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\list(1900,17):
-      或    “bool std::operator <(const std::list<_Ty,_Alloc> &,const std::list<_Ty,_Alloc> &)”
-          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\type_traits(2411,54):
-          “bool std::operator <(const std::list<_Ty,_Alloc> &,const std::list<_Ty,_Alloc> &)”: 无法从“const _Ty”推导出“const std::list<_Ty,_Alloc> &”的 模板 参数
-          with
-          [
-              _Ty=mainCtrKeys
-          ]
-      D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\map(652,17):
-      或    “bool std::operator <(const std::multimap<_Kty,_Ty,_Pr,_Alloc> &,const std::multimap<_Kty,_Ty,_Pr,_Alloc> &)”
-          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\type_traits(2411,54):
-          “bool std::operator <(const std::multimap<_Kty,_Ty,_Pr,_Alloc> &,const std::multimap<_Kty,_Ty,_Pr,_Alloc> &)”: 无法从“const _Ty”推导出“const std::multimap<_Kty,_Ty,_Pr,_Alloc> &”的 模板 参数
-          with
-          [
-              _Ty=mainCtrKeys
-          ]
-      D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\map(419,17):
-      或    “bool std::operator <(const std::map<_Kty,_Ty,_Pr,_Alloc> &,const std::map<_Kty,_Ty,_Pr,_Alloc> &)”
-          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\type_traits(2411,54):
-          “bool std::operator <(const std::map<_Kty,_Ty,_Pr,_Alloc> &,const std::map<_Kty,_Ty,_Pr,_Alloc> &)”: 无法从“const _Ty”推导出“const std::map<_Kty,_Ty,_Pr,_Alloc> &”的 模板 参数
-          with
-          [
-              _Ty=mainCtrKeys
-          ]
-      D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\tuple(863,27):
-      或    “bool std::operator <(const std::tuple<_Types...> &,const std::tuple<_Types...> &)”
-          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\type_traits(2411,54):
-          “bool std::operator <(const std::tuple<_Types...> &,const std::tuple<_Types...> &)”: 无法从“const _Ty”推导出“const std::tuple<_Types...> &”的 模板 参数
-          with
-          [
-              _Ty=mainCtrKeys
-          ]
-      D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\set(443,17):
-      或    “bool std::operator <(const std::multiset<_Kty,_Pr,_Alloc> &,const std::multiset<_Kty,_Pr,_Alloc> &)”
-          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\type_traits(2411,54):
-          “bool std::operator <(const std::multiset<_Kty,_Pr,_Alloc> &,const std::multiset<_Kty,_Pr,_Alloc> &)”: 无法从“const _Ty”推导出“const std::multiset<_Kty,_Pr,_Alloc> &”的 模板 参数
-          with
-          [
-              _Ty=mainCtrKeys
-          ]
-      D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\set(228,17):
-      或    “bool std::operator <(const std::set<_Kty,_Pr,_Alloc> &,const std::set<_Kty,_Pr,_Alloc> &)”
-          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\type_traits(2411,54):
-          “bool std::operator <(const std::set<_Kty,_Pr,_Alloc> &,const std::set<_Kty,_Pr,_Alloc> &)”: 无法从“const _Ty”推导出“const std::set<_Kty,_Pr,_Alloc> &”的 模板 参数
-          with
-          [
-              _Ty=mainCtrKeys
-          ]
-      D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\vector(2341,30):
-      或    “bool std::operator <(const std::vector<_Ty,_Alloc> &,const std::vector<_Ty,_Alloc> &)”
-          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\type_traits(2411,54):
-          “bool std::operator <(const std::vector<_Ty,_Alloc> &,const std::vector<_Ty,_Alloc> &)”: 无法从“const _Ty”推导出“const std::vector<_Ty,_Alloc> &”的 模板 参数
-          with
-          [
-              _Ty=mainCtrKeys
-          ]
-      D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\xstring(3282,17):
-      或    “bool std::operator <(const std::basic_string<_Elem,_Traits,_Alloc> &,const _Elem *const ) noexcept”
-          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\type_traits(2411,54):
-          “bool std::operator <(const std::basic_string<_Elem,_Traits,_Alloc> &,const _Elem *const ) noexcept”: 无法从“const _Ty”推导出“const std::basic_string<_Elem,_Traits,_Alloc> &”的 模板 参数
-          with
-          [
-              _Ty=mainCtrKeys
-          ]
-      D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\xstring(3276,17):
-      或    “bool std::operator <(const _Elem *const ,const std::basic_string<_Elem,_Traits,_Alloc> &) noexcept”
-          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\type_traits(2411,54):
-          “bool std::operator <(const _Elem *const ,const std::basic_string<_Elem,_Traits,_Alloc> &) noexcept”: 无法从“const _Ty”推导出“const _Elem *const ”的 模板 参数
-          with
-          [
-              _Ty=mainCtrKeys
-          ]
-      D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\xstring(3270,17):
-      或    “bool std::operator <(const std::basic_string<_Elem,_Traits,_Alloc> &,const std::basic_string<_Elem,_Traits,_Alloc> &) noexcept”
-          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\type_traits(2411,54):
-          “bool std::operator <(const std::basic_string<_Elem,_Traits,_Alloc> &,const std::basic_string<_Elem,_Traits,_Alloc> &) noexcept”: 无法从“const _Ty”推导出“const std::basic_string<_Elem,_Traits,_Alloc> &”的 模板 参数
-          with
-          [
-              _Ty=mainCtrKeys
-          ]
-      D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\xutility(4494,30):
-      或    “bool std::operator <(const std::move_iterator<_Iter> &,const std::move_iterator<_Iter2> &) noexcept(<expr>)”
-          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\type_traits(2411,54):
-          “bool std::operator <(const std::move_iterator<_Iter> &,const std::move_iterator<_Iter2> &) noexcept(<expr>)”: 无法从“const _Ty”推导出“const std::move_iterator<_Iter> &”的 模板 参数
-          with
-          [
-              _Ty=mainCtrKeys
-          ]
-      D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\xutility(1950,30):
-      或    “bool std::operator <(const std::reverse_iterator<_BidIt> &,const std::reverse_iterator<_BidIt2> &) noexcept(<expr>)”
-          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\type_traits(2411,54):
-          “bool std::operator <(const std::reverse_iterator<_BidIt> &,const std::reverse_iterator<_BidIt2> &) noexcept(<expr>)”: 无法从“const _Ty”推导出“const std::reverse_iterator<_BidIt> &”的 模板 参数
-          with
-          [
-              _Ty=mainCtrKeys
-          ]
-      D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\utility(524,27):
-      或    “bool std::operator <(const std::pair<_Ty1,_Ty2> &,const std::pair<_Uty1,_Uty2> &)”
-          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\type_traits(2411,54):
-          “bool std::operator <(const std::pair<_Ty1,_Ty2> &,const std::pair<_Uty1,_Uty2> &)”: 无法从“const _Ty”推导出“const std::pair<_Ty1,_Ty2> &”的 模板 参数
-          with
-          [
-              _Ty=mainCtrKeys
-          ]
-      D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\type_traits(2411,54):
-      尝试匹配参数列表“(const _Ty, const _Ty)”时
-          with
-          [
-              _Ty=mainCtrKeys
-          ]
-      D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\type_traits(2411,54):
+      D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\xhash(125,62):
       模板实例化上下文(最早的实例化上下文)为
-          D:\Users\13191\source\repos\shibusama\PandoraTrader\PandoraStrategy\cwStrategyDemo.cpp(243,6):
-          查看对正在编译的 类 模板 实例化“std::map<mainCtrKeys,mainCtrValues,std::less<mainCtrKeys>,std::allocator<std::pair<const mainCtrKeys,mainCtrValues>>>”的引用
-          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\map(345,18):
-          在编译 类 模板 成员函数“mainCtrValues &std::map<mainCtrKeys,mainCtrValues,std::less<mainCtrKeys>,std::allocator<std::pair<const mainCtrKeys,mainCtrValues>>>::operator [](const mainCtrKeys &)”时
-              D:\Users\13191\source\repos\shibusama\PandoraTrader\PandoraStrategy\cwStrategyDemo.cpp(243,20):
-              请参阅 "cwStrategyDemo::UpdateBarData" 中对 "std::map<mainCtrKeys,mainCtrValues,std::less<mainCtrKeys>,std::allocator<std::pair<const mainCtrKeys,mainCtrValues>>>::operator []" 的第一个引用
-          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\map(346,16):
-          查看对正在编译的函数 模板 实例化“std::pair<std::_Tree_node<std::pair<const mainCtrKeys,mainCtrValues>,std::_Default_allocator_traits<_Alloc>::void_pointer> *,bool> std::map<mainCtrKeys,mainCtrValues,std::less<mainCtrKeys>,_Alloc>::_Try_emplace<const mainCtrKeys&,>(_Keyty)”的引用
+          D:\Users\13191\source\repos\shibusama\PandoraTrader\PandoraStrategy\cwStrategyDemo.cpp(239,5):
+          查看对正在编译的 类 模板 实例化“std::unordered_map<mainCtrKeys,mainCtrValues,std::hash<mainCtrKeys>,std::equal_to<mainCtrKeys>,std::allocator<std::pair<const mainCtrKeys,mainCtrValues>>>”的引用
+          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\unordered_map(432,18):
+          在编译 类 模板 成员函数“mainCtrValues &std::unordered_map<mainCtrKeys,mainCtrValues,std::hash<mainCtrKeys>,std::equal_to<mainCtrKeys>,std::allocator<std::pair<const mainCtrKeys,mainCtrValues>>>::operator [](const mainCtrKeys &)”时
+              D:\Users\13191\source\repos\shibusama\PandoraTrader\PandoraStrategy\cwStrategyDemo.cpp(239,18):
+              请参阅 "cwStrategyDemo::UpdateBarData" 中对 "std::unordered_map<mainCtrKeys,mainCtrValues,std::hash<mainCtrKeys>,std::equal_to<mainCtrKeys>,std::allocator<std::pair<const mainCtrKeys,mainCtrValues>>>::operator []" 的第一个引用
+          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\unordered_map(433,22):
+          查看对正在编译的函数 模板 实例化“std::pair<std::_List_node<_Ty,std::_Default_allocator_traits<_Alloc>::void_pointer> *,bool> std::_Hash<std::_Umap_traits<_Kty,mainCtrValues,std::_Uhash_compare<_Kty,_Hasher,_Keyeq>,_Alloc,false>>::_Try_emplace<const mainCtrKeys&,>(_Keyty)”的引用
           with
           [
+              _Ty=std::pair<const mainCtrKeys,mainCtrValues>,
               _Alloc=std::allocator<std::pair<const mainCtrKeys,mainCtrValues>>,
+              _Kty=mainCtrKeys,
+              _Hasher=std::hash<mainCtrKeys>,
+              _Keyeq=std::equal_to<mainCtrKeys>,
               _Keyty=const mainCtrKeys &
           ]
-          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\map(197,36):
-          查看对正在编译的函数 模板 实例化“std::_Tree_find_result<std::_Tree_node<std::pair<const mainCtrKeys,mainCtrValues>,std::_Default_allocator_traits<_Alloc>::void_pointer> *> std::_Tree<std::_Tmap_traits<_Kty,_Ty,_Pr,_Alloc,false>>::_Find_lower_bound<mainCtrKeys>(const _Keyty &) const”的引用
+          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\xhash(697,31):
+          在编译 类 模板 成员函数“size_t std::_Uhash_compare<_Kty,_Hasher,_Keyeq>::operator ()<mainCtrKeys>(const _Keyty &) noexcept(<expr>) const”时
           with
           [
-              _Alloc=std::allocator<std::pair<const mainCtrKeys,mainCtrValues>>,
               _Kty=mainCtrKeys,
-              _Ty=mainCtrValues,
-              _Pr=std::less<mainCtrKeys>,
+              _Hasher=std::hash<mainCtrKeys>,
+              _Keyeq=std::equal_to<mainCtrKeys>,
               _Keyty=mainCtrKeys
           ]
-          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\xtree(1624,17):
-          查看对正在编译的函数 模板 实例化“bool std::_Debug_lt_pred<const std::less<mainCtrKeys>&,const _Kty&,const _Keyty&>(_Pr,_Ty1,_Ty2) noexcept(<expr>)”的引用
-          with
-          [
-              _Kty=mainCtrKeys,
-              _Keyty=mainCtrKeys,
-              _Pr=const std::less<mainCtrKeys> &,
-              _Ty1=const mainCtrKeys &,
-              _Ty2=const mainCtrKeys &
-          ]
+          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\xhash(148,72):
+          查看指向正在编译的变量模板“const bool _Nothrow_hash<std::hash<mainCtrKeys>,mainCtrKeys>”的引用
+  
+D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\xhash(125,5): error C2056: 非法表达式
+  (编译源文件“cwStrategyDemo.cpp”)
   
