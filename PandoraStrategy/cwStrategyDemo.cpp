@@ -237,7 +237,7 @@ void cwStrategyDemo::UpdateBarData() {
 				char arr[56];
 				std::strcpy(arr, *reinterpret_cast<const cwFtdcInstrumentIDType*>(sqlite3_column_text(stmt4, 2)));
 				mainCtrValues value = {
-					*arr,
+					arr,
 					std::stod(reinterpret_cast<const char*>(sqlite3_column_text(stmt4, 3))),
 					std::stod(reinterpret_cast<const char*>(sqlite3_column_text(stmt4, 4))) };
 				(MainInf)[key] = value;
@@ -350,7 +350,7 @@ void cwStrategyDemo::UpdateBarData() {
 
 }
 
-void cwStrategyDemo::UpdateFlow(std::unordered_map<cwFtdcInstrumentIDType, cwMarketDataPtr> code2data, std::unordered_map<std::string, PositionFieldPtr> curPos) {
+void cwStrategyDemo::UpdateFlow(std::unordered_map<std::string, cwMarketDataPtr> code2data, std::unordered_map<std::string, PositionFieldPtr> curPos) {
 	// 记录最新持仓状况（方向，数量，成本价格，开仓成本，数量）
 	(spePos).clear();
 	for (const auto& pair : curPos) {
@@ -385,7 +385,7 @@ void cwStrategyDemo::UpdateFlow(std::unordered_map<cwFtdcInstrumentIDType, cwMar
 
 		//}
 	for (const auto& pair : factorDictCur) {
-		cwFtdcInstrumentIDType code = { *pair.first };
+		std::string code = { pair.first };
 		double factor = pair.second;
 		if (code2data.count(code) > 0) {
 			std::string contract = std::regex_replace(code, std::regex("\\d"), "");
@@ -419,7 +419,7 @@ void cwStrategyDemo::UpdateFlow(std::unordered_map<cwFtdcInstrumentIDType, cwMar
 }
 
 /*STRATEGY PART*/
-std::vector<cwOrderPtr> cwStrategyDemo::StrategyTick(std::unordered_map<cwFtdcInstrumentIDType, cwMarketDataPtr> code2data/*数据*/) {
+std::vector<cwOrderPtr> cwStrategyDemo::StrategyTick(std::unordered_map<std::string, cwMarketDataPtr> code2data/*数据*/) {
 	// 当前策略设计的逻辑是对每个品种都进行单独的测试管理, 只是在仓位设置上进行等权重的去分配,所以每个品种的交易信号都应该单独做计算 
 	std::vector<cwOrderPtr> ordersTar;
 	std::cout << " start " << "StrategyTick " << std::endl;
@@ -579,7 +579,7 @@ std::vector<cwOrderPtr> cwStrategyDemo::StrategyPosSpeC(std::string contract, cw
 	return orders;
 }
 // 核心函数
-std::vector<cwOrderPtr> cwStrategyDemo::HandBar(std::unordered_map<cwFtdcInstrumentIDType, cwMarketDataPtr> code2data/*昨仓数据*/, std::unordered_map<std::string, PositionFieldPtr> curPos) {
+std::vector<cwOrderPtr> cwStrategyDemo::HandBar(std::unordered_map<std::string, cwMarketDataPtr> code2data/*昨仓数据*/, std::unordered_map<std::string, PositionFieldPtr> curPos) {
 	auto sTime = std::chrono::system_clock::now();
 	std::vector<cwFtdcInstrumentIDType> ff;
 	for (const auto& pair : (codeTractCur)) {

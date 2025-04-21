@@ -34,7 +34,7 @@ public:
 	static std::map<std::string, std::vector<barFuture>> barFlow;// 历史行情数据，键为string类型，值为barFuture结构体的vector（相当于C#中的List）
 
 	static std::map<std::string, std::vector<barFuture>> barFlowCur; // 新增行情数据
-	static std::map<cwFtdcInstrumentIDType, double> factorDictCur;// 因子数据
+	static std::map<std::string, double> factorDictCur;// 因子数据
 	static std::map<std::string, std::string> codeTractCur;// 目标交易合约
 	static std::map<std::string, futInfMng> futInfDict;// 期货合约信息，键为string类型，值为futInfMng结构体
 
@@ -50,8 +50,8 @@ public:
 	static std::string cursor_str; // 交易当天日期
 
 	static std::unordered_map<std::string, PositionFieldPtr> curPos;//这是持仓信息
-	static std::unordered_map<cwFtdcInstrumentIDType, cwMarketDataPtr> code2data;//这是行情信息
-	static std::unordered_map<cwFtdcInstrumentIDType, cwInstrumentDataPtr> futInfTable;//这是合约信息
+	static std::unordered_map<std::string, cwMarketDataPtr> code2data;//这是行情信息
+	static std::unordered_map<std::string, cwInstrumentDataPtr> futInfTable;//这是合约信息
 
 	static int sendCount;
 
@@ -61,9 +61,9 @@ public:
 
 	static void UpdateBarData();// 加载历史信息
 
-	static void UpdateFlow(std::unordered_map<cwFtdcInstrumentIDType, cwMarketDataPtr> code2data, std::unordered_map<std::string, PositionFieldPtr> curPos);// 记录最新持仓状况（方向，数量，成本价格，开仓成本，数量）
+	static void UpdateFlow(std::unordered_map<std::string, cwMarketDataPtr> code2data, std::unordered_map<std::string, PositionFieldPtr> curPos);// 记录最新持仓状况（方向，数量，成本价格，开仓成本，数量）
 
-	static std::vector<cwOrderPtr> StrategyTick(std::unordered_map<cwFtdcInstrumentIDType, cwMarketDataPtr> code2data/*数据*/);
+	static std::vector<cwOrderPtr> StrategyTick(std::unordered_map<std::string, cwMarketDataPtr> code2data/*数据*/);
 
 	static std::vector<cwOrderPtr> StrategyPosOpen(std::string contract, cwMarketDataPtr barBook, double stdLong, double stdShort);
 
@@ -71,5 +71,5 @@ public:
 
 	static std::vector<cwOrderPtr> StrategyPosSpeC(std::string contract, cwMarketDataPtr barBook, long posO);
 
-	static std::vector<cwOrderPtr> HandBar(std::unordered_map<cwFtdcInstrumentIDType, cwMarketDataPtr> code2data/*昨仓数据*/, std::unordered_map<std::string, PositionFieldPtr> curPos);
+	static std::vector<cwOrderPtr> HandBar(std::unordered_map<std::string, cwMarketDataPtr> code2data/*昨仓数据*/, std::unordered_map<std::string, PositionFieldPtr> curPos);
 };

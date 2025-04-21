@@ -1,80 +1,78 @@
 #pragma once
 #include <string>
-#include "cwBasicKindleStrategy.h"
-
-
 
 // 持仓状况结构体
+//方向、数量、开仓均价、开仓成本、数量
 struct catePortInf {
-    std::string direction;
-    int volume;
-    double costPrice;
-    double openCost;
-    int amount;
+	std::string direction;
+	int volume;
+	double costPrice;
+	double openCost;
+	int amount;
 };
 
 // 合约乘数与一跳价位结构体
 struct marginovk {
-    int multiple;
-    double ticksize;
+	int multiple;
+	double ticksize;
 };
 
 // 主力合约键结构体
 struct mainCtrKeys {
-    std::string date;
-    std::string contract;
+	std::string date; // 日期
+	std::string contract; // 合约
 };
 
 // 主力合约值结构体
 struct mainCtrValues {
-    cwFtdcInstrumentIDType code;
-    double factor;
-    double accfactor;
+	std::string code; // 合约代码
+	double factor; // 复权因子
+	double accfactor; // 累计复权因子
 };
 
 // 分钟数据信息结构体
 struct barFuture {
-    std::string code;
-    std::string tradingday;
-    std::string timestamp;
-    int64_t volume;
-    double price;
+	std::string code; // 合约代码
+	std::string tradingday; // 交易日
+	std::string timestamp; //时间戳
+	int64_t volume; // 成交量
+	double price; // 最新价格
 };
 
- //以下结构体如果有需要可以取消注释并使用
- //仓位管理结构体（原posMng，这里先注释掉，你可按需启用）
- struct posMng {
-     std::string code;
-     std::string direction;
-     int volume;
-     double costPrice;
-     double openCost;
-     int amount;
- };
+//以下结构体如果有需要可以取消注释并使用
+//仓位管理结构体（原posMng，这里先注释掉，你可按需启用）
+struct posMng {
+	std::string code; //合约代码
+	std::string direction; //持仓方向
+	int volume; //持仓数量
+	double costPrice; //
+	double openCost; //
+	int amount;
+};
 
 // 开仓管理结构体
 struct orcMng {
-    std::string cdate;
-    std::string ctime;
-    std::string dire;
-    int htime;
-    double profit;
-    std::string method;
+	std::string cdate;
+	std::string ctime;
+	std::string dire;
+	int htime;
+	double profit;
+	std::string method;
 };
 
 // 策略参数信息结构体
 struct paraMng {
-    std::string Fac;
-    std::string ver;
-    std::string typ;
-    int Rs;
-    int Rl;
+	std::string Fac;//策略编号
+	std::string ver;//策略版本
+	std::string typ;//策略类型
+	int Rs;//短期窗口
+	int Rl;//长期窗口
 };
 
 // 期货合约信息结构体
 struct futInfMng {
-    std::string exchange;
-    int multiple;
-    double ticksize;
-    double marginrate;
+	std::string exchange; //交易所
+	int multiple; //合约乘数
+	double ticksize; //跳价
+	double marginrate; //保证金率
 };
