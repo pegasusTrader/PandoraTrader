@@ -1,15 +1,15 @@
 ﻿  cwStrategyDemo.cpp
-D:\Users\13191\source\repos\shibusama\PandoraTrader\PandoraStrategy\cwStrategyDemo.cpp(638,32): warning C4101: “e”: 未引用的局部变量
-D:\Users\13191\source\repos\shibusama\PandoraTrader\PandoraStrategy\cwStrategyDemo.cpp(659,32): warning C4101: “e”: 未引用的局部变量
+D:\Users\13191\source\repos\shibusama\PandoraTrader\PandoraStrategy\cwStrategyDemo.cpp(641,32): warning C4101: “e”: 未引用的局部变量
+D:\Users\13191\source\repos\shibusama\PandoraTrader\PandoraStrategy\cwStrategyDemo.cpp(662,32): warning C4101: “e”: 未引用的局部变量
 D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\xhash(125,62): error C2064: 项不会计算为接受 1 个参数的函数
   (编译源文件“cwStrategyDemo.cpp”)
       D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\xhash(125,62):
       模板实例化上下文(最早的实例化上下文)为
-          D:\Users\13191\source\repos\shibusama\PandoraTrader\PandoraStrategy\cwStrategyDemo.cpp(239,5):
+          D:\Users\13191\source\repos\shibusama\PandoraTrader\PandoraStrategy\cwStrategyDemo.cpp(240,5):
           查看对正在编译的 类 模板 实例化“std::unordered_map<mainCtrKeys,mainCtrValues,std::hash<mainCtrKeys>,std::equal_to<mainCtrKeys>,std::allocator<std::pair<const mainCtrKeys,mainCtrValues>>>”的引用
           D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\unordered_map(432,18):
           在编译 类 模板 成员函数“mainCtrValues &std::unordered_map<mainCtrKeys,mainCtrValues,std::hash<mainCtrKeys>,std::equal_to<mainCtrKeys>,std::allocator<std::pair<const mainCtrKeys,mainCtrValues>>>::operator [](const mainCtrKeys &)”时
-              D:\Users\13191\source\repos\shibusama\PandoraTrader\PandoraStrategy\cwStrategyDemo.cpp(239,18):
+              D:\Users\13191\source\repos\shibusama\PandoraTrader\PandoraStrategy\cwStrategyDemo.cpp(319,25):
               请参阅 "cwStrategyDemo::UpdateBarData" 中对 "std::unordered_map<mainCtrKeys,mainCtrValues,std::hash<mainCtrKeys>,std::equal_to<mainCtrKeys>,std::allocator<std::pair<const mainCtrKeys,mainCtrValues>>>::operator []" 的第一个引用
           D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\unordered_map(433,22):
           查看对正在编译的函数 模板 实例化“std::pair<std::_List_node<_Ty,std::_Default_allocator_traits<_Alloc>::void_pointer> *,bool> std::_Hash<std::_Umap_traits<_Kty,mainCtrValues,std::_Uhash_compare<_Kty,_Hasher,_Keyeq>,_Alloc,false>>::_Try_emplace<const mainCtrKeys&,>(_Keyty)”的引用
