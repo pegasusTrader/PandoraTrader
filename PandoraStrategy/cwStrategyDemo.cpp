@@ -13,6 +13,8 @@
 #include <cmath>
 #include <exception>
 #include "My_structs.h"
+#include "sqlite3.h"
+
 
 //using namespace MyTrade;
 
@@ -129,6 +131,8 @@ void cwStrategyDemo::OnOrderCanceled(cwOrderPtr pOrder)
 void cwStrategyDemo::OnReady()
 {
 	SubScribePrice("IC2506");
+	std::cout << "start:______" << std::endl;
+	UpdateBarData();// 加载历史数据（行情 + 合约信息）
 }
 
 double cwStrategyDemo::ArithmeticMean(const std::vector<double>& arr) {//计算简单算数平均值
@@ -153,9 +157,11 @@ double cwStrategyDemo::SampleStd(const std::vector<double>& arr) {
 
 /*INIT DAILY DATA*/
 void cwStrategyDemo::UpdateBarData() {
-	// 获取60天近期交易日序列
+	// 加载交易日信息
 	std::cout << "UPDATE BAR DATA >>>>>>" << std::endl;
-	std::string sqlTradingDay = "select * from tradeday where tradingday < '" + cursor_str + "' order by tradingday DESC Limit 60;";
+
+	// 获取60天近期交易日序列
+	std::string sqlTradingDay = "select * from tradeday where tradingday	< '" + cursor_str + "' order by tradingday DESC Limit 60;";
 	sqlite3_stmt* stmt = nullptr;
 	std::vector<std::string> tradeDate;
 	if (sqlite3_prepare_v2(cnnSys, sqlTradingDay.c_str(), -1, &stmt, nullptr) == SQLITE_OK) {
@@ -201,8 +207,8 @@ void cwStrategyDemo::UpdateBarData() {
 	for (const auto& kvp : verDictCur) {
 		tarCateList.push_back(kvp.first);
 	}
-//
-	 //g.futureinfo = 加载合约信息
+	//
+		 //g.futureinfo = 加载合约信息
 	std::cout << " 加载合约信息 >>>" << std::endl;
 	std::string sqlFutInfo = "select code, exchange, multiple, ticksize, marginrate from futureinfo;";
 	sqlite3_stmt* stmt3 = nullptr;
@@ -217,14 +223,14 @@ void cwStrategyDemo::UpdateBarData() {
 	}
 	sqlite3_finalize(stmt3);
 
-//
-	// g.MainInf
-	// MainInf 需要调整 
+	//
+		// g.MainInf
+		// MainInf 需要调整 
 	std::map<std::string, std::string> tradeSftDict;
 	for (size_t i = 0; i < tradeDate.size(); ++i) {
 		tradeSftDict[tradeDate[i]] = (i == tradeDate.size() - 1) ? cursor_str : tradeDate[i + 1];
 	}
-//
+	//
 	std::string sqlMainContract = "select tradingday, prefix, code, factor,accfactor from TraderOvk where tradingday>='" + tradeDate.front() + "' and tradingday<='" + preCur_str + "';";
 	sqlite3_stmt* stmt4 = nullptr;
 	if (sqlite3_prepare_v2(cnn, sqlMainContract.c_str(), -1, &stmt4, nullptr) == SQLITE_OK) {
@@ -375,7 +381,7 @@ void cwStrategyDemo::UpdateFlow(std::unordered_map<std::string, cwMarketDataPtr>
 			(spePos)[positionField->InstrumentID] = cateInf;
 		}
 	}
-	 //用 code2data 最新的切片行情数据更新 barFlowCur & queueBar & retBar 
+	//用 code2data 最新的切片行情数据更新 barFlowCur & queueBar & retBar 
 /*	for (const auto& [key, value] : (*factorDictCur)){
 		cwFtdcInstrumentIDType code =  *key ;*/
 		//}
@@ -415,41 +421,30 @@ void cwStrategyDemo::UpdateFlow(std::unordered_map<std::string, cwMarketDataPtr>
 
 /*STRATEGY PART*/
 std::vector<cwOrderPtr> cwStrategyDemo::StrategyTick(std::unordered_map<std::string, cwMarketDataPtr> code2data/*数据*/) {
+
 	// 当前策略设计的逻辑是对每个品种都进行单独的测试管理, 只是在仓位设置上进行等权重的去分配,所以每个品种的交易信号都应该单独做计算 
+
 	std::vector<cwOrderPtr> ordersTar;
 	std::cout << " start " << "StrategyTick " << std::endl;
-	for (const std::string& contract : (tarCateList)) {
+	for (const std::string& contract : tarCateList) {
 		try {
 			std::cout << "##  " << contract << std::endl;
-			std::string aa = (codeTractCur).at(contract);
-			const char* bb = aa.c_str();
-			cwFtdcInstrumentIDType cc;
-			std::strcpy(cc, bb);
-			const cwMarketDataPtr& barBook = code2data.at(cc);
-
-			std::vector<double> retBarSubsetLong;
-			std::vector<double> retBarSubsetShort;
-
-			// 计算 stdLong
-			auto startIndexLong = max(0, static_cast<int>((retBar)[contract].size()) - (verDictCur)[contract].Rl);
-			for (size_t i = startIndexLong; i < min((retBar)[contract].size(), static_cast<size_t>(startIndexLong + (verDictCur)[contract].Rl)); ++i) {
-				retBarSubsetLong.push_back((retBar)[contract][i]);
-			}
-			double stdLong = SampleStd(retBarSubsetLong);
+			cwMarketDataPtr barBook = code2data.at(codeTractCur.at(contract));
 
 			// 计算 stdShort
-			auto startIndexShort = max(0, static_cast<int>((retBar)[contract].size()) - (verDictCur)[contract].Rs);
-			for (size_t i = startIndexShort; i < min((retBar)[contract].size(), static_cast<size_t>(startIndexShort + (verDictCur)[contract].Rs)); ++i) {
-				retBarSubsetShort.push_back((retBar)[contract][i]);
-			}
+			std::vector<double> retBarSubsetShort(std::prev(retBar[contract].end(), verDictCur[contract].Rs), retBar[contract].end());
 			double stdShort = SampleStd(retBarSubsetShort);
 
+			// 计算 stdLong
+			std::vector<double> retBarSubsetLong(std::prev(retBar[contract].end(), verDictCur[contract].Rl), retBar[contract].end());
+			double stdLong = SampleStd(retBarSubsetLong);
+			
 			// 对于每个品种直接设置 单组合固定的张数
 			long posV = ((spePos).count((codeTractCur)[contract]) > 0) ? (spePos)[(codeTractCur)[contract]].volume : 0;
 			long posC = posV; // 可平仓组合
 			long posO = (countLimitCur)[contract] - posC; // 可开仓组合  
 
-			std::cout << "    " << contract << " = PosC " << posC << " - PosO " << posO << "   Fac = " << (verDictCur)[contract].Fac << " >>>" << std::endl;
+			std::cout << contract << " = PosC " << posC << " - PosO " << posO << "   Fac = " << (verDictCur)[contract].Fac << " >>>" << std::endl;
 
 			// Spe Sta 0903 <可开仓位小于 0 代表已经开有多余的头寸，需要额外平仓处理， 特殊情况>
 			if (posO < 0) {
@@ -480,7 +475,7 @@ std::vector<cwOrderPtr> cwStrategyDemo::StrategyTick(std::unordered_map<std::str
 //// 开仓交易 条件
 std::vector<cwOrderPtr> cwStrategyDemo::StrategyPosOpen(std::string contract, cwMarketDataPtr barBook, double stdLong, double stdShort) {
 	std::vector<cwOrderPtr> orders;
-	if ((queueBar)[contract].back() < (queueBar)[contract][(queueBar).size() - ( verDictCur)[contract].Rs] && stdShort > stdLong) {
+	if ((queueBar)[contract].back() < (queueBar)[contract][(queueBar).size() - (verDictCur)[contract].Rs] && stdShort > stdLong) {
 		int tarVolume = (countLimitCur)[contract];
 		std::string key = (codeTractCur)[contract] + "=" + Strformatdate::getCurrentDateString(); // 假设存在函数 getCurrentTimeString 获取当前时间的字符串表示
 		(spePos)[key] = catePortInf{ "Long",{},barBook->LastPrice,{},tarVolume };
@@ -578,7 +573,7 @@ std::vector<cwOrderPtr> cwStrategyDemo::StrategyPosSpeC(std::string contract, cw
 std::vector<cwOrderPtr> cwStrategyDemo::HandBar(std::unordered_map<std::string, cwMarketDataPtr> code2data/*昨仓数据*/, std::unordered_map<std::string, PositionFieldPtr> curPos) {
 	auto sTime = std::chrono::system_clock::now();
 	std::vector<std::string> ff;
-	for (const auto& pair : (codeTractCur)) {
+	for (const auto& pair : codeTractCur) {
 		std::string key = pair.first;
 		cwFtdcInstrumentIDType value = { *pair.second.c_str() };
 		auto it = find((tarCateList).begin(), (tarCateList).end(), key);
