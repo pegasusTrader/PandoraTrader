@@ -21,8 +21,21 @@ struct marginovk {
 struct mainCtrKeys {
 	std::string date; // 日期
 	std::string contract; // 合约
-
+	bool operator==(const mainCtrKeys& other) const {
+		return date == other.date && contract == other.contract;
+	};
 };
+
+namespace std {
+	template <>
+	struct hash<mainCtrKeys> {
+		std::size_t operator()(const mainCtrKeys& p) const {
+			auto hash1 = std::hash<std::string>{}(p.date);
+			auto hash2 = std::hash<std::string>{}(p.contract);
+			return hash1 ^ (hash2 << 1);
+		}
+	};
+}
 
 // 主力合约值结构体
 struct mainCtrValues {

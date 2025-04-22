@@ -1,39 +1,64 @@
 ﻿  cwStrategyDemo.cpp
-D:\Users\13191\source\repos\shibusama\PandoraTrader\PandoraStrategy\cwStrategyDemo.cpp(641,32): warning C4101: “e”: 未引用的局部变量
-D:\Users\13191\source\repos\shibusama\PandoraTrader\PandoraStrategy\cwStrategyDemo.cpp(662,32): warning C4101: “e”: 未引用的局部变量
-D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\xhash(125,62): error C2064: 项不会计算为接受 1 个参数的函数
+D:\Users\13191\source\repos\shibusama\PandoraTrader\PandoraStrategy\cwStrategyDemo.cpp(638,32): warning C4101: “e”: 未引用的局部变量
+D:\Users\13191\source\repos\shibusama\PandoraTrader\PandoraStrategy\cwStrategyDemo.cpp(659,32): warning C4101: “e”: 未引用的局部变量
+D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\include\xutility(403,61): error C2665: “ORDERFIELD::ORDERFIELD”: 没有重载函数可以转换所有参数类型
   (编译源文件“cwStrategyDemo.cpp”)
-      D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\xhash(125,62):
+      D:\Users\13191\source\repos\shibusama\PandoraTrader\Interface\include\cwTradeCommonDefine.h(1088,1):
+      可能是“ORDERFIELD::ORDERFIELD(ORDERFIELD &&)”
+          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\include\xutility(403,61):
+          “ORDERFIELD::ORDERFIELD(ORDERFIELD &&)”: 无法将参数 1 从“_Ty”转换为“ORDERFIELD &&”
+          with
+          [
+              _Ty=cwOrderPtr
+          ]
+              D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\include\xutility(403,82):
+              原因如下: 无法从“_Ty”转换为“ORDERFIELD”
+          with
+          [
+              _Ty=cwOrderPtr
+          ]
+              D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\include\xutility(403,82):
+              没有可用于执行该转换的用户定义的转换运算符，或者无法调用该运算符
+      D:\Users\13191\source\repos\shibusama\PandoraTrader\Interface\include\cwTradeCommonDefine.h(1088,1):
+      或    “ORDERFIELD::ORDERFIELD(const ORDERFIELD &)”
+          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\include\xutility(403,61):
+          “ORDERFIELD::ORDERFIELD(const ORDERFIELD &)”: 无法将参数 1 从“_Ty”转换为“const ORDERFIELD &”
+          with
+          [
+              _Ty=cwOrderPtr
+          ]
+              D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\include\xutility(403,82):
+              原因如下: 无法从“_Ty”转换为“const ORDERFIELD”
+          with
+          [
+              _Ty=cwOrderPtr
+          ]
+              D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\include\xutility(403,82):
+              没有可用于执行该转换的用户定义的转换运算符，或者无法调用该运算符
+      D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\include\xutility(403,61):
+      尝试匹配参数列表“(_Ty)”时
+          with
+          [
+              _Ty=cwOrderPtr
+          ]
+      D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\include\xutility(403,61):
       模板实例化上下文(最早的实例化上下文)为
-          D:\Users\13191\source\repos\shibusama\PandoraTrader\PandoraStrategy\cwStrategyDemo.cpp(240,5):
-          查看对正在编译的 类 模板 实例化“std::unordered_map<mainCtrKeys,mainCtrValues,std::hash<mainCtrKeys>,std::equal_to<mainCtrKeys>,std::allocator<std::pair<const mainCtrKeys,mainCtrValues>>>”的引用
-          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\unordered_map(432,18):
-          在编译 类 模板 成员函数“mainCtrValues &std::unordered_map<mainCtrKeys,mainCtrValues,std::hash<mainCtrKeys>,std::equal_to<mainCtrKeys>,std::allocator<std::pair<const mainCtrKeys,mainCtrValues>>>::operator [](const mainCtrKeys &)”时
-              D:\Users\13191\source\repos\shibusama\PandoraTrader\PandoraStrategy\cwStrategyDemo.cpp(319,25):
-              请参阅 "cwStrategyDemo::UpdateBarData" 中对 "std::unordered_map<mainCtrKeys,mainCtrValues,std::hash<mainCtrKeys>,std::equal_to<mainCtrKeys>,std::allocator<std::pair<const mainCtrKeys,mainCtrValues>>>::operator []" 的第一个引用
-          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\unordered_map(433,22):
-          查看对正在编译的函数 模板 实例化“std::pair<std::_List_node<_Ty,std::_Default_allocator_traits<_Alloc>::void_pointer> *,bool> std::_Hash<std::_Umap_traits<_Kty,mainCtrValues,std::_Uhash_compare<_Kty,_Hasher,_Keyeq>,_Alloc,false>>::_Try_emplace<const mainCtrKeys&,>(_Keyty)”的引用
+          D:\Users\13191\source\repos\shibusama\PandoraTrader\PandoraStrategy\cwStrategyDemo.cpp(616,25):
+          查看对正在编译的函数 模板 实例化“std::shared_ptr<ORDERFIELD> std::make_shared<ORDERFIELD,_Ty&>(_Ty &)”的引用
           with
           [
-              _Ty=std::pair<const mainCtrKeys,mainCtrValues>,
-              _Alloc=std::allocator<std::pair<const mainCtrKeys,mainCtrValues>>,
-              _Kty=mainCtrKeys,
-              _Hasher=std::hash<mainCtrKeys>,
-              _Keyeq=std::equal_to<mainCtrKeys>,
-              _Keyty=const mainCtrKeys &
+              _Ty=cwOrderPtr
           ]
-          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\xhash(697,31):
-          在编译 类 模板 成员函数“size_t std::_Uhash_compare<_Kty,_Hasher,_Keyeq>::operator ()<mainCtrKeys>(const _Keyty &) noexcept(<expr>) const”时
+          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\include\memory(2906,46):
+          查看对正在编译的函数 模板 实例化“std::_Ref_count_obj2<ORDERFIELD>::_Ref_count_obj2<_Ty&>(_Ty &)”的引用
           with
           [
-              _Kty=mainCtrKeys,
-              _Hasher=std::hash<mainCtrKeys>,
-              _Keyeq=std::equal_to<mainCtrKeys>,
-              _Keyty=mainCtrKeys
+              _Ty=cwOrderPtr
           ]
-          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\xhash(148,72):
-          查看指向正在编译的变量模板“const bool _Nothrow_hash<std::hash<mainCtrKeys>,mainCtrKeys>”的引用
-  
-D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\xhash(125,5): error C2056: 非法表达式
-  (编译源文件“cwStrategyDemo.cpp”)
+          D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\include\memory(2095,18):
+          查看对正在编译的函数 模板 实例化“void std::_Construct_in_place<_Ty,std::shared_ptr<_Ty>&>(_Ty &,std::shared_ptr<_Ty> &) noexcept(false)”的引用
+          with
+          [
+              _Ty=ORDERFIELD
+          ]
   

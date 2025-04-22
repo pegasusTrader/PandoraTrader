@@ -91,7 +91,7 @@ void cwStrategyDemo::PriceUpdate(cwMarketDataPtr pPriceData)
 					cwOrderPtr order;
 					*order->InstrumentID = *position->InstrumentID;
 					order->VolumeTotalOriginal = position->TodayPosition;
-					cwFtdcDirectionType Long;
+					cwFtdcDirectionType Long = '0';
 					order->Direction = (position->PosiDirection == Long) ? CW_FTDC_D_Buy : CW_FTDC_D_Sell;
 
 					std::string offsetFlag = (futInfTable[order->InstrumentID]->ExchangeID == "SHFE") ? "3" : "1";
@@ -201,8 +201,8 @@ void cwStrategyDemo::UpdateBarData() {
 	for (const auto& kvp : verDictCur) {
 		tarCateList.push_back(kvp.first);
 	}
-
-	// g.futureinfo = 加载合约信息
+//
+	 //g.futureinfo = 加载合约信息
 	std::cout << " 加载合约信息 >>>" << std::endl;
 	std::string sqlFutInfo = "select code, exchange, multiple, ticksize, marginrate from futureinfo;";
 	sqlite3_stmt* stmt3 = nullptr;
@@ -217,14 +217,14 @@ void cwStrategyDemo::UpdateBarData() {
 	}
 	sqlite3_finalize(stmt3);
 
-
+//
 	// g.MainInf
 	// MainInf 需要调整 
 	std::map<std::string, std::string> tradeSftDict;
 	for (size_t i = 0; i < tradeDate.size(); ++i) {
 		tradeSftDict[tradeDate[i]] = (i == tradeDate.size() - 1) ? cursor_str : tradeDate[i + 1];
 	}
-
+//
 	std::string sqlMainContract = "select tradingday, prefix, code, factor,accfactor from TraderOvk where tradingday>='" + tradeDate.front() + "' and tradingday<='" + preCur_str + "';";
 	sqlite3_stmt* stmt4 = nullptr;
 	if (sqlite3_prepare_v2(cnn, sqlMainContract.c_str(), -1, &stmt4, nullptr) == SQLITE_OK) {
@@ -375,10 +375,9 @@ void cwStrategyDemo::UpdateFlow(std::unordered_map<std::string, cwMarketDataPtr>
 			(spePos)[positionField->InstrumentID] = cateInf;
 		}
 	}
-	// 用 code2data 最新的切片行情数据更新 barFlowCur & queueBar & retBar 
+	 //用 code2data 最新的切片行情数据更新 barFlowCur & queueBar & retBar 
 /*	for (const auto& [key, value] : (*factorDictCur)){
 		cwFtdcInstrumentIDType code =  *key ;*/
-
 		//}
 	for (const auto& pair : factorDictCur) {
 		std::string code = { pair.first };
@@ -478,7 +477,7 @@ std::vector<cwOrderPtr> cwStrategyDemo::StrategyTick(std::unordered_map<std::str
 	return ordersTar;
 }
 
-// 开仓交易 条件
+//// 开仓交易 条件
 std::vector<cwOrderPtr> cwStrategyDemo::StrategyPosOpen(std::string contract, cwMarketDataPtr barBook, double stdLong, double stdShort) {
 	std::vector<cwOrderPtr> orders;
 	if ((queueBar)[contract].back() < (queueBar)[contract][(queueBar).size() - ( verDictCur)[contract].Rs] && stdShort > stdLong) {
@@ -513,7 +512,7 @@ std::vector<cwOrderPtr> cwStrategyDemo::StrategyPosOpen(std::string contract, cw
 	return orders;
 }
 
-// 平仓交易 条件
+//// 平仓交易 条件
 std::vector<cwOrderPtr> cwStrategyDemo::StrategyPosClose(std::string contract, cwMarketDataPtr barBook, double stdLong, double stdShort) {
 	std::vector<cwOrderPtr> orders;
 	std::string code = (codeTractCur)[contract];// 当前持仓代码
@@ -574,7 +573,8 @@ std::vector<cwOrderPtr> cwStrategyDemo::StrategyPosSpeC(std::string contract, cw
 	orders.push_back(order);
 	return orders;
 }
-// 核心函数
+
+//// 核心函数
 std::vector<cwOrderPtr> cwStrategyDemo::HandBar(std::unordered_map<std::string, cwMarketDataPtr> code2data/*昨仓数据*/, std::unordered_map<std::string, PositionFieldPtr> curPos) {
 	auto sTime = std::chrono::system_clock::now();
 	std::vector<std::string> ff;
