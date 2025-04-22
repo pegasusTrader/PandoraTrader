@@ -26,35 +26,6 @@ public:
 
 	std::string m_strCurrentUpdateTime;
 
-	static sqlite3* cnn;
-	static sqlite3* cnnSys;
-
-	//全局变量
-	static std::unordered_map<mainCtrKeys, mainCtrValues> MainInf;//交易的主力合约对应信息
-	static std::map<std::string, std::vector<barFuture>> barFlow;// 历史行情数据，键为string类型，值为barFuture结构体的vector（相当于C#中的List）
-
-	static std::map<std::string, std::vector<barFuture>> barFlowCur; // 新增行情数据
-	static std::map<std::string, double> factorDictCur;// 因子数据
-	static std::map<std::string, std::string> codeTractCur;// 目标交易合约
-	static std::map<std::string, futInfMng> futInfDict;// 期货合约信息，键为string类型，值为futInfMng结构体
-
-	static std::map<std::string, std::vector<double>> queueBar;// 行情数据，键为string类型，值为double类型的vector
-	static std::map<std::string, std::vector<double>> retBar;// 收益率数据
-
-	static std::map<std::string, catePortInf> spePos;// 当前持仓情况，键为string类型，值为catePortInf结构体
-	static std::map<std::string, paraMng> verDictCur;// 策略参数对应信息
-	static std::map<std::string, int> countLimitCur;// 合约对应交易数量
-
-	static std::vector<std::string> tarCateList;
-
-	static std::string cursor_str; // 交易当天日期
-
-	static std::unordered_map<std::string, PositionFieldPtr> curPos;//这是持仓信息
-	static std::unordered_map<std::string, cwMarketDataPtr> code2data;//这是行情信息
-	static std::unordered_map<std::string, cwInstrumentDataPtr> futInfTable;//这是合约信息
-
-	static int sendCount;
-
 	static double ArithmeticMean(const std::vector<double>& arr); //计算简单算数平均值
 
 	static double SampleStd(const std::vector<double>& arr); //计算样本标准差
@@ -72,4 +43,5 @@ public:
 	static std::vector<cwOrderPtr> StrategyPosSpeC(std::string contract, cwMarketDataPtr barBook, long posO);
 
 	static std::vector<cwOrderPtr> HandBar(std::unordered_map<std::string, cwMarketDataPtr> code2data/*昨仓数据*/, std::unordered_map<std::string, PositionFieldPtr> curPos);
+	
 };

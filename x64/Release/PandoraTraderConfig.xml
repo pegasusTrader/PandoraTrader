@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+<Config Generated_at="2016-12-26 23:21:47">
+	<!-- Configs for PandoraTrader -->
+	<User>
+		<MarketDataServer Front="tcp://180.168.146.187:10131" BrokerID="9999" UserID="212893" PassWord="Zc@1319119251"/>
+		<TradeServer Front="tcp://180.168.146.187:10130" BrokerID="9999" UserID="212893" PassWord="Zc@1319119251" ProductInfo="Pandora" AppID="simnow_client_test" AuthCode="0000000000000000"/>
+	</User>
+	<Subscription>
+		<Instrument ID="FG501"/>
+		<Instrument ID="SA501"/>
+	</Subscription>
+
+	<HisDataFolder>
+		F:\dat\
+	</HisDataFolder>
+	<StrategyConfigFile>
+
+	</StrategyConfigFile>
+
+</Config>

@@ -1,2 +1,4 @@
 ﻿  cwStrategyDemo.cpp
-D:\Users\13191\source\repos\shibusama\PandoraTrader\PandoraStrategy\cwStrategyDemo.cpp(1,1): error C1041: 无法打开程序数据库“D:\Users\13191\Source\Repos\shibusama\PandoraTrader\x64\Debug\PandoraStrategy.pdb”；如果要将多个 CL.EXE 写入同一个 .PDB 文件，请使用 /FS
+D:\Users\13191\source\repos\shibusama\PandoraTrader\PandoraStrategy\cwStrategyDemo.cpp(649,32): warning C4101: “e”: 未引用的局部变量
+D:\Users\13191\source\repos\shibusama\PandoraTrader\PandoraStrategy\cwStrategyDemo.cpp(670,32): warning C4101: “e”: 未引用的局部变量
+  PandoraStrategy.vcxproj -> D:\Users\13191\source\repos\shibusama\PandoraTrader\x64\Debug\PandoraStrategy.lib

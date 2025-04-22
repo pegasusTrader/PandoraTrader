@@ -27,12 +27,12 @@
     <ClCompile Include="Strformatdate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\Interface\include\sqlite3.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cwStrategyDemo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="sqlite3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SqlliteHelp.h">
@@ -42,6 +42,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="My_structs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Interface\include\sqlite3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

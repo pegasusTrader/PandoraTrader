@@ -1,0 +1,2 @@
+LocalTime,Type,Symbol,ClientOrderID,ExchangeOrderID,ExchangeTradeID/UserProductInfo,Price/YdPosition,OrigionVolume/Position,TradedVolume/TdPosition,Side,OpenClose,OrderType,InsertTime,CancelTime,Status,Text
+20250423_00:17:39,MSG,,,,,,,,,,,,,,DisConnect!!

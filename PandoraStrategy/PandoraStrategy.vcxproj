@@ -124,14 +124,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\Interface\include\sqlite3.c" />
     <ClCompile Include="cwStrategyDemo.cpp" />
     <ClCompile Include="SqlliteHelp.cpp" />
     <ClCompile Include="Strformatdate.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Interface\include\sqlite3.h" />
     <ClInclude Include="cwStrategyDemo.h" />
     <ClInclude Include="My_structs.h" />
-    <ClInclude Include="sqlite3.h" />
     <ClInclude Include="SqlliteHelp.h" />
     <ClInclude Include="Strformatdate.h" />
   </ItemGroup>
