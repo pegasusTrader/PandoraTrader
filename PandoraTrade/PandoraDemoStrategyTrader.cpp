@@ -10,6 +10,10 @@
 //
 
 //#define EMPTYSTRATEGY
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/xml_parser.hpp>
+#include <filesystem>
+
 
 #include <thread>
 #include <iostream>
@@ -18,11 +22,8 @@
 #include "cwFtdMdSpi.h"
 #include "cwFtdTradeSpi.h"
 //#include "cwMarketDataReceiver.h"
-#ifdef EMPTYSTRATEGY
-#include "cwEmptyStrategy.h"
-#else
+
 #include "cwStrategyDemo.h"
-#endif
 #include "tinyxml.h"
 #include "cwBasicCout.h"
 #include "cwVersion.h"
@@ -46,12 +47,7 @@ HANDLE  m_hAppMutex(NULL);
 //price Server
 cwFtdMdSpi				m_mdCollector;
 cwFtdTradeSpi			m_TradeChannel;
-#ifdef EMPTYSTRATEGY
-cwEmptyStrategy			m_cwStategy;
-#else
 cwStrategyDemo			m_cwStategy;
-#endif
-
 cwBasicCout				m_cwShow;
 
 //XML Config Parameter
@@ -89,40 +85,22 @@ if (psz##Name != NULL)\
 }
 #endif // WIN32
 
+namespace fs = std::filesystem;
+
 
 bool ReadXmlConfigFile()
 {
-	char exeFullPath[MAX_PATH];
-	memset(exeFullPath, 0, MAX_PATH);
-	std::string strFullPath;
-#ifdef WIN32
-	WCHAR TexeFullPath[MAX_PATH] = { 0 };
+	// 创建一个 property_tree 对象
+	boost::property_tree::ptree pt;
 
-	GetModuleFileName(NULL, TexeFullPath, MAX_PATH);
-	int iLength;
-	//获取字节长度   
-	iLength = WideCharToMultiByte(CP_ACP, 0, TexeFullPath, -1, NULL, 0, NULL, NULL);
-	//将tchar值赋给_char    
-	WideCharToMultiByte(CP_ACP, 0, TexeFullPath, -1, exeFullPath, iLength, NULL, NULL);
-#else
-	size_t cnt = readlink("/proc/self/exe", exeFullPath, MAX_PATH);
-	if (cnt < 0 || cnt >= MAX_PATH)
-	{
-		printf("***Error***\n");
-		exit(-1);
-	}
-#endif // WIN32
+	// 从 XML 文件中读取数据
+	boost::property_tree::read_xml("example.xml", pt);
 
-	strFullPath = exeFullPath;
-	strFullPath = strFullPath.substr(0, strFullPath.find_last_of("/\\"));
+	// 访问 XML 中的数据
+	std::string name = pt.get<std::string>("root.person.name");
+	int age = pt.get<int>("root.person.age");
 
-#ifdef WIN32
-	strFullPath.append("\\PandoraTraderConfig.xml");
-#else
-	strFullPath.append("/PandoraTraderConfig.xml");
-#endif // WIN32
-
-	m_cwShow.AddLog("Get Account Config File : %s", strFullPath.c_str());
+	m_cwShow.AddLog("Get Account Config File : %s");
 
 	TiXmlDocument doc(strFullPath.c_str());
 	bool loadOkay = doc.LoadFile(TIXML_ENCODING_LEGACY);
@@ -312,8 +290,6 @@ int main()
 
 	m_cwShow.AddLog("Welcome To Pandora Trader !!");
 	m_cwShow.AddLog("Powered By PandoraTrader:");
-	m_cwShow.AddLog("GitHub: https://github.com/pegasusTrader/PandoraTrader");
-	m_cwShow.AddLog("Gitee: https://gitee.com/wuchangsheng/PandoraTrader");
 
 	m_cwShow.AddLog("Current Version:%s", GetPandoraTraderVersion());
 	m_cwShow.AddLog("Init Config From File!");

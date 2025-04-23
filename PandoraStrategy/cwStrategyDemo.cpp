@@ -23,10 +23,7 @@ static int sendCount = 0;
 static std::unordered_map<std::string, PositionFieldPtr> curPos;//这是持仓信息
 static std::unordered_map<std::string, cwMarketDataPtr> code2data;//这是行情信息
 static std::map<std::string, paraMng> verDictCur;// 策略参数对应信息
-
 static std::unordered_map<mainCtrKeys, mainCtrValues> MainInf;//交易的主力合约对应信息
-
-
 static std::unordered_map<std::string, cwInstrumentDataPtr> futInfTable;//这是合约信息
 static std::string cursor_str; // 交易当天日期
 static std::map<std::string, futInfMng> futInfDict;// 期货合约信息，键为string类型，值为futInfMng结构体
