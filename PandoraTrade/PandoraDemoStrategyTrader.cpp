@@ -157,21 +157,7 @@ int main()
 
 	m_cwShow.AddLog("User: %s ProductInfo:%s", m_szTdUserID, m_szTdProductInfo);
 
-
-	if (m_strHisDataFolder.size() > 0)
-	{
-		m_cwStategy.InitialHisKindleFromHisKindleFolder(m_strHisDataFolder.c_str());
-	}
-
-	if (m_strStrategyConfigFile.size() == 0)
-	{
-		m_cwStategy.InitialStrategy(NULL);
-	}
-	else
-	{
-		m_cwStategy.InitialStrategy(m_strStrategyConfigFile.c_str());
-	}
-
+	m_cwStategy.UpdateBarData();
 
 	m_TradeChannel.RegisterBasicStrategy(dynamic_cast<cwBasicStrategy*>(&m_cwStategy));
 
