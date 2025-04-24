@@ -14,7 +14,6 @@
 #include <boost/property_tree/xml_parser.hpp>
 #include <filesystem>
 
-
 #include <thread>
 #include <iostream>
 
@@ -70,21 +69,6 @@ std::vector<std::string> m_SubscribeInstrument;
 std::string				m_strStrategyConfigFile;
 std::string				m_strHisDataFolder;
 
-
-#ifdef WIN32
-#define GetCharElement(Type, Name) const char * psz##Name = Element->Attribute(#Name);\
-if (psz##Name != NULL)\
-{\
-	strcpy_s(m_sz##Type##Name, psz##Name);\
-}
-#else
-#define GetCharElement(Type, Name) const char * psz##Name = Element->Attribute(#Name);\
-if (psz##Name != NULL)\
-{\
-	strcpy(m_sz##Type##Name, psz##Name);\
-}
-#endif // WIN32
-
 namespace fs = std::filesystem;
 
 
@@ -94,113 +78,37 @@ bool ReadXmlConfigFile()
 	boost::property_tree::ptree pt;
 
 	// 从 XML 文件中读取数据
-	boost::property_tree::read_xml("example.xml", pt);
+	boost::property_tree::read_xml("PandoraTraderConfig.xml", pt);
 
-	// 访问 XML 中的数据
-	std::string name = pt.get<std::string>("root.person.name");
-	int age = pt.get<int>("root.person.age");
+	// 访问 XML 中的 MD 数据
+	std::string Front = pt.get<std::string>("Config.User.MarketDataServer.<xmlattr>.Front");
+	std::string BrokerID = pt.get<std::string>("Config.User.MarketDataServer.<xmlattr>.BrokerID");
+	std::string UserID = pt.get<std::string>("Config.User.MarketDataServer.<xmlattr>.UserID");
+	std::string PassWord = pt.get<std::string>("Config.User.MarketDataServer.<xmlattr>.PassWord");
 
-	m_cwShow.AddLog("Get Account Config File : %s");
+	strcpy(m_szMdFront, Front);
+	strcpy(m_szMdBrokerID, BrokerID);
+	strcpy(m_szMdUserID, UserID);
+	strcpy(m_szMdPassWord, PassWord);
 
-	TiXmlDocument doc(strFullPath.c_str());
-	bool loadOkay = doc.LoadFile(TIXML_ENCODING_LEGACY);
+	// 访问 XML 中的 TD 数据
+	std::string Front_ = pt.get<std::string>("Config.User.TradeServer.<xmlattr>.Front");
+	std::string BrokerID_ = pt.get<std::string>("Config.User.TradeServer.<xmlattr>.BrokerID");
+	std::string UserID_ = pt.get<std::string>("Config.User.TradeServer.<xmlattr>.UserID");
+	std::string PassWord_ = pt.get<std::string>("Config.User.TradeServer.<xmlattr>.PassWord");
+	std::string ProductInfo_ = pt.get<std::string>("Config.User.TradeServer.<xmlattr>.ProductInfo");
+	std::string AppID_ = pt.get<std::string>("Config.User.TradeServer.<xmlattr>.AppID");
+	std::string AuthCode_ = pt.get<std::string>("Config.User.TradeServer.<xmlattr>.AuthCode");
 
-	if (!loadOkay)
-	{
-		m_cwShow.AddLog("Load PandoraTraderConfig File Failed ! ");
-		return false;
-	}
-
-	TiXmlNode* RootNode = doc.RootElement();
-	if (RootNode != NULL)
-	{
-		//Read General
-		TiXmlNode* ChildNode = RootNode->FirstChild("User");
-		if (ChildNode != NULL)
-		{
-			TiXmlNode* SubChildNode = ChildNode->FirstChild("MarketDataServer");
-			if (SubChildNode != NULL)
-			{
-				TiXmlElement * Element = SubChildNode->ToElement();
-				GetCharElement(Md, Front);
-				GetCharElement(Md, BrokerID);
-				GetCharElement(Md, UserID);
-				GetCharElement(Md, PassWord);
-			}
-
-			SubChildNode = ChildNode->FirstChild("TradeServer");
-			if (SubChildNode != NULL)
-			{
-				TiXmlElement * Element = SubChildNode->ToElement();
-				GetCharElement(Td, Front);
-				GetCharElement(Td, BrokerID);
-				GetCharElement(Td, UserID);
-				GetCharElement(Td, PassWord);
-				GetCharElement(Td, ProductInfo);
-				GetCharElement(Td, AppID);
-				GetCharElement(Td, AuthCode);
-				GetCharElement(Td, DllPath);
-			}
-		}
-
-		ChildNode = RootNode->FirstChild("Subscription");
-		if (ChildNode != NULL)
-		{
-			TiXmlNode* SubChildNode = ChildNode->FirstChild("Instrument");
-			while (SubChildNode != NULL)
-			{
-				TiXmlElement * Element = SubChildNode->ToElement();
-				const char * pszTemp = Element->Attribute("ID");
-				if (pszTemp != NULL)
-				{
-					m_SubscribeInstrument.push_back(pszTemp);
-				}
-				SubChildNode = SubChildNode->NextSibling("Instrument");
-			}
-		}
-
-		m_strStrategyConfigFile.clear();
-		ChildNode = RootNode->FirstChild("StrategyConfigFile");
-		if (ChildNode != NULL)
-		{
-			TiXmlElement * Element = ChildNode->ToElement();
-			const char * pszTemp = Element->GetText();
-			if (pszTemp != NULL)
-			{
-				m_strStrategyConfigFile = pszTemp;
-			}
-		}
-
-		m_strHisDataFolder.clear();
-		ChildNode = RootNode->FirstChild("HisDataFolder");
-		if (ChildNode != nullptr)
-		{
-			TiXmlElement * Element = ChildNode->ToElement();
-			const char * pszTemp = Element->GetText();
-			if (pszTemp != NULL)
-			{
-				m_strHisDataFolder = pszTemp;
-			}
-		}
-	}
+	strcpy(m_szTdFront, Front_);
+	strcpy(m_szTdBrokerID, BrokerID_);
+	strcpy(m_szTdUserID, UserID_);
+	strcpy(m_szTdPassWord, PassWord_);
+	strcpy(m_szTdProductInfo, ProductInfo_);
+	strcpy(m_szTdAppID, AppID_);
+	strcpy(m_szTdAuthCode, AuthCode_);
 
 	return true;
-}
-
-void ResetParameter()
-{
-	memset(m_szMdFront, 0, sizeof(m_szMdFront));
-	memset(m_szMdBrokerID, 0, sizeof(m_szMdBrokerID));
-	memset(m_szMdUserID, 0, sizeof(m_szMdUserID));
-	memset(m_szMdPassWord, 0, sizeof(m_szMdPassWord));
-
-	memset(m_szTdFront, 0, sizeof(m_szTdFront));
-	memset(m_szTdBrokerID, 0, sizeof(m_szTdBrokerID));
-	memset(m_szTdUserID, 0, sizeof(m_szTdUserID));
-	memset(m_szTdPassWord, 0, sizeof(m_szTdPassWord));
-	memset(m_szTdProductInfo, 0, sizeof(m_szTdProductInfo));
-	memset(m_szTdAppID, 0, sizeof(m_szTdAppID));
-	memset(m_szTdAuthCode, 0, sizeof(m_szTdAuthCode));
 }
 
 unsigned int PriceServerThread()
