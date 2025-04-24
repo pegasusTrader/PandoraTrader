@@ -9,7 +9,6 @@
 //This software is provided "as is" with no expressed or implied warranty.I accept no liability for any damage or loss of business that this software may cause.
 //
 
-//#define EMPTYSTRATEGY
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 #include <filesystem>
@@ -20,7 +19,6 @@
 #include <string.h>
 #include "cwFtdMdSpi.h"
 #include "cwFtdTradeSpi.h"
-//#include "cwMarketDataReceiver.h"
 
 #include "cwStrategyDemo.h"
 #include "tinyxml.h"
@@ -34,14 +32,8 @@
 #endif // WIN32
 
 
-//本程序互斥量，用于判断是否有该程序在运行
-#ifdef WIN32
-HANDLE  m_hAppMutex(NULL);
-#endif
+#define MAX_PATH 260
 
-#ifndef MAX_PATH
-#define MAX_PATH          260
-#endif // !MAX_PATH
 
 //price Server
 cwFtdMdSpi				m_mdCollector;
@@ -70,7 +62,6 @@ std::string				m_strStrategyConfigFile;
 std::string				m_strHisDataFolder;
 
 namespace fs = std::filesystem;
-
 
 bool ReadXmlConfigFile()
 {
@@ -134,66 +125,8 @@ unsigned int TradeServerThread()
 	return 0;
 }
 
-#ifdef WIN32
-bool CtrlHandler(DWORD fdwCtrlType)
-{
-	switch (fdwCtrlType)
-	{
-		// Handle the CTRL-C signal.   
-	case CTRL_C_EVENT:
-		printf("Ctrl-C event\n\n");
-		//Beep(750, 300);
-		return(TRUE);
-
-		// CTRL-CLOSE: confirm that the user wants to exit.   
-	case CTRL_CLOSE_EVENT:
-		//Beep(600, 200);
-		//printf("Ctrl-Close event\n\n");
-		m_mdCollector.DisConnect();
-		m_TradeChannel.DisConnect();
-
-#ifdef WIN32
-		if (m_hAppMutex != NULL)
-		{
-			ReleaseMutex(m_hAppMutex);
-			CloseHandle(m_hAppMutex);
-			m_hAppMutex = NULL;
-		}
-#endif
-		return(TRUE);
-
-		// Pass other signals to the next handler.   
-	case CTRL_BREAK_EVENT:
-		//Beep(900, 200);
-		printf("Ctrl-Break event\n\n");
-		return FALSE;
-
-	case CTRL_LOGOFF_EVENT:
-		//Beep(1000, 200);
-		printf("Ctrl-Logoff event\n\n");
-		return FALSE;
-
-	case CTRL_SHUTDOWN_EVENT:
-		//Beep(750, 500);
-		printf("Ctrl-Shutdown event\n\n");
-		return FALSE;
-
-	default:
-		return FALSE;
-	}
-}
-#endif // WIN32
-
 int main()
 {
-
-#ifdef WIN32
-	if (!SetConsoleCtrlHandler((PHANDLER_ROUTINE)CtrlHandler, TRUE))
-	{
-		printf("\nThe Control Handler is uninstalled.\n");
-		return 0;
-	}
-#endif // WIN32
 	std::string strStrategyName = m_cwStategy.GetStrategyName();
 
 	m_cwShow.AddLog("Welcome To Pandora Trader !!");
@@ -202,59 +135,8 @@ int main()
 	m_cwShow.AddLog("Current Version:%s", GetPandoraTraderVersion());
 	m_cwShow.AddLog("Init Config From File!");
 
-	if (!ReadXmlConfigFile())
-	{
-		m_cwShow.AddLog("Init Config Failed!!");
-		m_cwShow.AddLog("The Program will shut down in 5s！");
-
-		int nCnt = 0;
-		while (nCnt < 6)
-		{
-			cwSleep(1000);
-			m_cwShow.AddLog("%d . ", nCnt);
-			nCnt++;
-		}
-
-		return -1;
-	}
 	m_cwShow.AddLog("User: %s ProductInfo:%s", m_szTdUserID, m_szTdProductInfo);
 
-
-	//设置mutex 防止一个程序开多个
-	std::string strAppMutexName;
-	strAppMutexName = m_szTdUserID;
-	strAppMutexName.append("_");
-	strAppMutexName += m_cwStategy.GetStrategyName().c_str();
-
-#ifdef WIN32
-	int  unicodeLen = ::MultiByteToWideChar(CP_ACP,	0, strAppMutexName.c_str(),	-1,	NULL, 0);
-	wchar_t  * TAppMutexName = new wchar_t[unicodeLen + 1];
-	memset(TAppMutexName, 0, (unicodeLen + 1)*sizeof(wchar_t));
-	::MultiByteToWideChar(CP_ACP, 0, strAppMutexName.c_str(), -1,(LPWSTR)TAppMutexName,	unicodeLen);
-
-	//声明互斥体，同一个名称只能声明一次，如果声明两次，将返回ERROR_ALREADY_EXISTS错误。
-	m_hAppMutex = ::CreateMutex(NULL, TRUE, TAppMutexName);
-	if (m_hAppMutex == NULL || GetLastError() == ERROR_ALREADY_EXISTS)
-	{
-		m_cwShow.AddLog("已经检测到一样的策略程序在运行，请不要重复打开策略程序！");
-		m_cwShow.AddLog("程序将在5秒后自动退出！！");
-		CloseHandle(m_hAppMutex);
-		m_hAppMutex = NULL;
-		delete [] TAppMutexName;
-
-		int nCnt = 0;
-		while (nCnt < 6)
-		{
-			cwSleep(1000);
-			m_cwShow.AddLog("%d . ", nCnt);
-			nCnt++;
-		}
-		
-		return -1;
-	}
-
-	delete [] TAppMutexName;
-#endif
 
 	if (m_strHisDataFolder.size() > 0)
 	{
