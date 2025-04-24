@@ -150,6 +150,8 @@ void cwStrategyDemo::OnReady()
 	UpdateBarData();// 加载历史数据（行情 + 合约信息）
 }
 
+
+
 double cwStrategyDemo::ArithmeticMean(const std::vector<double>& arr) {//计算简单算数平均值
 	if (arr.empty()) {
 		return 0.0;
@@ -168,6 +170,25 @@ double cwStrategyDemo::SampleStd(const std::vector<double>& arr) {
 		result += pow(num - mean, 2);
 	}
 	return sqrt(result / (static_cast<double>(arr.size()) - 1));
+}
+
+std::string cwStrategyDemo::getTodayDate()
+{
+	std::time_t now = std::time(nullptr);
+	std::tm localTime;
+
+#if defined(_WIN32) || defined(_WIN64)
+	// Windows
+	localtime_s(&localTime, &now);
+#else
+	// Linux/macOS
+	localtime_r(&now, &localTime);
+#endif
+
+	std::ostringstream oss;
+	oss << std::put_time(&localTime, "%Y%m%d");
+
+	return oss.str();
 }
 
 /*INIT DAILY DATA*/

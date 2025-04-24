@@ -30,6 +30,8 @@ public:
 
 	static double SampleStd(const std::vector<double>& arr); //计算样本标准差
 
+	static std::string getTodayDate();
+
 	static void UpdateBarData();// 加载历史信息
 
 	static void UpdateFlow(std::unordered_map<std::string, cwMarketDataPtr> code2data, std::unordered_map<std::string, PositionFieldPtr> curPos);// 记录最新持仓状况（方向，数量，成本价格，开仓成本，数量）
