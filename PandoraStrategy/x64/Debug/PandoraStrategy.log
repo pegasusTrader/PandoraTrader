@@ -1,7 +1,10 @@
-﻿  sqlite3.c
-  cwStrategyDemo.cpp
-D:\Users\13191\source\repos\shibusama\PandoraTrader\PandoraStrategy\cwStrategyDemo.cpp(646,32): warning C4101: “e”: 未引用的局部变量
-D:\Users\13191\source\repos\shibusama\PandoraTrader\PandoraStrategy\cwStrategyDemo.cpp(667,32): warning C4101: “e”: 未引用的局部变量
+﻿  cwStrategyDemo.cpp
+D:\Users\13191\Source\Repos\shibusama\PandoraTrader\PandoraStrategy\cwStrategyDemo.cpp(87,30): warning C5056: 运算符“==”: 已对数组类型弃用
+D:\Users\13191\Source\Repos\shibusama\PandoraTrader\PandoraStrategy\cwStrategyDemo.cpp(92,61): warning C5056: 运算符“==”: 已对数组类型弃用
+D:\Users\13191\Source\Repos\shibusama\PandoraTrader\PandoraStrategy\cwStrategyDemo.cpp(115,77): warning C5056: 运算符“==”: 已对数组类型弃用
+D:\Users\13191\Source\Repos\shibusama\PandoraTrader\PandoraStrategy\cwStrategyDemo.cpp(652,30): warning C5056: 运算符“==”: 已对数组类型弃用
+D:\Users\13191\Source\Repos\shibusama\PandoraTrader\PandoraStrategy\cwStrategyDemo.cpp(646,32): warning C4101: “e”: 未引用的局部变量
+D:\Users\13191\Source\Repos\shibusama\PandoraTrader\PandoraStrategy\cwStrategyDemo.cpp(667,32): warning C4101: “e”: 未引用的局部变量
   SqlliteHelp.cpp
   Strformatdate.cpp
   正在生成代码...

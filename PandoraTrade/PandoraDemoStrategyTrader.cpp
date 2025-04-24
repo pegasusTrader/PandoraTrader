@@ -16,7 +16,10 @@
 #include <thread>
 #include <iostream>
 
+#include <cstring>
+#include <string>
 #include <string.h>
+#include <stdio.h>
 #include "cwFtdMdSpi.h"
 #include "cwFtdTradeSpi.h"
 
@@ -61,7 +64,9 @@ std::vector<std::string> m_SubscribeInstrument;
 std::string				m_strStrategyConfigFile;
 std::string				m_strHisDataFolder;
 
+
 namespace fs = std::filesystem;
+
 
 bool ReadXmlConfigFile()
 {
@@ -77,12 +82,12 @@ bool ReadXmlConfigFile()
 	std::string UserID = pt.get<std::string>("Config.User.MarketDataServer.<xmlattr>.UserID");
 	std::string PassWord = pt.get<std::string>("Config.User.MarketDataServer.<xmlattr>.PassWord");
 
-	strcpy(m_szMdFront, Front);
-	strcpy(m_szMdBrokerID, BrokerID);
-	strcpy(m_szMdUserID, UserID);
-	strcpy(m_szMdPassWord, PassWord);
+	snprintf(m_szMdFront, sizeof(m_szMdFront), "%s", Front.c_str());
+	snprintf(m_szMdBrokerID, sizeof(m_szMdBrokerID), "%s", BrokerID.c_str());
+	snprintf(m_szMdUserID, sizeof(m_szMdUserID), "%s", UserID.c_str());
+	snprintf(m_szMdPassWord, sizeof(m_szMdPassWord), "%s", PassWord.c_str());
 
-	// 访问 XML 中的 TD 数据
+	//// 访问 XML 中的 TD 数据
 	std::string Front_ = pt.get<std::string>("Config.User.TradeServer.<xmlattr>.Front");
 	std::string BrokerID_ = pt.get<std::string>("Config.User.TradeServer.<xmlattr>.BrokerID");
 	std::string UserID_ = pt.get<std::string>("Config.User.TradeServer.<xmlattr>.UserID");
@@ -91,20 +96,20 @@ bool ReadXmlConfigFile()
 	std::string AppID_ = pt.get<std::string>("Config.User.TradeServer.<xmlattr>.AppID");
 	std::string AuthCode_ = pt.get<std::string>("Config.User.TradeServer.<xmlattr>.AuthCode");
 
-	strcpy(m_szTdFront, Front_);
-	strcpy(m_szTdBrokerID, BrokerID_);
-	strcpy(m_szTdUserID, UserID_);
-	strcpy(m_szTdPassWord, PassWord_);
-	strcpy(m_szTdProductInfo, ProductInfo_);
-	strcpy(m_szTdAppID, AppID_);
-	strcpy(m_szTdAuthCode, AuthCode_);
+	snprintf(m_szTdFront, sizeof(m_szTdFront), "%s", Front_.c_str());
+	snprintf(m_szTdBrokerID, sizeof(m_szTdBrokerID), "%s", BrokerID_.c_str());
+	snprintf(m_szTdUserID, sizeof(m_szTdUserID), "%s", UserID_.c_str());
+	snprintf(m_szTdPassWord, sizeof(m_szTdPassWord), "%s", PassWord_.c_str());
+	snprintf(m_szTdProductInfo, sizeof(m_szTdProductInfo), "%s", ProductInfo_.c_str());
+	snprintf(m_szTdAppID, sizeof(m_szTdAppID), "%s", AppID_.c_str());
+	snprintf(m_szTdAuthCode, sizeof(m_szTdAuthCode), "%s", AuthCode_.c_str());
 
 	return true;
 }
 
 unsigned int PriceServerThread()
 {
-	
+
 	m_mdCollector.SetUserLoginField(m_szMdBrokerID, m_szMdUserID, m_szMdPassWord);
 	m_mdCollector.SubscribeMarketData(m_SubscribeInstrument);
 
@@ -129,11 +134,26 @@ int main()
 {
 	std::string strStrategyName = m_cwStategy.GetStrategyName();
 
-	m_cwShow.AddLog("Welcome To Pandora Trader !!");
-	m_cwShow.AddLog("Powered By PandoraTrader:");
+	m_cwShow.AddLog("start:______");
+	m_cwShow.AddLog("Powered By shibusama:");
 
 	m_cwShow.AddLog("Current Version:%s", GetPandoraTraderVersion());
 	m_cwShow.AddLog("Init Config From File!");
+
+	if (!ReadXmlConfigFile())
+	{
+		m_cwShow.AddLog("Init Config Failed!!");
+		m_cwShow.AddLog("The Program will shut down in 5s！");
+
+		int nCnt = 0;
+		while (nCnt < 6)
+		{
+			cwSleep(1000);
+			m_cwShow.AddLog("%d . ", nCnt);
+			nCnt++;
+		}
+		return -1;
+	}
 
 	m_cwShow.AddLog("User: %s ProductInfo:%s", m_szTdUserID, m_szTdProductInfo);
 
@@ -162,18 +182,18 @@ int main()
 
 	std::thread m_TradeServerThread = std::thread(TradeServerThread);
 
-	
+
 	int iCnt = 0;
 	while (1)
 	{
-		
+
 		iCnt++;
 		if (iCnt % 20 == 0)
 		{
 			if (iCnt % 80 == 0)
 			{
 				m_cwShow.AddLog("%s %s Md:%s Trade:%s",
-					m_szTdUserID, strStrategyName.c_str(), 
+					m_szTdUserID, strStrategyName.c_str(),
 					m_mdCollector.GetCurrentStatusString(),
 					m_TradeChannel.GetCurrentStatusString());
 			}
@@ -189,5 +209,5 @@ int main()
 		}
 		cwSleep(1000);
 	}
-    return 0;
+	return 0;
 }
