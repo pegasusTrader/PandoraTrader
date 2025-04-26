@@ -67,7 +67,7 @@ std::string				m_strHisDataFolder;
 
 namespace fs = std::filesystem;
 
-
+ 
 bool ReadXmlConfigFile()
 {
 	// 创建一个 property_tree 对象
