@@ -114,7 +114,7 @@ copy "..\Interface\CTPTradeApi32\*.dll" "$(SolutionDir)$(Configuration)\";</Comm
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>C:\local\boost_1_87_0;../PandoraStrategy/;../cwStrategys/include/;../Interface/include/;../Interface/;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

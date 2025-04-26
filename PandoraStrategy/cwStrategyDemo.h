@@ -30,6 +30,8 @@ public:
 
 	static double SampleStd(const std::vector<double>& arr); //计算样本标准差
 
+	static std::string GetTodayDate();
+
 	static std::string getTodayDate();
 
 	static void UpdateBarData();// 加载历史信息
