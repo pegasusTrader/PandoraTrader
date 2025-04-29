@@ -14,6 +14,9 @@ public:
 	///行情更新
 	virtual void PriceUpdate(cwMarketDataPtr pPriceData);
 
+	//当生成一根新K线的时候，会调用该回调
+	virtual void OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKindleStrategy::cwKindleSeriesPtr pKindleSeries);
+
 	//Trade SPI
 	///成交回报
 	virtual void OnRtnTrade(cwTradePtr pTrade);
@@ -22,7 +25,7 @@ public:
 	//撤单成功
 	virtual void OnOrderCanceled(cwOrderPtr pOrder);
 	//当策略交易初始化完成时会调用OnReady, 可以在此函数做策略的初始化操作
-	virtual void			OnReady();
+	virtual void OnReady();
 
 	std::string m_strCurrentUpdateTime;
 
@@ -47,5 +50,5 @@ public:
 	static std::vector<cwOrderPtr> StrategyPosSpeC(std::string contract, cwMarketDataPtr barBook, long posO);
 
 	static std::vector<cwOrderPtr> HandBar(std::unordered_map<std::string, cwMarketDataPtr> code2data/*昨仓数据*/, std::unordered_map<std::string, PositionFieldPtr> curPos);
-	
+
 };

@@ -157,7 +157,7 @@ int main()
 
 	m_cwShow.AddLog("User: %s ProductInfo:%s", m_szTdUserID, m_szTdProductInfo);
 
-	m_cwStategy.UpdateBarData();
+	//m_cwStategy.UpdateBarData();
 
 	m_TradeChannel.RegisterBasicStrategy(dynamic_cast<cwBasicStrategy*>(&m_cwStategy));
 

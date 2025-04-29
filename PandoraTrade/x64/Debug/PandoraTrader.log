@@ -1,11 +1,6 @@
-﻿  PandoraDemoStrategyTrader.cpp
-  LINK : 没有找到 D:\Users\13191\source\repos\shibusama\PandoraTrader\x64\Debug\PandoraTrader.exe 或上一个增量链接没有生成它；正在执行完全链接
-tinyxml.lib(tinyxml.obj) : warning LNK4099: 未找到 PDB“”(使用“tinyxml.lib(tinyxml.obj)”或在“”中寻找)；正在链接对象，如同没有调试信息一样
-tinyxml.lib(tinyxmlparser.obj) : warning LNK4099: 未找到 PDB“”(使用“tinyxml.lib(tinyxmlparser.obj)”或在“”中寻找)；正在链接对象，如同没有调试信息一样
-tinyxml.lib(tinystr.obj) : warning LNK4099: 未找到 PDB“”(使用“tinyxml.lib(tinystr.obj)”或在“”中寻找)；正在链接对象，如同没有调试信息一样
-tinyxml.lib(tinyxmlerror.obj) : warning LNK4099: 未找到 PDB“”(使用“tinyxml.lib(tinyxmlerror.obj)”或在“”中寻找)；正在链接对象，如同没有调试信息一样
-LINK : warning LNK4098: 默认库“LIBCMTD”与其他库的使用冲突；请使用 /NODEFAULTLIB:library
-  PandoraTrader.vcxproj -> D:\Users\13191\source\repos\shibusama\PandoraTrader\x64\Debug\PandoraTrader.exe
+﻿  PandoraTrader.vcxproj -> D:\Users\13191\Source\Repos\shibusama\PandoraTrader\x64\Debug\PandoraTrader.exe
+  'pwsh.exe' 不是内部或外部命令，也不是可运行的程序
+  或批处理文件。
   请在PandoraTraderConfig.xml配置账户等信息！
   ..\Interface\CTPTradeApi64\thostmduserapi_se.dll
   ..\Interface\CTPTradeApi64\thosttraderapi_se.dll
