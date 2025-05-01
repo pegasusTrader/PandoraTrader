@@ -465,8 +465,9 @@ bool cwCTAPlatform::IsNearDeliverDateWarning(const char* szInstrumentID)
 
 int cwCTAPlatform::GetTradingDayRemainWarning(const char* szInstrumentID)
 {
-	auto pProductID = GetProductID(szInstrumentID);
-	return cwPandoraTrader::GetcwTradingDayRemainWarning(pProductID == nullptr ? "" : (std::string)(pProductID));
+	/*auto pProductID = GetProductID(szInstrumentID);
+	return cwPandoraTrader::GetcwTradingDayRemainWarning(pProductID == nullptr ? "" : (std::string)(pProductID));*/
+	return 10;
 }
 
 bool cwCTAPlatform::ReadXmlConfigFile(const char * pConfigFilePath, bool bNeedDisPlay/*= true*/)
