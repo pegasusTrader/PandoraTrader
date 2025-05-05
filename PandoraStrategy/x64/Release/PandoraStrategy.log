@@ -1,7 +1,0 @@
-﻿  sqlite3.c
-  cwStrategyDemo.cpp
-D:\Users\13191\Source\Repos\shibusama\PandoraTrader\PandoraStrategy\cwStrategyDemo.cpp(649,32): warning C4101: “e”: 未引用的局部变量
-D:\Users\13191\Source\Repos\shibusama\PandoraTrader\PandoraStrategy\cwStrategyDemo.cpp(670,32): warning C4101: “e”: 未引用的局部变量
-  SqlliteHelp.cpp
-  Strformatdate.cpp
-  PandoraStrategy.vcxproj -> D:\Users\13191\Source\Repos\shibusama\PandoraTrader\x64\Release\PandoraStrategy.lib

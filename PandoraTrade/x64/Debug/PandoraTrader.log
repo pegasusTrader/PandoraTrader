@@ -1,6 +1,4 @@
-﻿  PandoraTrader.vcxproj -> D:\Users\13191\Source\Repos\shibusama\PandoraTrader\x64\Debug\PandoraTrader.exe
-  'pwsh.exe' 不是内部或外部命令，也不是可运行的程序
-  或批处理文件。
+﻿  PandoraTrader.vcxproj -> D:\Users\13191\source\repos\shibusama\PandoraTrader\x64\Debug\PandoraTrader.exe
   请在PandoraTraderConfig.xml配置账户等信息！
   ..\Interface\CTPTradeApi64\thostmduserapi_se.dll
   ..\Interface\CTPTradeApi64\thosttraderapi_se.dll

@@ -53,12 +53,10 @@ cwStrategyDemo::~cwStrategyDemo()
 
 void cwStrategyDemo::PriceUpdate(cwMarketDataPtr pPriceData)
 {
-	std::cout << pPriceData->UpdateTime << std::endl;
 	if (pPriceData.get() == NULL)
 	{
 		return;
 	}
-	std::cout << pPriceData->UpdateTime << std::endl;
 }
 
 void cwStrategyDemo::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKindleStrategy::cwKindleSeriesPtr pKindleSeries) {
@@ -66,13 +64,21 @@ void cwStrategyDemo::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKi
 	{
 		return;
 	}
-	//判断当天是否为交易日，不是交易日不执行程序，但是不是交易日的话，根本不执行事件，所以应该没事
-	//to_dolist
 
-	
+	/*std::string InstrumentID(pPriceData->InstrumentID);
+	code2data[InstrumentID] = pPriceData;*/
+	code2data[pPriceData->InstrumentID] = pPriceData;
+
 	auto now = std::chrono::system_clock::now();
 	std::time_t now_time = std::chrono::system_clock::to_time_t(now);
-	std::tm local_time = *std::localtime(&now_time);
+
+	std::tm local_time;
+#ifdef _WIN32
+	localtime_s(&local_time, &now_time); // Windows 平台
+#else
+	localtime_r(&now_time, &local_time); // POSIX (Linux/macOS)
+#endif
+	std::cout << std::put_time(&local_time, "%Y-%m-%d %H:%M:%S") << std::endl;
 
 	int hour = local_time.tm_hour;
 	int minute = local_time.tm_min;
@@ -80,20 +86,25 @@ void cwStrategyDemo::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKi
 	bool isTradingTime = (hour == 9 && minute >= 1) || (hour > 9 && hour < 10) || (hour == 10 && minute < 15) ||
 		(hour == 10 && minute >= 30) || (hour > 10 && hour < 11) || (hour == 11 && minute < 30) ||
 		(hour == 13 && minute >= 30) || (hour > 13 && hour < 14) || (hour == 14 && minute < 45);
+
 	if (isTradingTime) {
 		// 输出当前时间
-		std::cout << "--- Tigger " << std::setfill('0') << std::setw(2) << hour << ":"
-			<< std::setfill('0') << std::setw(2) << minute << ":" << std::setfill('0') << std::setw(2) << second
-			<< " ---------------" << std::endl;
+		std::cout << "当前时间" << isTradingTime << std::endl;
+		std::cout << "--- Tigger " << std::setfill('0') << std::setw(2) << hour << ":" << std::setfill('0') << std::setw(2) << minute << ":" << std::setfill('0') << std::setw(2) << second << " ---------------" << std::endl;
 		std::cout << "InstrumentID - Direction - Position - OpenPriceAvg - MktProfit  |  ExchangeMargin - OpenCost --->" << std::endl;
-		for (const auto& pair : (curPos)) {
-			const std::string& codeDR = pair.first;
-			const PositionFieldPtr& posInfo = pair.second;
-			if (posInfo->TodayPosition != 0) {
-				std::cout << "=== " << posInfo->InstrumentID << "     " << posInfo->PosiDirection << "         " << posInfo->TodayPosition << std::endl;
+
+		//输出当前持仓情况
+		for (const auto& pair : curPos) {
+			double OpenPriceAvg = curPos[pair.first]->AveragePosPrice;
+			double absMktProfit = curPos[pair.first]->PositionProfit;
+			double MktProfit = curPos[pair.first]->PosiDirection == CW_FTDC_D_Buy ? absMktProfit : -1 * absMktProfit;
+			if (curPos[pair.first]->TodayPosition != 0) {
+				std::cout << "=====" << curPos[pair.first]->InstrumentID << "     " << curPos[pair.first]->PosiDirection << "     " << curPos[pair.first]->TodayPosition
+					<< OpenPriceAvg << "     " << MktProfit << "     " << curPos[pair.first]->ExchangeMargin << "     " << curPos[pair.first]->ExchangeMargin << "     "
+					<< curPos[pair.first]->OpenCost << "     " << std::endl;
 			}
 		}
-		code2data[pPriceData->InstrumentID] = pPriceData;
+
 		std::vector<cwOrderPtr> orders = cwStrategyDemo::HandBar(code2data/*当前持仓数据*/, curPos);
 		//std::vector<cwOrderPtr> orders;
 		for (const auto& order : orders) {
@@ -164,7 +175,8 @@ void cwStrategyDemo::OnReady()
 {
 	SubScribePrice("IC2506");
 	std::cout << "start:______" << std::endl;
-	UpdateBarData();// 加载历史数据（行情 + 合约信息）
+	//UpdateBarData();// 加载历史数据（行情 + 合约信息）
+	auto kSeries = SubcribeKindle("IF2506", cwKINDLE_TIMESCALE_1MIN, 50);
 }
 
 double cwStrategyDemo::ArithmeticMean(const std::vector<double>& arr) {//计算简单算数平均值
@@ -723,5 +735,5 @@ std::vector<cwOrderPtr> cwStrategyDemo::HandBar(std::unordered_map<std::string, 
 	}
 
 	return ordersTar;
-	
+
 }
