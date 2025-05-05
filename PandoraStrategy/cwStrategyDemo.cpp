@@ -12,7 +12,7 @@
 #include <regex>
 #include <cmath>
 #include <exception>
-#include "My_structs.h"
+#include "MyStructs.h"
 #include "sqlite3.h"
 #include <format>
 #include <boost/algorithm/string/join.hpp>
@@ -227,31 +227,12 @@ std::string cwStrategyDemo::GetTodayDate() {
 	return oss.str();
 }
 
-std::string cwStrategyDemo::getTodayDate()
-{
-	std::time_t now = std::time(nullptr);
-	std::tm localTime;
-
-#if defined(_WIN32) || defined(_WIN64)
-	// Windows
-	localtime_s(&localTime, &now);
-#else
-	// Linux/macOS
-	localtime_r(&now, &localTime);
-#endif
-
-	std::ostringstream oss;
-	oss << std::put_time(&localTime, "%Y%m%d");
-
-	return oss.str();
-}
-
 /*INIT DAILY DATA*/
 void cwStrategyDemo::UpdateBarData() {
 	//创建数据库连接
 	sqlite3* cnnSys = SqlliteHelp::OpenDatabase("system.db");
 	sqlite3* cnn = SqlliteHelp::OpenDatabase("tmp.db");
-	std::string cursor_str = getTodayDate();
+	std::string cursor_str = GetTodayDate();
 
 
 	std::cout << "UPDATE BAR DATA >>>>>>" << std::endl;

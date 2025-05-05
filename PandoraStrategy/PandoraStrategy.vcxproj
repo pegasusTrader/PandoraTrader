@@ -135,7 +135,7 @@
   <ItemGroup>
     <ClInclude Include="..\Interface\include\sqlite3.h" />
     <ClInclude Include="cwStrategyDemo.h" />
-    <ClInclude Include="My_structs.h" />
+    <ClInclude Include="MyStructs.h" />
     <ClInclude Include="SqlliteHelp.h" />
     <ClInclude Include="Strformatdate.h" />
   </ItemGroup>

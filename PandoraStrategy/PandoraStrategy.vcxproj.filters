@@ -41,7 +41,7 @@
     <ClInclude Include="Strformatdate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="My_structs.h">
+    <ClInclude Include="MyStructs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\Interface\include\sqlite3.h">

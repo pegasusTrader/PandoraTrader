@@ -1,7 +1,7 @@
 #pragma once
 #include "cwBasicKindleStrategy.h"
 #include "sqlite3.h"
-#include "My_structs.h"
+#include "MyStructs.h"
 
 class cwStrategyDemo :
 	public cwBasicKindleStrategy
@@ -34,8 +34,6 @@ public:
 	static double SampleStd(const std::vector<double>& arr); //计算样本标准差
 
 	static std::string GetTodayDate();
-
-	static std::string getTodayDate();
 
 	static void UpdateBarData();// 加载历史信息
 
