@@ -71,7 +71,6 @@ void cwStrategyDemo::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKi
 
 	auto now = std::chrono::system_clock::now();
 	std::time_t now_time = std::chrono::system_clock::to_time_t(now);
-
 	std::tm local_time;
 #ifdef _WIN32
 	localtime_s(&local_time, &now_time); // Windows 平台
@@ -83,13 +82,12 @@ void cwStrategyDemo::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKi
 	int hour = local_time.tm_hour;
 	int minute = local_time.tm_min;
 	int second = local_time.tm_sec;
-	bool isTradingTime = (hour == 9 && minute >= 1) || (hour > 9 && hour < 10) || (hour == 10 && minute < 15) ||
-		(hour == 10 && minute >= 30) || (hour > 10 && hour < 11) || (hour == 11 && minute < 30) ||
-		(hour == 13 && minute >= 30) || (hour > 13 && hour < 14) || (hour == 14 && minute < 45);
 
-	if (isTradingTime) {
+	if ((hour == 9 && minute >= 1) || (hour > 9 && hour < 10) || (hour == 10 && minute < 15) ||
+		(hour == 10 && minute >= 30) || (hour > 10 && hour < 11) || (hour == 11 && minute < 30) ||
+		(hour == 13 && minute >= 30) || (hour > 13 && hour < 14) || (hour == 14 && minute < 45)) {
 		// 输出当前时间
-		std::cout << "当前时间" << isTradingTime << std::endl;
+		std::cout << "当前时间:需要填写" << std::endl;
 		std::cout << "--- Tigger " << std::setfill('0') << std::setw(2) << hour << ":" << std::setfill('0') << std::setw(2) << minute << ":" << std::setfill('0') << std::setw(2) << second << " ---------------" << std::endl;
 		std::cout << "InstrumentID - Direction - Position - OpenPriceAvg - MktProfit  |  ExchangeMargin - OpenCost --->" << std::endl;
 
@@ -106,27 +104,32 @@ void cwStrategyDemo::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKi
 		}
 
 		std::vector<cwOrderPtr> orders = cwStrategyDemo::HandBar(code2data/*当前持仓数据*/, curPos);
-		//std::vector<cwOrderPtr> orders;
 		for (const auto& order : orders) {
 			// 增加 sendCount
 			++sendCount;
 			std::cout << "    Count=" << sendCount << "：" << order->InstrumentID << " => " << order->Direction << " " << order->CombOffsetFlag << " - Amount " << order->VolumeTotalOriginal << " Price " << order->LimitPrice << std::endl;
 			std::string offsetFlag;
-			if (order->CombOffsetFlag == "Open") {
-				offsetFlag = "0";
+			/*		if (order->CombOffsetFlag == "Open") {
+						offsetFlag = "0";
+					}
+					else {
+						auto it = futInfTable.find(order->InstrumentID);
+						if (it != futInfTable.end() && it->second->ExchangeID == "SHFE") {
+							offsetFlag = "3";
+						}
+						else {
+							offsetFlag = "1";
+						}
+					}*/
+			EasyInputMultiOrder(order->InstrumentID, order->VolumeTotalOriginal, order->LimitPrice);
+			if (orders.size() > 0) {
+				std::cout << "--- SUBMIT ORDERS ===========" << std::endl;
 			}
-			else {
-				auto it = (futInfTable).find(order->InstrumentID);
-				if (it != (futInfTable).end() && it->second->ExchangeID == "SHFE") {
-					offsetFlag = "3";
-				}
-				else {
-					offsetFlag = "1";
-				}
-			}
+			std::this_thread::sleep_for(std::chrono::milliseconds(5000)); // 等待 5 秒
+			std::cout << "--- Update curPosInfo ===========" << std::endl; // 更新持仓信息
 		}
 	}
-	else if (!isTradingTime)
+	else if ((hour == 14 && minute >= 45) || (hour == 15 && minute == 0))
 	{
 		std::cout << "dfff" << std::endl;
 		for (const auto& pair : curPos) {
@@ -151,11 +154,18 @@ void cwStrategyDemo::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKi
 			}
 		}
 	}
-	else if (1)
+	else if ((hour == 15 && minute >= 0 && minute < 10))
 	{
+		std::cout << "--------------- TraderOver ---------------" << std::endl;
+		std::cout << "--------------- StoreBaseData ---------------" << std::endl;
+		std::cout << "" << std::endl;
+		std::cout << "---------------------------------------------" << std::endl;
 	}
 	else
 	{
+		if (minute == 0 || minute == 10 || minute == 20 || minute == 30 || minute == 40 || minute == 50) {
+			std::cout << "waiting" << std::put_time(&local_time, "%Y-%m-%d %H:%M:%S") << std::endl;
+		}
 	}
 };
 
