@@ -3,7 +3,7 @@
 ################################################################################
 
 /Interface/MySql
-/.vs/PandoraTrader
+/.vs/
 /PandoraStrategy/x64
 /PandoraTrade/x64
 /x64/Debug
