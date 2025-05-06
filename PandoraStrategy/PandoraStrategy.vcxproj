@@ -133,9 +133,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Interface\include\sqlite3.h" />
+    <ClInclude Include="IndayStrategy.hpp" />
     <ClInclude Include="cwStrategyDemo.h" />
     <ClInclude Include="MyStructs.h" />
     <ClInclude Include="SqlliteHelp.h" />
+    <ClInclude Include="Utils.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="CTAPlatformConfig.xml" />
