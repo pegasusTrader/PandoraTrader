@@ -1,6 +1,14 @@
 #pragma once
 #include <string>
 
+// 期货合约信息结构体
+struct futInfMng {
+	std::string contract; //合约
+	int multiple; //合约乘数
+	double Rs; //跳价
+	double Rl; //保证金率
+};
+
 // 持仓状况结构体
 //方向、数量、开仓均价、开仓成本、数量
 struct catePortInf {
@@ -84,9 +92,9 @@ struct paraMng {
 };
 
 // 期货合约信息结构体
-struct futInfMng {
-	std::string exchange; //交易所
-	int multiple; //合约乘数
-	double ticksize; //跳价
-	double marginrate; //保证金率
-};
+//struct futInfMng {
+//	std::string exchange; //交易所
+//	int multiple; //合约乘数
+//	double ticksize; //跳价
+//	double marginrate; //保证金率
+//};

@@ -5,6 +5,12 @@
 #include <iomanip>
 #include <vector> 
 
+struct timePara {
+	int hour;//策略编号
+	int minute;//策略版本
+	int second;//策略类型
+
+};
 
 // 获取当前日期YYYYMMDD
 std::string GetTodayDate() {
@@ -44,4 +50,23 @@ double SampleStd(const std::vector<double>& arr) {
 		result += pow(num - mean, 2);
 	}
 	return sqrt(result / (static_cast<double>(arr.size()) - 1));
+}
+
+timePara IsTradingTime() {
+	auto now = std::chrono::system_clock::now();
+	std::time_t now_time = std::chrono::system_clock::to_time_t(now);
+	std::tm local_time;
+#ifdef _WIN32
+	localtime_s(&local_time, &now_time); // Windows 平台
+#else
+	localtime_r(&now_time, &local_time); // POSIX (Linux/macOS)
+#endif
+	std::cout << std::put_time(&local_time, "%Y-%m-%d %H:%M:%S") << std::endl;
+
+	int hour = local_time.tm_hour;
+	int minute = local_time.tm_min;
+	int second = local_time.tm_sec;
+
+	timePara timePara_ = { hour ,minute ,second };
+	return timePara_;
 }
