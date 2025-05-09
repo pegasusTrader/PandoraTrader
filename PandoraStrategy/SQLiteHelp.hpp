@@ -15,7 +15,7 @@ sqlite3* OpenDatabase(const char* dbFilePath)
     return db;
 }
 
-
+    
 // 关闭数据库连接
 void CloseDatabase(sqlite3* db) {
     sqlite3_close(db);
