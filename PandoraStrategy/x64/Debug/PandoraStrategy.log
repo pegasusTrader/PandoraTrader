@@ -1,8 +1,3 @@
 ﻿  cwStrategyDemo.cpp
-D:\Users\13191\source\repos\shibusama\PandoraTrader\PandoraStrategy\cwStrategyDemo.cpp(106,30): warning C5056: 运算符“==”: 已对数组类型弃用
-D:\Users\13191\source\repos\shibusama\PandoraTrader\PandoraStrategy\cwStrategyDemo.cpp(111,61): warning C5056: 运算符“==”: 已对数组类型弃用
-D:\Users\13191\source\repos\shibusama\PandoraTrader\PandoraStrategy\cwStrategyDemo.cpp(134,77): warning C5056: 运算符“==”: 已对数组类型弃用
-D:\Users\13191\source\repos\shibusama\PandoraTrader\PandoraStrategy\cwStrategyDemo.cpp(706,30): warning C5056: 运算符“==”: 已对数组类型弃用
-D:\Users\13191\source\repos\shibusama\PandoraTrader\PandoraStrategy\cwStrategyDemo.cpp(700,32): warning C4101: “e”: 未引用的局部变量
-D:\Users\13191\source\repos\shibusama\PandoraTrader\PandoraStrategy\cwStrategyDemo.cpp(721,32): warning C4101: “e”: 未引用的局部变量
+D:\Users\13191\source\repos\shibusama\PandoraTrader\PandoraStrategy\cwStrategyDemo.cpp(133,77): warning C5056: 运算符“==”: 已对数组类型弃用
   PandoraStrategy.vcxproj -> D:\Users\13191\source\repos\shibusama\PandoraTrader\x64\Debug\PandoraStrategy.lib

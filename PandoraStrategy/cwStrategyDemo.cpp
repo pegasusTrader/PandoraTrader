@@ -143,9 +143,8 @@ void cwStrategyDemo::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKi
 	}
 	else if ((hour == 15 && minute >= 0 && minute < 10))
 	{
-		std::cout << "--------------- TraderOver ---------------" << std::endl;
+		std::cout << "----------------- TraderOver ----------------" << std::endl;
 		std::cout << "--------------- StoreBaseData ---------------" << std::endl;
-		std::cout << "" << std::endl;
 		std::cout << "---------------------------------------------" << std::endl;
 	}
 	else
@@ -170,8 +169,8 @@ void cwStrategyDemo::OnOrderCanceled(cwOrderPtr pOrder)
 
 void cwStrategyDemo::OnReady()
 {
-	SubScribePrice("IC2506");
-	std::cout << "start:______" << std::endl;
+	/*SubScribePrice("IC2506");
+	std::cout << "start:______" << std::endl;*/
 	//UpdateBarData();// 加载历史数据（行情 + 合约信息）
 	auto kSeries = SubcribeKindle("IF2506", cwKINDLE_TIMESCALE_1MIN, 50);
 }
