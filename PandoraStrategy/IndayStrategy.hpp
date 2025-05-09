@@ -1,4 +1,5 @@
 #pragma once
+#include "cwBasicKindleStrategy.h"
 #include <iostream>
 #include <format>
 #include <algorithm>
@@ -12,10 +13,11 @@
 std::map<std::string, std::vector<double>> UpdateBarData() {
 	//创建数据库连接
 	sqlite3* mydb = OpenDatabase("dm.db");
-	std::map<std::string, std::vector<double>> retBar;
+	std::map<std::string, std::vector<double>> retBar; //目标合约收益率数据
+	std::vector<std::string> tar_contract_list; // 目标合约列表
+	static std::map<std::string, int> countLimitCur;// 合约对应交易数量
 	if (mydb) {
 		std::string tar_contract_sql = "SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%';";
-		std::vector<std::string> tar_contract_list;
 		sqlite3_stmt* stmt = nullptr;
 		if (sqlite3_prepare_v2(mydb, tar_contract_sql.c_str(), -1, &stmt, nullptr) == SQLITE_OK) {
 			while (sqlite3_step(stmt) == SQLITE_ROW) {
@@ -33,7 +35,11 @@ std::map<std::string, std::vector<double>> UpdateBarData() {
 			}
 			sqlite3_finalize(stmt);
 		}
-		// 执行SQL语句、查询、插入等
+		for (const auto& pair : (verDictCur)) {
+			int comboMultiple = 2;  // 组合策略做几倍杠杆
+			double numLimit = comboMultiple * 1000000 / 20 / (barFlow).at(pair.first).back().price / (futInfDict).at(pair.first).multiple;  // 策略杠杆数，1000000 为策略基本资金单位， 20为目前覆盖品种的近似值， 收盘价格，保证金乘数
+			(countLimitCur)[pair.first] = (numLimit >= 1) ? static_cast<int>(numLimit) : 1;  // 整数 取舍一下
+		}
 		CloseDatabase(mydb);  // 最后关闭数据库连接
 	}
 
@@ -43,7 +49,7 @@ std::map<std::string, std::vector<double>> UpdateBarData() {
 /*UPDATE FLOW*/
 void UpdateFlow(std::unordered_map<std::string, cwMarketDataPtr> code2data, std::unordered_map<std::string, PositionFieldPtr> curPos) {
 	// 记录最新持仓状况（方向，数量，成本价格，开仓成本，数量）
-	(spePos).clear();
+	spePos.clear();
 	for (const auto& pair : curPos) {
 		std::string codeDR = pair.first;
 		PositionFieldPtr positionField = pair.second;
@@ -67,7 +73,7 @@ void UpdateFlow(std::unordered_map<std::string, cwMarketDataPtr> code2data, std:
 			else {
 				cateInf.amount = -1 * cateInf.volume;
 			}
-			(spePos)[positionField->InstrumentID] = cateInf;
+			spePos[positionField->InstrumentID] = cateInf;
 		}
 	}
 	//用 code2data 最新的切片行情数据更新 barFlowCur & queueBar & retBar 
