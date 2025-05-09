@@ -45,12 +45,3 @@ double SampleStd(const std::vector<double>& arr) {
 	}
 	return sqrt(result / (static_cast<double>(arr.size()) - 1));
 }
-
-// 除法函数
-double divide(double a, double b) {
-    if (b != 0) {
-        return a / b;
-    }
-    // 处理除数为零的情况
-    return 0;
-}

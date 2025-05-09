@@ -21,18 +21,12 @@
     <ClCompile Include="cwStrategyDemo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SqlliteHelp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\Interface\include\sqlite3.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cwStrategyDemo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SqlliteHelp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MyStructs.h">
@@ -45,6 +39,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Utils.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SQLiteHelp.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

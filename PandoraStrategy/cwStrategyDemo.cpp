@@ -16,6 +16,7 @@
 #include <format>
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string.hpp>
+#include "Utils.hpp"
 
 
 //全局变量
@@ -186,44 +187,6 @@ void cwStrategyDemo::OnReady()
 	std::cout << "start:______" << std::endl;
 	//UpdateBarData();// 加载历史数据（行情 + 合约信息）
 	auto kSeries = SubcribeKindle("IF2506", cwKINDLE_TIMESCALE_1MIN, 50);
-}
-
-double cwStrategyDemo::ArithmeticMean(const std::vector<double>& arr) {//计算简单算数平均值
-	if (arr.empty()) {
-		return 0.0;
-	}
-	double sum = 0.0;
-	for (const double num : arr) {
-		sum += num;
-	}
-	return sum / static_cast<double>(arr.size());
-}
-
-double cwStrategyDemo::SampleStd(const std::vector<double>& arr) {
-	double mean = ArithmeticMean(arr);
-	double result = 0.0;
-	for (const double num : arr) {
-		result += pow(num - mean, 2);
-	}
-	return sqrt(result / (static_cast<double>(arr.size()) - 1));
-}
-
-std::string cwStrategyDemo::GetTodayDate() {
-	std::time_t now = std::time(nullptr);
-	std::tm localTime;
-
-#if defined(_WIN32) || defined(_WIN64)
-	// Windows
-	localtime_s(&localTime, &now);
-#else
-	// Linux/macOS
-	localtime_r(&now, &localTime);
-#endif
-
-	std::ostringstream oss;
-	oss << std::put_time(&localTime, "%Y%m%d");
-
-	return oss.str();
 }
 
 /*INIT DAILY DATA*/
@@ -544,7 +507,7 @@ std::vector<cwOrderPtr> cwStrategyDemo::StrategyPosOpen(std::string contract, cw
 	std::vector<cwOrderPtr> orders;
 	if ((queueBar)[contract].back() < (queueBar)[contract][(queueBar).size() - (verDictCur)[contract].Rs] && stdShort > stdLong) {
 		int tarVolume = (countLimitCur)[contract];
-		std::string key = (codeTractCur)[contract] + "=" + Strformatdate::getCurrentDateString(); // 假设存在函数 getCurrentTimeString 获取当前时间的字符串表示
+		std::string key = (codeTractCur)[contract] + "=" + GetTodayDate(); // 假设存在函数 getCurrentTimeString 获取当前时间的字符串表示
 		(spePos)[key] = catePortInf{ "Long",{},barBook->LastPrice,{},tarVolume };
 		char DireSlc = (verDictCur)[contract].Fac == "Mom_std_bar_re_dym" ? '0' : '1'; // 假设 0 表示 Buy，1 表示 Sell
 
@@ -559,7 +522,7 @@ std::vector<cwOrderPtr> cwStrategyDemo::StrategyPosOpen(std::string contract, cw
 	}
 	else if ((queueBar)[contract].back() > (queueBar)[contract][(queueBar).size() - 500] && stdShort > stdLong) {
 		int tarVolume = (countLimitCur)[contract];
-		std::string key = (codeTractCur)[contract] + "=" + Strformatdate::getCurrentDateString();
+		std::string key = (codeTractCur)[contract] + "=" + GetTodayDate();
 		(spePos)[key] = catePortInf{ "Short",{}, barBook->LastPrice, {},tarVolume };
 		char DireSlc = (verDictCur)[contract].Fac == "Mom_std_bar_re_dym" ? '1' : '0';
 
