@@ -65,12 +65,29 @@ void cwStrategyDemo::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKi
 		return;
 	}
 
-	//code2data[pPriceData->InstrumentID] = pPriceData;
-	//timePara _timePara = IsTradingTime();
-	//auto hour = _timePara.hour;
-	//auto minute = _timePara.minute;
-	//auto second = _timePara.second;
+	//std::cout << pKindleSeries->GetInstrumentID() << std::endl;
 
+	//code2data[pPriceData->InstrumentID] = pPriceData;
+	timePara _timePara = IsTradingTime();
+	auto hour = _timePara.hour;
+	auto minute = _timePara.minute;
+	auto second = _timePara.second;
+
+	std::cout << "当前时间:需要填写" << std::endl;
+	std::cout << "--- Tigger " << std::setfill('0') << std::setw(2) << hour << ":" << std::setfill('0') << std::setw(2) << minute << ":" << std::setfill('0') << std::setw(2) << second << " ---------------" << std::endl;
+	std::cout << "InstrumentID - Direction - Position - OpenPriceAvg - MktProfit  |  ExchangeMargin - OpenCost --->" << std::endl;
+	std::map<std::string, cwPositionPtr> PositionMap;
+	GetPositions(PositionMap);
+	for (const auto& pair : PositionMap) {
+		/*std::cout << "=====" << pair.first << "     " << pair.second->LongPosition->TodayPosition << "     " << 
+						curPos[pair.first]->TodayPosition
+						<< OpenPriceAvg << "     " << MktProfit << "     " << curPos[pair.first]->ExchangeMargin << "     " << curPos[pair.first]->ExchangeMargin << "     "
+<< 
+					curPos[pair.first]->OpenCost << "     " << std::endl;*/
+		
+	}
+
+	
 	//if ((hour == 9 && minute >= 1) || (hour > 9 && hour < 10) || (hour == 10 && minute < 15) ||
 	//	(hour == 10 && minute >= 30) || (hour > 10 && hour < 11) || (hour == 11 && minute < 30) ||
 	//	(hour == 13 && minute >= 30) || (hour > 13 && hour < 14) || (hour == 14 && minute < 45)) {
@@ -97,7 +114,7 @@ void cwStrategyDemo::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKi
 	//		++sendCount;
 	//		std::cout << "    Count=" << sendCount << "：" << order->InstrumentID << " => " << order->Direction << " " << order->CombOffsetFlag << " - Amount " << order->VolumeTotalOriginal << " Price " << order->LimitPrice << std::endl;
 	//		std::string offsetFlag;
-	//		/*		if (order->CombOffsetFlag == "Open") {
+	//				if (order->CombOffsetFlag == "Open") {
 	//					offsetFlag = "0";
 	//				}
 	//				else {
@@ -108,7 +125,7 @@ void cwStrategyDemo::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKi
 	//					else {
 	//						offsetFlag = "1";
 	//					}
-	//				}*/
+	//				}
 	//		EasyInputMultiOrder(order->InstrumentID, order->VolumeTotalOriginal, order->LimitPrice);
 	//		if (orders.size() > 0) {
 	//			std::cout << "--- SUBMIT ORDERS ===========" << std::endl;
@@ -176,7 +193,8 @@ void cwStrategyDemo::OnReady()
 	std::cout << "dddd" << std::endl;
 	StrategyContext ctx = UpdateBarData();
 	for (auto& futInfMng : ctx.tarContracInfo) {
-		std::cout << futInfMng.code << std::endl;
+		SubcribeKindle(futInfMng.code.c_str(), cwKINDLE_TIMESCALE_1MIN, 50);
+		//std::cout << futInfMng.code << std::endl;
 	};
 	//auto kSeries = SubcribeKindle("IF2506", cwKINDLE_TIMESCALE_1MIN, 50);
 }

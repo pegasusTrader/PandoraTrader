@@ -20,7 +20,6 @@ StrategyContext  UpdateBarData() {
 		if (sqlite3_prepare_v2(mydb, tar_contract_sql.c_str(), -1, &stmt, nullptr) == SQLITE_OK) {
 			while (sqlite3_step(stmt) == SQLITE_ROW) {
 				std::string contract = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));//合约
-				std::cout << contract << std::endl;
 				int multiple = sqlite3_column_int(stmt, 1);//合约乘数
 				double Rs = sqlite3_column_double(stmt, 2); //跳价
 				double Rl = sqlite3_column_double(stmt, 3); //保证金率
