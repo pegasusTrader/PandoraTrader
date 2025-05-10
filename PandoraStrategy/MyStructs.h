@@ -7,6 +7,8 @@ struct futInfMng {
 	int multiple; //合约乘数
 	double Rs; //跳价
 	double Rl; //保证金率
+	std::string code; //合约代码
+	double accfactor; //累计复权因子	 
 };
 
 // 持仓状况结构体
@@ -98,3 +100,10 @@ struct paraMng {
 //	double ticksize; //跳价
 //	double marginrate; //保证金率
 //};
+
+struct StrategyContext {
+	std::vector<futInfMng> tarContracInfo;               // 目标合约结构体
+	std::map<std::string, std::vector<double>> retBar;   // 收益率数据
+	std::map<std::string, std::vector<double>> barFlow;  // 收盘价数据(未复权)
+	std::map<std::string, int> countLimitCur;            // 合约对应交易数量
+};
