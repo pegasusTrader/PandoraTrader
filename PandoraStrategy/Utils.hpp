@@ -4,6 +4,7 @@
 #include <iostream>
 #include <iomanip>
 #include <vector> 
+#include <chrono>
 
 struct timePara {
 	int hour;
@@ -68,4 +69,13 @@ timePara IsTradingTime() {
 
 	timePara timePara_ = { hour ,minute ,second };
 	return timePara_;
+}
+
+double Sampl11eStd(const std::vector<double>& arr) {
+	double mean = ArithmeticMean(arr);
+	double result = 0.0;
+	for (const double num : arr) {
+		result += pow(num - mean, 2);
+	}
+	return sqrt(result / (static_cast<double>(arr.size()) - 1));
 }

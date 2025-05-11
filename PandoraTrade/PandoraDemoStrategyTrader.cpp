@@ -205,6 +205,7 @@ int main()
 					<< std::setw(15) << pair.second->LongPosition->OpenCost
 					<< std::endl;
 			}
+			std::cout << "ffff" << std::endl;
 		}
 		cwSleep(1000);
 	}
