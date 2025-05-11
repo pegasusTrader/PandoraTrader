@@ -188,14 +188,14 @@ int main()
 				m_cwShow.AddLog("InstrID\t\tDir\tPos\tPriAvg\t\tMktfit\t\t\tExMar\t\tOpCos");
 				for (const auto& pair : m_PositionMap)
 				{
-					m_cwShow.AddLog("%s\t\t%s\t%.1f\t%.1f\t\t%.1f\t\t\t%.1f\t\t%.1f",
+					/*m_cwShow.AddLog("%s\t\t%s\t%.1f\t%.1f\t\t%.1f\t\t\t%.1f\t\t%.1f",
 						pair.first.c_str(),
 						std::string(1, pair.second->LongPosition->PosiDirection).c_str(),
 						pair.second->LongPosition->TodayPosition,
 						pair.second->LongPosition->AveragePosPrice,
 						pair.second->LongPosition->PositionProfit,
 						pair.second->LongPosition->ExchangeMargin,
-						pair.second->LongPosition->OpenCost);
+						pair.second->LongPosition->OpenCost);*/
 				}
 			}
 			m_cwShow.AddLog("\n");
