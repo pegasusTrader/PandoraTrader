@@ -172,40 +172,43 @@ int main()
 	int iCnt = 0;
 	while (1)
 	{
-
 		iCnt++;
 		if (iCnt % 20 == 0)
 		{
 			if (iCnt % 80 == 0)
 			{
-				m_cwShow.AddLog("%s %s Md:%s Trade:%s",
+				m_cwShow.AddLog("%s\t%s\tMd:%s\tTrade:%s",
 					m_szTdUserID, strStrategyName.c_str(),
 					m_mdCollector.GetCurrentStatusString(),
 					m_TradeChannel.GetCurrentStatusString());
 			}
+			std::map<std::string, cwPositionPtr> m_PositionMap = m_TradeChannel.GetPosition();
+			if (!m_PositionMap.empty())
+			{
+				m_cwShow.AddLog("InstrID\t\tDir\tPos\tPriAvg\t\tMktfit\t\t\tExMar\t\tOpCos");
+				for (const auto& pair : m_PositionMap)
+				{
+					m_cwShow.AddLog("%s\t\t%s\t%.1f\t%.1f\t\t%.1f\t\t\t%.1f\t\t%.1f",
+						pair.first.c_str(),
+						std::string(1, pair.second->LongPosition->PosiDirection).c_str(),
+						pair.second->LongPosition->TodayPosition,
+						pair.second->LongPosition->AveragePosPrice,
+						pair.second->LongPosition->PositionProfit,
+						pair.second->LongPosition->ExchangeMargin,
+						pair.second->LongPosition->OpenCost);
+				}
+			}
+			m_cwShow.AddLog("\n");
 			cwAccountPtr pAccount = m_TradeChannel.GetAccount();
 			if (pAccount.get() != NULL)
 			{
-				m_cwShow.AddLog("%s Total:%.2f Available:%.2f PL:%.2f Fee:%.2f",
+				m_cwShow.AddLog("%s\tTotal:%.2f\tAvailable:%.2f\tPL:%.2f\tFee:%.2f",
 					m_cwStategy.m_strCurrentUpdateTime.c_str(),
 					pAccount->Balance, pAccount->Available,
 					pAccount->CloseProfit + pAccount->PositionProfit - pAccount->Commission,
 					pAccount->Commission);
 			}
-			std::map<std::string, cwPositionPtr> m_PositionMap = m_TradeChannel.GetPosition();
-			for (const auto& pair : m_PositionMap)
-			{
-				std::cout << std::left
-					<< std::setw(15) << pair.first
-					<< std::setw(15) << pair.second->LongPosition->PosiDirection
-					<< std::setw(15) << pair.second->LongPosition->TodayPosition
-					<< std::setw(15) << pair.second->LongPosition->AveragePosPrice
-					<< std::setw(15) << pair.second->LongPosition->PositionProfit
-					<< std::setw(20) << pair.second->LongPosition->ExchangeMargin
-					<< std::setw(15) << pair.second->LongPosition->OpenCost
-					<< std::endl;
-			}
-			std::cout << "ffff" << std::endl;
+			
 		}
 		cwSleep(1000);
 	}
