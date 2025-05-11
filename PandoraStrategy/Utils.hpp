@@ -6,9 +6,9 @@
 #include <vector> 
 
 struct timePara {
-	int hour;//策略编号
-	int minute;//策略版本
-	int second;//策略类型
+	int hour;
+	int minute;
+	int second;
 
 };
 
@@ -61,7 +61,6 @@ timePara IsTradingTime() {
 #else
 	localtime_r(&now_time, &local_time); // POSIX (Linux/macOS)
 #endif
-	std::cout << std::put_time(&local_time, "%Y-%m-%d %H:%M:%S") << std::endl;
 
 	int hour = local_time.tm_hour;
 	int minute = local_time.tm_min;

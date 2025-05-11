@@ -73,19 +73,31 @@ void cwStrategyDemo::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKi
 	auto minute = _timePara.minute;
 	auto second = _timePara.second;
 
-	std::cout << "当前时间:需要填写" << std::endl;
-	std::cout << "--- Tigger " << std::setfill('0') << std::setw(2) << hour << ":" << std::setfill('0') << std::setw(2) << minute << ":" << std::setfill('0') << std::setw(2) << second << " ---------------" << std::endl;
-	std::cout << "InstrumentID - Direction - Position - OpenPriceAvg - MktProfit  |  ExchangeMargin - OpenCost --->" << std::endl;
-	std::map<std::string, cwPositionPtr> PositionMap;
-	GetPositions(PositionMap);
-	for (const auto& pair : PositionMap) {
-		/*std::cout << "=====" << pair.first << "     " << pair.second->LongPosition->TodayPosition << "     " << 
-						curPos[pair.first]->TodayPosition
-						<< OpenPriceAvg << "     " << MktProfit << "     " << curPos[pair.first]->ExchangeMargin << "     " << curPos[pair.first]->ExchangeMargin << "     "
-<< 
-					curPos[pair.first]->OpenCost << "     " << std::endl;*/
+	//std::cout << "--- 当前时间 " << std::setfill('0') << std::setw(2) << hour << ":" << std::setfill('0') << std::setw(2) << minute << ":" << std::setfill('0') << std::setw(2) << second << " ---------------" << std::endl;
+	//std::cout << std::setfill(' ');
+	//std::cout << std::left  // 左对齐
+	//	<< std::setw(15) << "InstrumentID"
+	//	<< std::setw(15) << "Direction"
+	//	<< std::setw(15) << "Position"
+	//	<< std::setw(15) << "OpenPriceAvg"
+	//	<< std::setw(15) << "MktProfit"
+	//	<< std::setw(20) << "ExchangeMargin"
+	//	<< std::setw(15) << "OpenCost"
+	//	<< "--->" << std::endl;
+	//std::map<std::string, cwPositionPtr> PositionMap;
+	//GetPositions(PositionMap);
+	/*for (const auto& pair : PositionMap) {
+		std::cout << std::left
+			<< std::setw(15) << pair.first
+			<< std::setw(15) << pair.second->LongPosition->PosiDirection
+			<< std::setw(15) << pair.second->LongPosition->TodayPosition
+			<< std::setw(15) << pair.second->LongPosition->AveragePosPrice
+			<< std::setw(15) << pair.second->LongPosition->PositionProfit
+			<< std::setw(20) << pair.second->LongPosition->ExchangeMargin
+			<< std::setw(15) << pair.second->LongPosition->OpenCost
+			<< std::endl;
 		
-	}
+	}*/
 
 	
 	//if ((hour == 9 && minute >= 1) || (hour > 9 && hour < 10) || (hour == 10 && minute < 15) ||
@@ -196,5 +208,6 @@ void cwStrategyDemo::OnReady()
 		SubcribeKindle(futInfMng.code.c_str(), cwKINDLE_TIMESCALE_1MIN, 50);
 		//std::cout << futInfMng.code << std::endl;
 	};
+	SubcribeKindle("IC2506", cwKINDLE_TIMESCALE_1MIN, 50);
 	//auto kSeries = SubcribeKindle("IF2506", cwKINDLE_TIMESCALE_1MIN, 50);
 }

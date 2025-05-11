@@ -67,7 +67,7 @@ std::string				m_strHisDataFolder;
 
 namespace fs = std::filesystem;
 
- 
+
 bool ReadXmlConfigFile()
 {
 	// 创建一个 property_tree 对象
@@ -191,6 +191,19 @@ int main()
 					pAccount->Balance, pAccount->Available,
 					pAccount->CloseProfit + pAccount->PositionProfit - pAccount->Commission,
 					pAccount->Commission);
+			}
+			std::map<std::string, cwPositionPtr> m_PositionMap = m_TradeChannel.GetPosition();
+			for (const auto& pair : m_PositionMap)
+			{
+				std::cout << std::left
+					<< std::setw(15) << pair.first
+					<< std::setw(15) << pair.second->LongPosition->PosiDirection
+					<< std::setw(15) << pair.second->LongPosition->TodayPosition
+					<< std::setw(15) << pair.second->LongPosition->AveragePosPrice
+					<< std::setw(15) << pair.second->LongPosition->PositionProfit
+					<< std::setw(20) << pair.second->LongPosition->ExchangeMargin
+					<< std::setw(15) << pair.second->LongPosition->OpenCost
+					<< std::endl;
 			}
 		}
 		cwSleep(1000);
