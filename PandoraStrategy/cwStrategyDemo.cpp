@@ -75,7 +75,7 @@ void cwStrategyDemo::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKi
 	// 计算 stdLong
 	std::vector<double> retBarSubsetLong(std::prev(ctx.retBar[currentContract].end(), ctx.tarContracInfo[contractIndex].Rl), ctx.retBar[currentContract].end());
 	double stdLong = SampleStd(retBarSubsetLong);
-	
+
 	//InitClearStatus()：策略启动时调用 临近收盘处理仓位需要再OnReady里面进行 处理残留仓位
 	// handbar 生成订单
 	// 下订单
@@ -200,7 +200,33 @@ void cwStrategyDemo::OnOrderCanceled(cwOrderPtr pOrder)
 
 void cwStrategyDemo::OnReady()
 {
-	for (auto& futInfMng : ctx.tarContracInfo) {
-		SubcribeKindle(futInfMng.code.c_str(), cwKINDLE_TIMESCALE_1MIN, 50);
-	};
+	std::map<std::string, cwPositionPtr> positionMap;
+	while (!positionMap.empty())
+	{
+		GetPositions(positionMap);
+		for (auto& pair : positionMap)
+		{
+			if (pair.second->LongPosition->PosiDirection == CW_FTDC_D_Buy) {
+
+				std::cout << "LONG" << pair.first << std::endl;
+				std::cout << "N" << pair.second->LongPosition->YdPosition << std::endl;
+				EasyInputOrder(pair.first.c_str(), CW_FTDC_D_Sell, CW_FTDC_OF_CloseToday, pair.second->LongPosition->YdPosition, 0);
+				EasyInputMultiOrder(pair.first.c_str(), CW_FTDC_D_Sell, CW_FTDC_OF_CloseToday, pair.second->LongPosition->YdPosition, 0);
+
+			}
+			else if (pair.second->ShortPosition->PosiDirection == CW_FTDC_D_Sell)
+			{
+				std::cout << "SHORT" << pair.first << std::endl;
+				std::cout << "N" << pair.second->ShortPosition->YdPosition << std::endl;
+			}
+		}
+	}//这边用挂单处理比较好评  就是那个函数 *************************
+	
+
+
+	//for (auto& futInfMng : ctx.tarContracInfo) 
+	//{
+	//	SubcribeKindle(futInfMng.code.c_str(), cwKINDLE_TIMESCALE_1MIN, 50);
+	//	
+	//};	
 }
