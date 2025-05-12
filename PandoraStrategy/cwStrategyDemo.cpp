@@ -45,29 +45,38 @@ void cwStrategyDemo::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKi
 
 	std::cout << pKindleSeries->GetInstrumentID() << std::endl;
 	std::cout << pKindleSeries->GetLastKindleStick()->Close << std::endl;
+	std::string currentContract = pKindleSeries->GetInstrumentID();
 
 	timePara _timePara = IsTradingTime();
 	auto hour = _timePara.hour;
 	auto minute = _timePara.minute;
 	auto second = _timePara.second;
 	//barFolw更新
-	ctx.barFlow[pKindleSeries->GetInstrumentID()].push_back(pKindleSeries->GetLastKindleStick()->Close);
+	ctx.barFlow[currentContract].push_back(pKindleSeries->GetLastKindleStick()->Close);
 	//queueBar更新
-	std::string constrct_id = pKindleSeries->GetInstrumentID();
-	int contract_index = findIndex<futInfMng>(ctx.tarContracInfo, [constrct_id](const futInfMng& item) {return item.contract == constrct_id; });
-	ctx.queueBar[pKindleSeries->GetInstrumentID()].push_back(pKindleSeries->GetLastKindleStick()->Close / ctx.tarContracInfo[contract_index].accfactor);
+	std::string constrct_id = currentContract;
+	int contractIndex = findIndex<futInfMng>(ctx.tarContracInfo, [constrct_id](const futInfMng& item) {return item.contract == constrct_id; });
+	ctx.queueBar[currentContract].push_back(pKindleSeries->GetLastKindleStick()->Close / ctx.tarContracInfo[contractIndex].accfactor);
 	//ret更新
-	double last = ctx.queueBar[pKindleSeries->GetInstrumentID()][ctx.queueBar[pKindleSeries->GetInstrumentID()].size() - 1];
-	double secondLast = ctx.queueBar[pKindleSeries->GetInstrumentID()][ctx.queueBar[pKindleSeries->GetInstrumentID()].size() - 2];
-	ctx.retBar[pKindleSeries->GetInstrumentID()].push_back(last / secondLast - 1);
+	double last = ctx.queueBar[currentContract][ctx.queueBar[currentContract].size() - 1];
+	double secondLast = ctx.queueBar[currentContract][ctx.queueBar[currentContract].size() - 2];
+	ctx.retBar[currentContract].push_back(last / secondLast - 1);
 
 	//删除首位元素
-	ctx.barFlow[pKindleSeries->GetInstrumentID()].pop_front();
-	ctx.queueBar[pKindleSeries->GetInstrumentID()].pop_front();
-	ctx.retBar[pKindleSeries->GetInstrumentID()].pop_front();
+	ctx.barFlow[currentContract].pop_front();
+	ctx.queueBar[currentContract].pop_front();
+	ctx.retBar[currentContract].pop_front();
 
+	// 计算标准差
+	// 计算 stdShort
+	std::vector<double> retBarSubsetShort(std::prev(ctx.retBar[currentContract].end(), ctx.tarContracInfo[contractIndex].Rs), ctx.retBar[currentContract].end());
+	double stdShort = SampleStd(retBarSubsetShort);
 
-	// 用code2data最新的切片行情数据更新 barFlowCur & queueBar & retBar 明天要做的内容
+	// 计算 stdLong
+	std::vector<double> retBarSubsetLong(std::prev(ctx.retBar[currentContract].end(), ctx.tarContracInfo[contractIndex].Rl), ctx.retBar[currentContract].end());
+	double stdLong = SampleStd(retBarSubsetLong);
+	
+	//InitClearStatus()：策略启动时调用 临近收盘处理仓位需要再OnReady里面进行 处理残留仓位
 	// handbar 生成订单
 	// 下订单
 	// 临近收盘 清仓处理
@@ -111,16 +120,6 @@ void cwStrategyDemo::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKi
 		//	std::cout << "InstrumentID - Direction - Position - OpenPriceAvg - MktProfit  |  ExchangeMargin - OpenCost --->" << std::endl;
 
 		//	//输出当前持仓情况
-		//	for (const auto& pair : curPos) {
-		//		double OpenPriceAvg = curPos[pair.first]->AveragePosPrice;
-		//		double absMktProfit = curPos[pair.first]->PositionProfit;
-		//		double MktProfit = curPos[pair.first]->PosiDirection == CW_FTDC_D_Buy ? absMktProfit : -1 * absMktProfit;
-		//		if (curPos[pair.first]->TodayPosition != 0) {
-		//			std::cout << "=====" << curPos[pair.first]->InstrumentID << "     " << curPos[pair.first]->PosiDirection << "     " << curPos[pair.first]->TodayPosition
-		//				<< OpenPriceAvg << "     " << MktProfit << "     " << curPos[pair.first]->ExchangeMargin << "     " << curPos[pair.first]->ExchangeMargin << "     "
-		//				<< curPos[pair.first]->OpenCost << "     " << std::endl;
-		//		}
-		//	}
 
 		//	std::vector<cwOrderPtr> orders = cwStrategyDemo::HandBar(code2data/*当前持仓数据*/, curPos);
 		//	for (const auto& order : orders) {
