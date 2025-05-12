@@ -5,6 +5,9 @@
 #include <iomanip>
 #include <vector> 
 #include <chrono>
+#include <algorithm>  // std::find_if
+#include <iterator>   // std::distance
+#include <functional> // std::function
 
 struct timePara {
 	int hour;
@@ -71,3 +74,14 @@ timePara IsTradingTime() {
 	return timePara_;
 }
 
+// 泛型函数：根据自定义条件查找结构体在 vector 中的索引
+template <typename T>
+int findIndex(const std::vector<T>& vec, std::function<bool(const T&)> condition) {
+	auto it = std::find_if(vec.begin(), vec.end(), condition);
+	if (it != vec.end()) {
+		return static_cast<int>(std::distance(vec.begin(), it));
+	}
+	else {
+		return -1; // 没找到返回 -1
+	}
+}

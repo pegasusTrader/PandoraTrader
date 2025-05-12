@@ -55,6 +55,17 @@ StrategyContext  UpdateBarData() {
 			sqlite3_finalize(stmt);
 		}
 
+		for (auto& futInfMng : ctx.tarContracInfo) {
+			std::string real_close_sql = std::format("SELECT real_close FROM {} ORDER BY tradingday,timestamp ", futInfMng.contract);
+			sqlite3_stmt* stmt = nullptr;
+			if (sqlite3_prepare_v2(mydb, real_close_sql.c_str(), -1, &stmt, nullptr) == SQLITE_OK) {
+				while (sqlite3_step(stmt) == SQLITE_ROW) {
+					ctx.queueBar[futInfMng.contract].push_back(sqlite3_column_double(stmt, 0));
+				}
+			}
+			sqlite3_finalize(stmt);
+		}
+
 		for (const auto& futInfMng : ctx.tarContracInfo) {
 			int comboMultiple = 2;  // 组合策略做几倍杠杆
 			int tarCount = ctx.tarContracInfo.size();  // 目标合约数量
