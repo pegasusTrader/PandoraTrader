@@ -76,9 +76,9 @@ void cwStrategyDemo::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKi
 	std::vector<double> retBarSubsetLong(std::prev(ctx.retBar[currentContract].end(), ctx.tarContracInfo[contractIndex].Rl), ctx.retBar[currentContract].end());
 	double stdLong = SampleStd(retBarSubsetLong);
 
-	//InitClearStatus()：策略启动时调用 临近收盘处理仓位需要再OnReady里面进行 处理残留仓位
-	// handbar 生成订单
-	// 下订单
+	//开多仓信号
+	//开空仓信号
+	
 	// 临近收盘 清仓处理
 	// 打印一些东西
 
