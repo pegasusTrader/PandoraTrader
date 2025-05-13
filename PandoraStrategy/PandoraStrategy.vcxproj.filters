@@ -29,7 +29,7 @@
     <ClInclude Include="cwStrategyDemo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MyStructs.h">
+    <ClInclude Include="myStructs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\Interface\include\sqlite3.h">
@@ -38,10 +38,10 @@
     <ClInclude Include="IndayStrategy.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Utils.hpp">
+    <ClInclude Include="utils.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SQLiteHelp.hpp">
+    <ClInclude Include="sqlLiteHelp.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,7 +1,7 @@
 #pragma once
 #include "cwBasicKindleStrategy.h"
 #include "sqlite3.h"
-#include "MyStructs.h"
+#include "myStructs.h"
 
 class cwStrategyDemo :
 	public cwBasicKindleStrategy
@@ -28,5 +28,6 @@ public:
 	virtual void OnReady();
 
 	std::string m_strCurrentUpdateTime;
+	// sqlLiteHelp
 
 };

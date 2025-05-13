@@ -6,9 +6,9 @@
 #include <map>
 #include <regex>
 #include "sqlite3.h"
-#include "MyStructs.h"
-#include "SQLiteHelp.hpp"
-#include "Utils.hpp"
+#include "myStructs.h"
+#include "sqlLiteHelp.hpp"
+#include "utils.hpp"
 
 StrategyContext  UpdateBarData() {
 	StrategyContext ctx;

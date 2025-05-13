@@ -13,10 +13,10 @@
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string.hpp>
 #include <format>
-#include "MyStructs.h"
+#include "myStructs.h"
 #include "sqlite3.h"
 #include "IndayStrategy.hpp"
-#include "Utils.hpp"
+#include "utils.hpp"
 
 static StrategyContext ctx = UpdateBarData();
 
