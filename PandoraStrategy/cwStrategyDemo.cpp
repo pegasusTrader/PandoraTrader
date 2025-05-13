@@ -200,32 +200,15 @@ void cwStrategyDemo::OnOrderCanceled(cwOrderPtr pOrder)
 
 void cwStrategyDemo::OnReady()
 {
-	/*std::map<std::string, cwPositionPtr> positionMap;
-	GetPositions(positionMap);
-	for (auto& pair : positionMap)
-	{
-		if (pair.second->LongPosition->PosiDirection == CW_FTDC_D_Buy) {
 
-			std::cout << "LONG" << pair.first << std::endl;
-			std::cout << "L_volume:\t"<< pair.second->LongPosition->YdPosition << std::endl;
-			EasyInputMultiOrder(pair.first.c_str(), -pair.second->LongPosition->YdPosition, GetLastestMarketData(pair.first)->BidPrice1);
-
-		}
-		else if (pair.second->ShortPosition->PosiDirection == CW_FTDC_D_Sell)
-		{
-			std::cout << "SHORT" << pair.first << std::endl;
-			std::cout << "S_volume:\t" << pair.second->ShortPosition->YdPosition << std::endl;
-			EasyInputMultiOrder(pair.first.c_str(), pair.second->ShortPosition->YdPosition, GetLastestMarketData(pair.first)->AskPrice1);
-		}
-	}*/
 	//定义map，用于保存持仓信息 
 	std::map<std::string, cwPositionPtr> CurrentPosMap;
 	//定义map，用于保存挂单信息 
 	std::map<cwActiveOrderKey, cwOrderPtr> WaitOrderList;
-	//获取挂单信  当前持仓信息
 	
 	while (true) 
 	{
+		//获取挂单信  当前持仓信息
 		GetPositionsAndActiveOrders(CurrentPosMap, WaitOrderList);
 		if (!CurrentPosMap.empty()) 
 		{
@@ -247,11 +230,16 @@ void cwStrategyDemo::OnReady()
 			}
 			while (true)
 			{
-				if(!)
-
-
+				if (!WaitOrderList.empty())
+				{
+					continue;
+				}
+				else
+				{
+					std::cout << "活跃订单" << std::endl;
+					break;
+				}
 			}
-			std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 		}
 		else
 		{
