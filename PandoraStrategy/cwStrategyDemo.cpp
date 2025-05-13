@@ -200,7 +200,6 @@ void cwStrategyDemo::OnOrderCanceled(cwOrderPtr pOrder)
 
 void cwStrategyDemo::OnReady()
 {
-
 	//定义map，用于保存持仓信息 
 	std::map<std::string, cwPositionPtr> CurrentPosMap;
 	//定义map，用于保存挂单信息 
@@ -249,38 +248,9 @@ void cwStrategyDemo::OnReady()
 		
 	}
 
-	for (auto& pair : CurrentPosMap)
+	for (auto& futInfMng : ctx.tarContracInfo) 
 	{
-		std::cout << "LONG" << pair.first << std::endl;
-	}
-
-
-	//while (!positionMap.empty())
-	//{
-	//	GetPositions(positionMap);
-	//	for (auto& pair : positionMap)
-	//	{
-	//		if (pair.second->LongPosition->PosiDirection == CW_FTDC_D_Buy) {
-
-	//			std::cout << "LONG" << pair.first << std::endl;
-	//			std::cout << "N" << pair.second->LongPosition->YdPosition << std::endl;
-	//			EasyInputOrder(pair.first.c_str(), CW_FTDC_D_Sell, CW_FTDC_OF_CloseToday, pair.second->LongPosition->YdPosition, 0);
-	//			EasyInputMultiOrder(pair.first.c_str(), CW_FTDC_D_Sell, CW_FTDC_OF_CloseToday, pair.second->LongPosition->YdPosition, 0);
-
-	//		}
-	//		else if (pair.second->ShortPosition->PosiDirection == CW_FTDC_D_Sell)
-	//		{
-	//			std::cout << "SHORT" << pair.first << std::endl;
-	//			std::cout << "N" << pair.second->ShortPosition->YdPosition << std::endl;
-	//		}
-	//	}
-	//}//这边用挂单处理比较好评  就是那个函数 *************************
-	
-
-
-	//for (auto& futInfMng : ctx.tarContracInfo) 
-	//{
-	//	SubcribeKindle(futInfMng.code.c_str(), cwKINDLE_TIMESCALE_1MIN, 50);
-	//	
-	//};	
+		SubcribeKindle(futInfMng.code.c_str(), cwKINDLE_TIMESCALE_1MIN, 50);
+		
+	};	
 }
