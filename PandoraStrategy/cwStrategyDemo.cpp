@@ -201,26 +201,43 @@ void cwStrategyDemo::OnOrderCanceled(cwOrderPtr pOrder)
 void cwStrategyDemo::OnReady()
 {
 	std::map<std::string, cwPositionPtr> positionMap;
-	while (!positionMap.empty())
+	GetPositions(positionMap);
+	for (auto& pair : positionMap)
 	{
-		GetPositions(positionMap);
-		for (auto& pair : positionMap)
-		{
-			if (pair.second->LongPosition->PosiDirection == CW_FTDC_D_Buy) {
+		if (pair.second->LongPosition->PosiDirection == CW_FTDC_D_Buy) {
 
-				std::cout << "LONG" << pair.first << std::endl;
-				std::cout << "N" << pair.second->LongPosition->YdPosition << std::endl;
-				EasyInputOrder(pair.first.c_str(), CW_FTDC_D_Sell, CW_FTDC_OF_CloseToday, pair.second->LongPosition->YdPosition, 0);
-				EasyInputMultiOrder(pair.first.c_str(), CW_FTDC_D_Sell, CW_FTDC_OF_CloseToday, pair.second->LongPosition->YdPosition, 0);
+			std::cout << "LONG" << pair.first << std::endl;
+			std::cout << "L_volume:\t"<< pair.second->LongPosition->YdPosition << std::endl;
+			EasyInputMultiOrder(pair.first.c_str(), -pair.second->LongPosition->YdPosition, GetLastestMarketData(pair.first)->BidPrice1);
 
-			}
-			else if (pair.second->ShortPosition->PosiDirection == CW_FTDC_D_Sell)
-			{
-				std::cout << "SHORT" << pair.first << std::endl;
-				std::cout << "N" << pair.second->ShortPosition->YdPosition << std::endl;
-			}
 		}
-	}//这边用挂单处理比较好评  就是那个函数 *************************
+		else if (pair.second->ShortPosition->PosiDirection == CW_FTDC_D_Sell)
+		{
+			std::cout << "SHORT" << pair.first << std::endl;
+			std::cout << "S_volume:\t" << pair.second->ShortPosition->YdPosition << std::endl;
+			EasyInputMultiOrder(pair.first.c_str(), pair.second->ShortPosition->YdPosition, GetLastestMarketData(pair.first)->AskPrice1);
+		}
+	}
+	//while (!positionMap.empty())
+	//{
+	//	GetPositions(positionMap);
+	//	for (auto& pair : positionMap)
+	//	{
+	//		if (pair.second->LongPosition->PosiDirection == CW_FTDC_D_Buy) {
+
+	//			std::cout << "LONG" << pair.first << std::endl;
+	//			std::cout << "N" << pair.second->LongPosition->YdPosition << std::endl;
+	//			EasyInputOrder(pair.first.c_str(), CW_FTDC_D_Sell, CW_FTDC_OF_CloseToday, pair.second->LongPosition->YdPosition, 0);
+	//			EasyInputMultiOrder(pair.first.c_str(), CW_FTDC_D_Sell, CW_FTDC_OF_CloseToday, pair.second->LongPosition->YdPosition, 0);
+
+	//		}
+	//		else if (pair.second->ShortPosition->PosiDirection == CW_FTDC_D_Sell)
+	//		{
+	//			std::cout << "SHORT" << pair.first << std::endl;
+	//			std::cout << "N" << pair.second->ShortPosition->YdPosition << std::endl;
+	//		}
+	//	}
+	//}//这边用挂单处理比较好评  就是那个函数 *************************
 	
 
 
