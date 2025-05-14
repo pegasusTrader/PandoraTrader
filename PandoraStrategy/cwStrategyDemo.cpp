@@ -235,7 +235,7 @@ void cwStrategyDemo::OnReady()
 				}
 				else
 				{
-					std::cout << "活跃订单" << std::endl;
+					std::cout << "订单全部成交&没有昨日订单" << std::endl;
 					break;
 				}
 			}

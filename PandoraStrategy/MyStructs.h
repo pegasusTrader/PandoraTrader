@@ -6,8 +6,9 @@
 struct futInfMng {
 	std::string contract; //合约
 	int multiple; //合约乘数
-	double Rs; //跳价
-	double Rl; //保证金率
+	std::string Fac;
+	int Rs; //跳价
+	int Rl; //保证金率
 	std::string code; //合约代码
 	double accfactor; //累计复权因子	 
 };

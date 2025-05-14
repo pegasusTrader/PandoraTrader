@@ -19,13 +19,14 @@ StrategyContext  UpdateBarData() {
 		sqlite3_stmt* stmt = nullptr;
 		if (sqlite3_prepare_v2(mydb, tar_contract_sql.c_str(), -1, &stmt, nullptr) == SQLITE_OK) {
 			while (sqlite3_step(stmt) == SQLITE_ROW) {
-				std::string contract = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));//合约
+				std::string contract = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));//目标合约
 				int multiple = sqlite3_column_int(stmt, 1);//合约乘数
-				double Rs = sqlite3_column_double(stmt, 2); //跳价
-				double Rl = sqlite3_column_double(stmt, 3); //保证金率
-				std::string code = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 4)); //目标合约代码
-				double accfactor = sqlite3_column_double(stmt, 5);
-				ctx.tarContracInfo.push_back({ contract, multiple, Rs, Rl, code, accfactor });
+				std::string Fac = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));//Fac
+				int Rs = sqlite3_column_int(stmt, 3); // ...
+				int Rl = sqlite3_column_int(stmt, 4); // ...
+				std::string code = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 5)); //目标合约代码
+				double accfactor = sqlite3_column_double(stmt, 6);//保证金率
+				ctx.tarContracInfo.push_back({ contract, multiple, Fac ,Rs, Rl, code, accfactor });
 			}
 		}
 		else if (sqlite3_prepare_v2(mydb, tar_contract_sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
