@@ -187,32 +187,24 @@ int main()
 			{
 				m_cwShow.AddLog("%-12s %-10s %-8s %-12s %-12s %-14s %-10s",
 					"InstrumentID", "Direction", "Volume", "OpenPriceAvg", "MktProfit", "ExchangeMargin", "OpenCost");
-				for (const auto& pair : m_PositionMap)
+				for (const auto& [instrumentID, pos] : m_PositionMap)
 				{
-					if (pair.second->LongPosition->PosiDirection == CW_FTDC_D_Buy) {
-
-						m_cwShow.AddLog("%-12s %-10s %-8d %-12.1f %-12.1f %-14.1f %-10.1f",
-							pair.first.c_str(),
-							"Long",
-							pair.second->LongPosition->TotalPosition,
-							pair.second->LongPosition->AveragePosPrice,
-							pair.second->LongPosition->PositionProfit,
-							pair.second->LongPosition->ExchangeMargin,
-							pair.second->LongPosition->OpenCost);
-
-					}
-					else if (pair.second->ShortPosition->PosiDirection == CW_FTDC_D_Sell)
+					if (pos->LongPosition->TotalPosition > 0)
 					{
+						auto& p = pos->LongPosition;
 						m_cwShow.AddLog("%-12s %-10s %-8d %-12.1f %-12.1f %-14.1f %-10.1f",
-							pair.first.c_str(),
-							"Short",
-							pair.second->ShortPosition->TotalPosition,
-							pair.second->ShortPosition->AveragePosPrice,
-							pair.second->ShortPosition->PositionProfit,
-							pair.second->ShortPosition->ExchangeMargin,
-							pair.second->ShortPosition->OpenCost);
+							instrumentID.c_str(), "Long",
+							p->TotalPosition, p->AveragePosPrice,
+							p->PositionProfit, p->ExchangeMargin, p->OpenCost);
 					}
-
+					if (pos->ShortPosition->TotalPosition > 0)
+					{
+						auto& p = pos->ShortPosition;
+						m_cwShow.AddLog("%-12s %-10s %-8d %-12.1f %-12.1f %-14.1f %-10.1f",
+							instrumentID.c_str(), "Short",
+							p->TotalPosition, p->AveragePosPrice,
+							p->PositionProfit, p->ExchangeMargin, p->OpenCost);
+					}
 				}
 			}
 			m_cwShow.AddLog("\n");
