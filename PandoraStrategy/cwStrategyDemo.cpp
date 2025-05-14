@@ -43,20 +43,20 @@ void cwStrategyDemo::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKi
 		return;
 	}
 
-	std::cout << pKindleSeries->GetInstrumentID() << std::endl;
-	std::cout << pKindleSeries->GetLastKindleStick()->Close << std::endl;
-	std::string currentContract = pKindleSeries->GetInstrumentID();
+	//std::cout << pKindleSeries->GetInstrumentID() << std::endl;
+	//std::cout << pKindleSeries->GetLastKindleStick()->Close << std::endl;
+	std::string currentContract = pPriceData->InstrumentID;
 
 	timePara _timePara = IsTradingTime();
 	auto hour = _timePara.hour;
 	auto minute = _timePara.minute;
 	auto second = _timePara.second;
 	//barFolw更新
-	ctx.barFlow[currentContract].push_back(pKindleSeries->GetLastKindleStick()->Close);
+	ctx.barFlow[currentContract].push_back(pPriceData->LastPrice);
 	//queueBar更新
 	std::string constrct_id = currentContract;
 	int contractIndex = findIndex<futInfMng>(ctx.tarContracInfo, [constrct_id](const futInfMng& item) {return item.contract == constrct_id; });
-	ctx.queueBar[currentContract].push_back(pKindleSeries->GetLastKindleStick()->Close / ctx.tarContracInfo[contractIndex].accfactor);
+	ctx.queueBar[currentContract].push_back(pPriceData->LastPrice / ctx.tarContracInfo[contractIndex].accfactor);
 	//ret更新
 	double last = ctx.queueBar[currentContract][ctx.queueBar[currentContract].size() - 1];
 	double secondLast = ctx.queueBar[currentContract][ctx.queueBar[currentContract].size() - 2];
@@ -75,6 +75,8 @@ void cwStrategyDemo::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKi
 	// 计算 stdLong
 	std::vector<double> retBarSubsetLong(std::prev(ctx.retBar[currentContract].end(), ctx.tarContracInfo[contractIndex].Rl), ctx.retBar[currentContract].end());
 	double stdLong = SampleStd(retBarSubsetLong);
+
+
 
 	//开多仓信号
 	//开空仓信号

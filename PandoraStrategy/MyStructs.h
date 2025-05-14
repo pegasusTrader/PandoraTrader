@@ -13,6 +13,13 @@ struct futInfMng {
 	double accfactor; //累计复权因子	 
 };
 
+struct orderInfo 
+{
+	std::string szInstrumentID;
+	int volume; 
+	double price;
+};
+
 // 持仓状况结构体
 //方向、数量、开仓均价、开仓成本、数量
 struct catePortInf {
@@ -95,13 +102,7 @@ struct paraMng {
 	int Rl;//长期窗口
 };
 
-// 期货合约信息结构体
-//struct futInfMng {
-//	std::string exchange; //交易所
-//	int multiple; //合约乘数
-//	double ticksize; //跳价
-//	double marginrate; //保证金率
-//};
+
 
 struct StrategyContext {
 	std::vector<futInfMng> tarContracInfo;               // 目标合约结构体
