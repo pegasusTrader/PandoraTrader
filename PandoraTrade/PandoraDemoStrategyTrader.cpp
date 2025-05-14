@@ -185,17 +185,34 @@ int main()
 			std::map<std::string, cwPositionPtr> m_PositionMap = m_TradeChannel.GetPosition();
 			if (!m_PositionMap.empty())
 			{
-				m_cwShow.AddLog("InstrID\t\tDir\tPos\tPriAvg\t\tMktfit\t\t\tExMar\t\tOpCos");
+				m_cwShow.AddLog("%-12s %-10s %-8s %-12s %-12s %-14s %-10s",
+					"InstrumentID", "Direction", "Volume", "OpenPriceAvg", "MktProfit", "ExchangeMargin", "OpenCost");
 				for (const auto& pair : m_PositionMap)
 				{
-					/*m_cwShow.AddLog("%s\t\t%s\t%.1f\t%.1f\t\t%.1f\t\t\t%.1f\t\t%.1f",
-						pair.first.c_str(),
-						std::string(1, pair.second->LongPosition->PosiDirection).c_str(),
-						pair.second->LongPosition->TodayPosition,
-						pair.second->LongPosition->AveragePosPrice,
-						pair.second->LongPosition->PositionProfit,
-						pair.second->LongPosition->ExchangeMargin,
-						pair.second->LongPosition->OpenCost);*/
+					if (pair.second->LongPosition->PosiDirection == CW_FTDC_D_Buy) {
+
+						m_cwShow.AddLog("%-12s %-10s %-8d %-12.1f %-12.1f %-14.1f %-10.1f",
+							pair.first.c_str(),
+							"Long",
+							pair.second->LongPosition->TotalPosition,
+							pair.second->LongPosition->AveragePosPrice,
+							pair.second->LongPosition->PositionProfit,
+							pair.second->LongPosition->ExchangeMargin,
+							pair.second->LongPosition->OpenCost);
+
+					}
+					else if (pair.second->ShortPosition->PosiDirection == CW_FTDC_D_Sell)
+					{
+						m_cwShow.AddLog("%-12s %-10s %-8d %-12.1f %-12.1f %-14.1f %-10.1f",
+							pair.first.c_str(),
+							"Short",
+							pair.second->ShortPosition->TotalPosition,
+							pair.second->ShortPosition->AveragePosPrice,
+							pair.second->ShortPosition->PositionProfit,
+							pair.second->ShortPosition->ExchangeMargin,
+							pair.second->ShortPosition->OpenCost);
+					}
+
 				}
 			}
 			m_cwShow.AddLog("\n");
@@ -208,7 +225,7 @@ int main()
 					pAccount->CloseProfit + pAccount->PositionProfit - pAccount->Commission,
 					pAccount->Commission);
 			}
-			
+
 		}
 		cwSleep(1000);
 	}

@@ -160,6 +160,7 @@ void cwStrategyDemo::OnReady()
 			{
 				if (!WaitOrderList.empty())
 				{
+					cwSleep(1000); // Ã¿´ÎµÈ´ý1000ºÁÃë
 					continue;
 				}
 				else
