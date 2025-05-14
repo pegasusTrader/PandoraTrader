@@ -126,49 +126,61 @@ orderInfo StrategyPosOpen(std::string contract, StrategyContext ctx, double stdL
 }
 
 //// 平仓交易 条件
-orderInfo StrategyPosClose(std::string contract, StrategyContext ctx, double stdLong, double stdShort) {
-	std::vector<cwOrderPtr> orders;
-	std::string code = (codeTractCur)[contract];// 当前持仓代码
-	std::string dire = (spePos)[code].direction; // 当前持仓方向
-	auto DireREFunc = [](const std::string& x) -> std::string {
-		if (x == "Long") {
-			return "Short";
+orderInfo StrategyPosClose(std::string contract, cwPositionPtr& pPosition, StrategyContext ctx, double stdLong, double stdShort) {
+	orderInfo order;
+	int contractIndex = findIndex<futInfMng>(ctx.tarContracInfo, [contract](const futInfMng& item) {return item.contract == contract; });
+	auto& barQueue = ctx.queueBar[contract];
+	size_t rs = ctx.tarContracInfo[contractIndex].Rs;
+	std::string FacDirection;
+	if (ctx.tarContracInfo[contractIndex].Fac == "Mom_std_bar_re_dym")
+	{
+		if (pPosition->LongPosition->PosiDirection == CW_FTDC_D_Buy) {
+			std::string FacDirection = "Long";
 		}
-		else if (x == "Short") {
-			return "Long";
+		else if (pPosition->ShortPosition->PosiDirection == CW_FTDC_D_Sell)
+		{
+			std::string FacDirection = "Short";
 		}
-		else {
-			return "Miss";
+	}
+	else
+	{
+		if (pPosition->LongPosition->PosiDirection == CW_FTDC_D_Buy) {
+			std::string FacDirection = "Short";
 		}
-		};
-	std::string FacDirection = (verDictCur)[contract].Fac == "Mom_std_bar_re_dym" ? dire : DireREFunc(dire);//根据策略类型调整交易方向Fac
-	//Fac方向 =买 && （最新价格 > 短期价格 || 短期波动率<=长期波动率）
-	if (FacDirection == "Long" && ((queueBar)[contract].back() > (queueBar)[contract][(queueBar)[contract].size() - (verDictCur)[contract].Rs] || stdShort <= stdLong)) {
-		int tarVolume = (spePos)[code].volume;
-		(spePos).erase(code);
+		else if (pPosition->ShortPosition->PosiDirection == CW_FTDC_D_Sell)
+		{
+			std::string FacDirection = "Long";
+		}
+	}
 
-		char DireSlc = (verDictCur)[contract].Fac == "Mom_std_bar_re_dym" ? '1' : '0';  // 假设 1 表示 Sell，0 表示 Buy
-		cwOrderPtr order = std::make_shared<ORDERFIELD>();
-		strcpy(order->InstrumentID, (codeTractCur)[contract].c_str());
-		order->Direction = DireSlc;
-		strcpy(order->CombOffsetFlag, "Close");
-		order->VolumeTotalOriginal = tarVolume;
-		order->LimitPrice = (*barBook).LastPrice;
-		orders.push_back(order);
+	//Fac方向 =买 && （最新价格 > 短期价格 || 短期波动率<=长期波动率）
+	if (FacDirection == "Long" && (barQueue.back() > barQueue[barQueue.size() - rs] || stdShort <= stdLong)) {
+		if (ctx.tarContracInfo[contractIndex].Fac == "Mom_std_bar_re_dym")
+		{
+			order.volume = ctx.countLimitCur[contract];
+		}
+		else
+		{
+			order.volume = -ctx.countLimitCur[contract];
+		}
+		order.szInstrumentID = contract;
+		order.price = ctx.barFlow[contract].back();
 	}
-	else if (FacDirection == "Short" && ((queueBar)[contract].back() < (queueBar)[contract][(queueBar)[contract].size() - (verDictCur)[contract].Rs] || stdShort <= stdLong)) {
-		int tarVolume = (spePos)[code].volume;
-		(spePos).erase(code);
-		char DireSlc = (verDictCur)[contract].Fac == "Mom_std_bar_re_dym" ? '0' : '1';  // 假设 1 表示 Sell，0 表示 Buy
-		cwOrderPtr order = std::make_shared<ORDERFIELD>();
-		strcpy(order->InstrumentID, (codeTractCur)[contract].c_str());
-		order->Direction = DireSlc;
-		strcpy(order->CombOffsetFlag, "Close");
-		order->VolumeTotalOriginal = tarVolume;
-		order->LimitPrice = (*barBook).LastPrice;
-		orders.push_back(order);
+	//Fac方向 =卖 && （最新价格 < 短期价格 || 短期波动率<=长期波动率）
+	else if (FacDirection == "Short" && (barQueue.back() < barQueue[barQueue.size() - rs] || stdShort <= stdLong)) 
+	{
+		if (ctx.tarContracInfo[contractIndex].Fac == "Mom_std_bar_re_dym")
+		{
+			order.volume = ctx.countLimitCur[contract];
+		}
+		else
+		{
+			order.volume = -ctx.countLimitCur[contract];
+		}
+		order.szInstrumentID = contract;
+		order.price = ctx.barFlow[contract].back();
 	}
-	return orders;
+	return order;
 }
 
 
