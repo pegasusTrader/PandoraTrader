@@ -104,88 +104,88 @@ void cwStrategyDemo::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKi
 	}
 	else
 	{
-		if (minute == 0 || minute == 10 || minute == 20 || minute == 30 || minute == 40 || minute == 50) 
+		if (minute == 0 || minute == 10 || minute == 20 || minute == 30 || minute == 40 || minute == 50)
 		{
 			std::cout << "waiting" << hour << "::" << minute << "::" << second << std::endl;
 		}
 	}
-		//开多仓信号
-		//开空仓信号
-		// 临近收盘 清仓处理
-		// 打印一些东西
-	};
+	//开多仓信号
+	//开空仓信号
+	// 临近收盘 清仓处理
+	// 打印一些东西
+};
 
-	void cwStrategyDemo::OnRtnTrade(cwTradePtr pTrade)
+void cwStrategyDemo::OnRtnTrade(cwTradePtr pTrade)
+{
+}
+
+void cwStrategyDemo::OnRtnOrder(cwOrderPtr pOrder, cwOrderPtr pOriginOrder)
+{
+}
+
+void cwStrategyDemo::OnOrderCanceled(cwOrderPtr pOrder)
+{
+}
+
+void cwStrategyDemo::OnReady()
+{
+	//定义map，用于保存持仓信息 
+	std::map<std::string, cwPositionPtr> CurrentPosMap;
+	//定义map，用于保存挂单信息 
+	std::map<cwActiveOrderKey, cwOrderPtr> WaitOrderList;
+
+	while (true)
 	{
-	}
-
-	void cwStrategyDemo::OnRtnOrder(cwOrderPtr pOrder, cwOrderPtr pOriginOrder)
-	{
-	}
-
-	void cwStrategyDemo::OnOrderCanceled(cwOrderPtr pOrder)
-	{
-	}
-
-	void cwStrategyDemo::OnReady()
-	{
-		//定义map，用于保存持仓信息 
-		std::map<std::string, cwPositionPtr> CurrentPosMap;
-		//定义map，用于保存挂单信息 
-		std::map<cwActiveOrderKey, cwOrderPtr> WaitOrderList;
-
-		while (true)
+		//获取挂单信  当前持仓信息
+		GetPositionsAndActiveOrders(CurrentPosMap, WaitOrderList);
+		if (!CurrentPosMap.empty())
 		{
-			//获取挂单信  当前持仓信息
-			GetPositionsAndActiveOrders(CurrentPosMap, WaitOrderList);
-			if (!CurrentPosMap.empty())
+			for (auto& pair : CurrentPosMap)
 			{
-				for (auto& pair : CurrentPosMap)
-				{
-					if (pair.second->LongPosition->PosiDirection == CW_FTDC_D_Buy) {
+				if (pair.second->LongPosition->PosiDirection == CW_FTDC_D_Buy) {
 
-						std::cout << "LONG" << pair.first << std::endl;
-						std::cout << "L_volume:\t" << pair.second->LongPosition->YdPosition << std::endl;
-						EasyInputMultiOrder(pair.first.c_str(), -pair.second->LongPosition->YdPosition, GetLastestMarketData(pair.first)->BidPrice1);
+					std::cout << "LONG" << pair.first << std::endl;
+					std::cout << "L_volume:\t" << pair.second->LongPosition->YdPosition << std::endl;
+					EasyInputMultiOrder(pair.first.c_str(), -pair.second->LongPosition->YdPosition, GetLastestMarketData(pair.first)->BidPrice1);
 
-					}
-					else if (pair.second->ShortPosition->PosiDirection == CW_FTDC_D_Sell)
-					{
-						std::cout << "SHORT" << pair.first << std::endl;
-						std::cout << "S_volume:\t" << pair.second->ShortPosition->YdPosition << std::endl;
-						EasyInputMultiOrder(pair.first.c_str(), pair.second->ShortPosition->YdPosition, GetLastestMarketData(pair.first)->AskPrice1);
-					}
 				}
-				while (true)
+				else if (pair.second->ShortPosition->PosiDirection == CW_FTDC_D_Sell)
 				{
-					if (!WaitOrderList.empty())
-					{
-						continue;
-					}
-					else
-					{
-						std::cout << "订单全部成交&没有昨日订单" << std::endl;
-						break;
-					}
+					std::cout << "SHORT" << pair.first << std::endl;
+					std::cout << "S_volume:\t" << pair.second->ShortPosition->YdPosition << std::endl;
+					EasyInputMultiOrder(pair.first.c_str(), pair.second->ShortPosition->YdPosition, GetLastestMarketData(pair.first)->AskPrice1);
 				}
 			}
-			else
+			while (true)
 			{
-				std::cout << "没有持仓" << std::endl;
-				break;
+				if (!WaitOrderList.empty())
+				{
+					continue;
+				}
+				else
+				{
+					std::cout << "订单全部成交&没有昨日订单" << std::endl;
+					break;
+				}
 			}
-
+		}
+		else
+		{
+			std::cout << "没有持仓" << std::endl;
+			break;
 		}
 
-		for (auto& futInfMng : ctx.tarContracInfo)
-		{
-			SubcribeKindle(futInfMng.code.c_str(), cwKINDLE_TIMESCALE_1MIN, 50);
-
-		};
 	}
 
+	for (auto& futInfMng : ctx.tarContracInfo)
+	{
+		SubcribeKindle(futInfMng.code.c_str(), cwKINDLE_TIMESCALE_1MIN, 50);
+
+	};
+}
 
 
-	//std::cout << "--- 当前时间 " << std::setfill('0') << std::setw(2) << hour << ":" << std::setfill('0') << std::setw(2) << minute << ":" << std::setfill('0') << std::setw(2) << second << " ---------------" << std::endl;
-		//std::cout << std::setfill(' ');
-		//std::cout << std::left  // 左对齐
+
+//std::cout << "--- 当前时间 " << std::setfill('0') << std::setw(2) << hour << ":" << std::setfill('0') << std::setw(2) << minute << ":" << std::setfill('0') << std::setw(2) << second << " ---------------" << std::endl;
+	//std::cout << std::setfill(' ');
+	//std::cout << std::left  // 左对齐
