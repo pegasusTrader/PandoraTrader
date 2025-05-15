@@ -93,10 +93,10 @@ void cwStrategyDemo::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKi
 	}
 	else if ((hour == 14 && minute >= 45) || (hour == 15 && minute == 0))
 	{
-		cwPositionPtr pPos= nullptr;
+		cwPositionPtr pPos = nullptr;
 		std::map<cwActiveOrderKey, cwOrderPtr> WaitOrderList;
 		GetPositionsAndActiveOrders(currentContract, pPos, WaitOrderList);
-		if (pPos==nullptr)
+		if (pPos == nullptr)
 		{
 			std::cout << "没有持仓" << std::endl;
 			return;
@@ -104,15 +104,13 @@ void cwStrategyDemo::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKi
 		if (pPos->LongPosition->TotalPosition > 0) {
 			auto& lp = pPos->LongPosition;
 			double price = GetLastestMarketData(currentContract)->BidPrice1;
-			EasyInputMultiOrder(currentContract.c_str(), -lp->TotalPosition, price); // 平多仓
+			EasyInputMultiOrder(currentContract.c_str(), -lp->TotalPosition, price); // 如有多仓平多仓
 		}
 		if (pPos->ShortPosition->TotalPosition > 0) {
 			auto& sp = pPos->ShortPosition;
 			double price = GetLastestMarketData(currentContract)->AskPrice1;
-			EasyInputMultiOrder(currentContract.c_str(), sp->TotalPosition, price); // 平空仓
+			EasyInputMultiOrder(currentContract.c_str(), sp->TotalPosition, price); // 如有空仓平空仓
 		}
-
-
 	}
 	else if ((hour == 15 && minute >= 0 && minute < 10))
 	{
@@ -148,7 +146,7 @@ void cwStrategyDemo::OnOrderCanceled(cwOrderPtr pOrder)
 
 void cwStrategyDemo::OnReady()
 {
-	
+
 	AutoCloseAllPositionsLoop();
 
 	for (auto& futInfMng : ctx.tarContracInfo)
