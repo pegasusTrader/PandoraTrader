@@ -21,10 +21,9 @@ struct orderInfo
 };
 
 
-struct StrategyContext {
-	std::vector<futInfMng> tarContracInfo;               // 目标合约结构体
-	std::map<std::string, std::deque<double>> retBar;   // 收益率数据
-	std::map<std::string, std::deque<double>> barFlow;  // 收盘价数据(未复权)
+struct barInfo 
+{          
 	std::map<std::string, std::deque<double>> queueBar;  // 收盘价数据(已复权)
-	std::map<std::string, int> countLimitCur;            // 合约对应交易数量
+	std::map<std::string, std::deque<double>> barFlow;  // 收盘价数据(未复权)
+	std::map<std::string, std::deque<double>> retBar;   // 收益率数据
 };
