@@ -140,20 +140,20 @@ void cwStrategyDemo::OnReady()
 		GetPositionsAndActiveOrders(CurrentPosMap, WaitOrderList);
 		if (!CurrentPosMap.empty())
 		{
-			for (auto& pair : CurrentPosMap)
+			for (const auto& [instrumentID, pos] : CurrentPosMap)
 			{
-				if (pair.second->LongPosition->PosiDirection == CW_FTDC_D_Buy) {
-
-					std::cout << "LONG" << pair.first << std::endl;
-					std::cout << "L_volume:\t" << pair.second->LongPosition->YdPosition << std::endl;
-					EasyInputMultiOrder(pair.first.c_str(), -pair.second->LongPosition->YdPosition, GetLastestMarketData(pair.first)->BidPrice1);
+				if (pos->LongPosition->TotalPosition > 0) {
+					auto& p = pos->LongPosition;
+					std::cout << "LONG:\t" << instrumentID << std::endl;
+					std::cout << "L_volume:\t" << p->TotalPosition << std::endl;
+					EasyInputMultiOrder(instrumentID.c_str(), -p->YdPosition, GetLastestMarketData(instrumentID)->BidPrice1);
 
 				}
-				else if (pair.second->ShortPosition->PosiDirection == CW_FTDC_D_Sell)
+				else if (pos->ShortPosition->TotalPosition > 0)
 				{
-					std::cout << "SHORT" << pair.first << std::endl;
-					std::cout << "S_volume:\t" << pair.second->ShortPosition->YdPosition << std::endl;
-					EasyInputMultiOrder(pair.first.c_str(), pair.second->ShortPosition->YdPosition, GetLastestMarketData(pair.first)->AskPrice1);
+					std::cout << "SHORT:\t" << instrumentID << std::endl;
+					std::cout << "S_volume:\t" << p->YdPosition << std::endl;
+					EasyInputMultiOrder(instrumentID.c_str(), p->TotalPosition, GetLastestMarketData(instrumentID)->AskPrice1);
 				}
 			}
 			while (true)
