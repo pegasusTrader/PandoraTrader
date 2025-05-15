@@ -31,44 +31,22 @@ cwStrategyDemo::~cwStrategyDemo()
 
 void cwStrategyDemo::PriceUpdate(cwMarketDataPtr pPriceData)
 {
-	if (pPriceData.get() == NULL)
-	{
-		return;
-	}
+	if (pPriceData.get() == NULL) { return; }
 }
 
 void cwStrategyDemo::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKindleStrategy::cwKindleSeriesPtr pKindleSeries) {
-	if (pPriceData.get() == NULL)
-	{
-		return;
-	}
+	if (pPriceData.get() == NULL) { return; }
 
 	std::string currentContract = pPriceData->InstrumentID;
-
+	int contractIndex = findIndex<futInfMng>(ctx.tarContracInfo, [currentContract](const futInfMng& item) {return item.contract == currentContract; });
 	timePara _timePara = IsTradingTime();
 	auto hour = _timePara.hour;
 	auto minute = _timePara.minute;
 	auto second = _timePara.second;
 
-	if ((hour == 9 && minute >= 1) || (hour > 9 && hour < 10) || (hour == 10 && minute < 15) ||
-		(hour == 10 && minute >= 30) || (hour > 10 && hour < 11) || (hour == 11 && minute < 30) ||
-		(hour == 13 && minute >= 30) || (hour > 13 && hour < 14) || (hour == 14 && minute < 45))
+	if (IsNormalTradingTime(hour, minute))
 	{
-		//barFolw更新
-		ctx.barFlow[currentContract].push_back(pPriceData->LastPrice);
-		//queueBar更新
-		std::string constrct_id = currentContract;
-		int contractIndex = findIndex<futInfMng>(ctx.tarContracInfo, [constrct_id](const futInfMng& item) {return item.contract == constrct_id; });
-		ctx.queueBar[currentContract].push_back(pPriceData->LastPrice / ctx.tarContracInfo[contractIndex].accfactor);
-		//ret更新
-		double last = ctx.queueBar[currentContract][ctx.queueBar[currentContract].size() - 1];
-		double secondLast = ctx.queueBar[currentContract][ctx.queueBar[currentContract].size() - 2];
-		ctx.retBar[currentContract].push_back(last / secondLast - 1);
-
-		//删除首位元素
-		ctx.barFlow[currentContract].pop_front();
-		ctx.queueBar[currentContract].pop_front();
-		ctx.retBar[currentContract].pop_front();
+		UpdateCtx(pPriceData, ctx, currentContract);
 
 		// 计算标准差
 		// 计算 stdShort
@@ -91,11 +69,18 @@ void cwStrategyDemo::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKi
 			StrategyPosClose(currentContract, PositionMap[currentContract], ctx, stdLong, stdShort);
 		}
 	}
-	else if ((hour == 14 && minute >= 45) || (hour == 15 && minute == 0))
+	else if (IsClosingTime(hour, minute))
 	{
+
 		cwPositionPtr pPos = nullptr;
 		std::map<cwActiveOrderKey, cwOrderPtr> WaitOrderList;
 		GetPositionsAndActiveOrders(currentContract, pPos, WaitOrderList);
+		std::cout << "[AutoClose] 尝试平仓: " << currentContract
+			<< " LongYd=" << pPos->LongPosition->YdPosition
+			<< " LongTd=" << pPos->LongPosition->TodayPosition
+			<< " ShortYd=" << pPos->ShortPosition->YdPosition
+			<< " ShortTd=" << pPos->ShortPosition->TodayPosition << std::endl;
+
 		if (pPos == nullptr)
 		{
 			std::cout << "没有持仓" << std::endl;
@@ -112,7 +97,7 @@ void cwStrategyDemo::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKi
 			EasyInputMultiOrder(currentContract.c_str(), sp->TotalPosition, price); // 如有空仓平空仓
 		}
 	}
-	else if ((hour == 15 && minute >= 0 && minute < 10))
+	else if (IsAfterMarket(hour, minute))
 	{
 		std::cout << "----------------- TraderOver ----------------" << std::endl;
 		std::cout << "--------------- StoreBaseData ---------------" << std::endl;
@@ -197,3 +182,23 @@ void cwStrategyDemo::AutoCloseAllPositionsLoop() {
 		}
 	}
 }
+
+void cwStrategyDemo::UpdateCtx(cwMarketDataPtr pPriceData, StrategyContext& ctx, std::string& currentContract)
+{
+	//barFolw更新
+	ctx.barFlow[currentContract].push_back(pPriceData->LastPrice);
+	//queueBar更新
+	int contractIndex = findIndex<futInfMng>(ctx.tarContracInfo, [currentContract](const futInfMng& item) {return item.contract == currentContract; });
+	ctx.queueBar[currentContract].push_back(pPriceData->LastPrice / ctx.tarContracInfo[contractIndex].accfactor);
+	//ret更新
+	double last = ctx.queueBar[currentContract][ctx.queueBar[currentContract].size() - 1];
+	double secondLast = ctx.queueBar[currentContract][ctx.queueBar[currentContract].size() - 2];
+	ctx.retBar[currentContract].push_back(last / secondLast - 1);
+	//删除首位元素
+	ctx.barFlow[currentContract].pop_front();
+	ctx.queueBar[currentContract].pop_front();
+	ctx.retBar[currentContract].pop_front();
+}
+
+
+

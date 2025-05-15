@@ -85,3 +85,20 @@ int findIndex(const std::vector<T>& vec, std::function<bool(const T&)> condition
 		return -1; // 没找到返回 -1
 	}
 }
+
+inline bool IsNormalTradingTime(int hour, int minute) {
+	int time = hour * 100 + minute;
+	return
+		(time >= 901 && time < 1015) ||  // 上午前段
+		(time >= 1030 && time < 1130) ||  // 上午后段
+		(time >= 1330 && time < 1445);    // 下午
+}
+
+inline bool IsClosingTime(int hour, int minute) {
+	return (hour == 14 && minute >= 45) || (hour == 15 && minute == 0);
+}
+
+inline bool IsAfterMarket(int hour, int minute) {
+	return hour == 15 && minute >= 0 && minute < 10;
+}
+

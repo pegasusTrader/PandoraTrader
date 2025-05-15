@@ -30,5 +30,5 @@ public:
 	void AutoCloseAllPositionsLoop();
 	std::string m_strCurrentUpdateTime;
 	// sqlLiteHelp
-
+	void UpdateCtx(cwMarketDataPtr pPriceData,StrategyContext &ctx, std::string& currentContract);
 };
