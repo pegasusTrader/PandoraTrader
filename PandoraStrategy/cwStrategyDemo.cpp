@@ -93,7 +93,25 @@ void cwStrategyDemo::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKi
 	}
 	else if ((hour == 14 && minute >= 45) || (hour == 15 && minute == 0))
 	{
-		//全部清仓
+		cwPositionPtr pPos= nullptr;
+		std::map<cwActiveOrderKey, cwOrderPtr> WaitOrderList;
+		GetPositionsAndActiveOrders(currentContract, pPos, WaitOrderList);
+		if (pPos==nullptr)
+		{
+			std::cout << "没有持仓" << std::endl;
+			return;
+		}
+		if (pPos->LongPosition->TotalPosition > 0) {
+			auto& lp = pPos->LongPosition;
+			double price = GetLastestMarketData(currentContract)->BidPrice1;
+			EasyInputMultiOrder(currentContract.c_str(), -lp->TotalPosition, price); // 平多仓
+		}
+		if (pPos->ShortPosition->TotalPosition > 0) {
+			auto& sp = pPos->ShortPosition;
+			double price = GetLastestMarketData(currentContract)->AskPrice1;
+			EasyInputMultiOrder(currentContract.c_str(), sp->TotalPosition, price); // 平空仓
+		}
+
 
 	}
 	else if ((hour == 15 && minute >= 0 && minute < 10))
@@ -109,10 +127,6 @@ void cwStrategyDemo::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKi
 			std::cout << "waiting" << hour << "::" << minute << "::" << second << std::endl;
 		}
 	}
-	//开多仓信号
-	//开空仓信号
-	// 临近收盘 清仓处理
-	// 打印一些东西
 };
 
 void cwStrategyDemo::OnRtnTrade(cwTradePtr pTrade)
@@ -158,12 +172,12 @@ void cwStrategyDemo::AutoCloseAllPositionsLoop() {
 			if (pos->LongPosition->TotalPosition > 0) {
 				auto& lp = pos->LongPosition;
 				double price = GetLastestMarketData(id)->BidPrice1;
-				EasyInputMultiOrder(id.c_str(), -lp->YdPosition, price); // 平昨多
+				EasyInputMultiOrder(id.c_str(), -lp->TotalPosition, price); // 平昨多
 			}
 			if (pos->ShortPosition->TotalPosition > 0) {
 				auto& sp = pos->ShortPosition;
 				double price = GetLastestMarketData(id)->AskPrice1;
-				EasyInputMultiOrder(id.c_str(), sp->YdPosition, price); // 平昨空
+				EasyInputMultiOrder(id.c_str(), sp->TotalPosition, price); // 平昨空
 			}
 		}
 
