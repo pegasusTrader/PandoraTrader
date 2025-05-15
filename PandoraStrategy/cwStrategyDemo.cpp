@@ -139,6 +139,11 @@ void cwStrategyDemo::OnRtnOrder(cwOrderPtr pOrder, cwOrderPtr pOriginOrder)
 
 void cwStrategyDemo::OnOrderCanceled(cwOrderPtr pOrder)
 {
+	if (pOrder->OrderStatus == '5') { // 拒单
+		std::cout << "[AutoClose] 拒单: " << pOrder->InstrumentID << std::endl;
+		//pendingContracts.erase(pOrder->InstrumentID); // 强制移除，避免阻塞
+	}
+
 }
 
 void cwStrategyDemo::OnReady()
