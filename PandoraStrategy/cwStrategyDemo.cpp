@@ -129,54 +129,8 @@ void cwStrategyDemo::OnOrderCanceled(cwOrderPtr pOrder)
 
 void cwStrategyDemo::OnReady()
 {
-	//定义map，用于保存持仓信息 
-	std::map<std::string, cwPositionPtr> CurrentPosMap;
-	//定义map，用于保存挂单信息 
-	std::map<cwActiveOrderKey, cwOrderPtr> WaitOrderList;
-
-	while (true)
-	{
-		//获取挂单信  当前持仓信息
-		GetPositionsAndActiveOrders(CurrentPosMap, WaitOrderList);
-		if (!CurrentPosMap.empty())
-		{
-			for (const auto& [instrumentID, pos] : CurrentPosMap)
-			{
-				if (pos->LongPosition->TotalPosition > 0) {
-					auto& p = pos->LongPosition;
-					std::cout << "LONG:\t" << instrumentID << std::endl;
-					std::cout << "L_volume:\t" << p->TotalPosition << std::endl;
-					EasyInputMultiOrder(instrumentID.c_str(), -p->YdPosition, GetLastestMarketData(instrumentID)->BidPrice1);
-
-				}
-				else if (pos->ShortPosition->TotalPosition > 0)
-				{
-					std::cout << "SHORT:\t" << instrumentID << std::endl;
-					std::cout << "S_volume:\t" << p->YdPosition << std::endl;
-					EasyInputMultiOrder(instrumentID.c_str(), p->TotalPosition, GetLastestMarketData(instrumentID)->AskPrice1);
-				}
-			}
-			while (true)
-			{
-				if (!WaitOrderList.empty())
-				{
-					cwSleep(1000); // 每次等待1000毫秒
-					continue;
-				}
-				else
-				{
-					std::cout << "订单全部成交&没有昨日订单" << std::endl;
-					break;
-				}
-			}
-		}
-		else
-		{
-			std::cout << "没有持仓" << std::endl;
-			break;
-		}
-
-	}
+	
+	AutoCloseAllPositionsLoop();
 
 	for (auto& futInfMng : ctx.tarContracInfo)
 	{
@@ -186,7 +140,43 @@ void cwStrategyDemo::OnReady()
 }
 
 
+void cwStrategyDemo::AutoCloseAllPositionsLoop() {
 
-//std::cout << "--- 当前时间 " << std::setfill('0') << std::setw(2) << hour << ":" << std::setfill('0') << std::setw(2) << minute << ":" << std::setfill('0') << std::setw(2) << second << " ---------------" << std::endl;
-	//std::cout << std::setfill(' ');
-	//std::cout << std::left  // 左对齐
+	//定义map，用于保存持仓信息 
+	std::map<std::string, cwPositionPtr> CurrentPosMap;
+	//定义map，用于保存挂单信息 
+	std::map<cwActiveOrderKey, cwOrderPtr> WaitOrderList;
+
+	while (true) {
+		GetPositionsAndActiveOrders(CurrentPosMap, WaitOrderList);
+		if (CurrentPosMap.empty()) {
+			std::cout << "没有持仓" << std::endl;
+			break;
+		}
+
+		for (auto& [id, pos] : CurrentPosMap) {
+			if (pos->LongPosition->TotalPosition > 0) {
+				auto& lp = pos->LongPosition;
+				double price = GetLastestMarketData(id)->BidPrice1;
+				EasyInputMultiOrder(id.c_str(), -lp->YdPosition, price); // 平昨多
+			}
+			if (pos->ShortPosition->TotalPosition > 0) {
+				auto& sp = pos->ShortPosition;
+				double price = GetLastestMarketData(id)->AskPrice1;
+				EasyInputMultiOrder(id.c_str(), sp->YdPosition, price); // 平昨空
+			}
+		}
+
+		// 等待所有订单完成
+		while (true) {
+			if (!WaitOrderList.empty()) {
+				cwSleep(1000);
+				GetPositionsAndActiveOrders(CurrentPosMap, WaitOrderList); // 更新
+			}
+			else {
+				std::cout << "订单全部成交&没有昨日订单" << std::endl;
+				break;
+			}
+		}
+	}
+}
