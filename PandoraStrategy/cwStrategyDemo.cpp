@@ -66,11 +66,6 @@ void cwStrategyDemo::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKi
 		cwPositionPtr pPos = nullptr;
 		std::map<cwActiveOrderKey, cwOrderPtr> WaitOrderList;
 		GetPositionsAndActiveOrders(pPriceData->InstrumentID, pPos, WaitOrderList);
-		std::cout << "[AutoClose] ³¢ÊÔÆ½²Ö: " << pPriceData->InstrumentID
-			<< " LongYd=" << pPos->LongPosition->YdPosition
-			<< " LongTd=" << pPos->LongPosition->TodayPosition
-			<< " ShortYd=" << pPos->ShortPosition->YdPosition
-			<< " ShortTd=" << pPos->ShortPosition->TodayPosition << std::endl;
 
 		if (pPos == nullptr)
 		{
