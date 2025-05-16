@@ -24,9 +24,6 @@ static std::map<std::string, int> countLimitCur;    // 合约对应交易数量
 static std::map<cwActiveOrderKey, cwOrderPtr> WaitOrderList; // 挂单列表（全局）
 static std::map<std::string, bool> instrumentCloseFlag;// 是否触发收盘平仓
 
-
-
-
 cwStrategyDemo::cwStrategyDemo()
 {
 }
