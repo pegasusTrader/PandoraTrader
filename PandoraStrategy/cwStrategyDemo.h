@@ -36,8 +36,8 @@ public:
 	void UpdateCtx(cwMarketDataPtr pPriceData);
 
 	// 开仓交易 条件
-	orderInfo StrategyPosOpen(std::string contract, orderInfo& order);
+	orderInfo StrategyPosOpen(cwMarketDataPtr, orderInfo& order);
 
 	// 平仓交易 条件
-	orderInfo StrategyPosClose(std::string contract, cwPositionPtr pPos, orderInfo& order);
+	orderInfo StrategyPosClose(cwMarketDataPtr pPriceData, cwPositionPtr pPos, orderInfo& order);
 };
