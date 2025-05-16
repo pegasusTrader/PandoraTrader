@@ -87,6 +87,7 @@ void cwStrategyDemo::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKi
 		{
 			std::cout << "持仓全部清空，" << WaitOrderList.size() << " 单剩余。" << std::endl;
 			cwSleep(5000);
+			return;
 		}
 		else                                          //有持仓&&有挂单
 		{
