@@ -79,58 +79,68 @@ void UpdateBarData(std::map<std::string, futInfMng>& tarFutInfo, barInfo& comBar
 }
 
 //// 开仓交易 条件
-orderInfo StrategyPosOpen(std::string contract, StrategyContext ctx, double stdLong, double stdShort) {
+orderInfo StrategyPosOpen(std::map<std::string, futInfMng>& tarFutInfo, barInfo& comBarInfo, std::map<std::string, int>& countLimitCur) {
+
+	// 计算标准差
+	// 计算 stdShort
+	std::vector<double> retBarSubsetShort(std::prev(ctx.retBar[currentContract].end(), ctx.tarContracInfo[contractIndex].Rs), ctx.retBar[currentContract].end());
+	double stdShort = SampleStd(retBarSubsetShort);
+
+	// 计算 stdLong
+	std::vector<double> retBarSubsetLong(std::prev(ctx.retBar[currentContract].end(), ctx.tarContracInfo[contractIndex].Rl), ctx.retBar[currentContract].end());
+	double stdLong = SampleStd(retBarSubsetLong);
+
 	orderInfo order;
-	int contractIndex = findIndex<futInfMng>(ctx.tarContracInfo, [contract](const futInfMng& item) {return item.contract == contract; });
-	auto& barQueue = ctx.queueBar[contract];
-	size_t rs = ctx.tarContracInfo[contractIndex].Rs;
+	auto& barQueue = comBarInfo.queueBar[contract];
+	size_t rs = tarFutInfo[contract].Rs;
 	// 最新价格 < 短期价格 && 短期波动率 > 长期波动率
 	if (barQueue.back() < barQueue[barQueue.size() - rs] && stdShort > stdLong) {
-		int tarVolume = ctx.countLimitCur[contract];
-		//std::string key = (codeTractCur)[contract] + "=" + Strformatdate::getCurrentDateString(); // 假设存在函数 getCurrentTimeString 获取当前时间的字符串表示
-		//(spePos)[key] = catePortInf{ "Long",{},barBook->LastPrice,{},tarVolume };
-		//char DireSlc = ctx.tarContracInfo[contractIndex].Fac == "Mom_std_bar_re_dym" ? '0' : '1'; // 假设 0 表示 Buy，1 表示 Sell
-		if (ctx.tarContracInfo[contractIndex].Fac == "Mom_std_bar_re_dym")
+		int tarVolume = countLimitCur[contract];
+		if (tarFutInfo[contract].Fac == "Mom_std_bar_re_dym")
 		{
-			order.volume = ctx.countLimitCur[contract];
+			order.volume = countLimitCur[contract];
 		}
 		else
 		{
-			order.volume = -ctx.countLimitCur[contract];
+			order.volume = -countLimitCur[contract];
 		}
 		order.szInstrumentID = contract;
-		order.price = ctx.barFlow[contract].back();
+		order.price = comBarInfo.barFlow[contract].back();
 
 	}
 	// 最新价格 > 短期价格 && 短期波动率 > 长期波动率
 	else if (barQueue.back() > barQueue[barQueue.size() - 500] && stdShort > stdLong) {
-		int tarVolume = ctx.countLimitCur[contract];
-		/*std::string key = (codeTractCur)[contract] + "=" + Strformatdate::getCurrentDateString();
-		(spePos)[key] = catePortInf{ "Short",{}, barBook->LastPrice, {},tarVolume };*/
-		//char DireSlc = (verDictCur)[contract].Fac == "Mom_std_bar_re_dym" ? '1' : '0';
-		if (ctx.tarContracInfo[contractIndex].Fac == "Mom_std_bar_re_dym")
+		int tarVolume = countLimitCur[contract];
+		if (tarFutInfo[contract].Fac == "Mom_std_bar_re_dym")
 		{
-			order.volume = ctx.countLimitCur[contract];
+			order.volume = countLimitCur[contract];
 		}
 		else
 		{
-			order.volume = -ctx.countLimitCur[contract];
+			order.volume = -countLimitCur[contract];
 		}
 		order.szInstrumentID = contract;
-		order.price = ctx.barFlow[contract].back();
+		order.price = comBarInfo.barFlow[contract].back();
 
 	}
 	return order;
 }
 
 //// 平仓交易 条件
-orderInfo StrategyPosClose(std::string contract, cwPositionPtr& pPosition, StrategyContext ctx, double stdLong, double stdShort) {
+orderInfo StrategyPosClose(std::map<std::string, futInfMng>& tarFutInfo, barInfo& comBarInfo, std::map<std::string, int>& countLimitCur) {
+	// 计算标准差
+	// 计算 stdShort
+	std::vector<double> retBarSubsetShort(std::prev(ctx.retBar[currentContract].end(), ctx.tarContracInfo[contractIndex].Rs), ctx.retBar[currentContract].end());
+	double stdShort = SampleStd(retBarSubsetShort);
+
+	// 计算 stdLong
+	std::vector<double> retBarSubsetLong(std::prev(ctx.retBar[currentContract].end(), ctx.tarContracInfo[contractIndex].Rl), ctx.retBar[currentContract].end());
+	double stdLong = SampleStd(retBarSubsetLong);
 	orderInfo order;
-	int contractIndex = findIndex<futInfMng>(ctx.tarContracInfo, [contract](const futInfMng& item) {return item.contract == contract; });
-	auto& barQueue = ctx.queueBar[contract];
-	size_t rs = ctx.tarContracInfo[contractIndex].Rs;
+	auto& barQueue = comBarInfo.queueBar[contract];
+	size_t rs = tarFutInfo[contract].Rs;
 	std::string FacDirection;
-	if (ctx.tarContracInfo[contractIndex].Fac == "Mom_std_bar_re_dym")
+	if (tarFutInfo[contract].Fac == "Mom_std_bar_re_dym")
 	{
 		if (pPosition->LongPosition->PosiDirection == CW_FTDC_D_Buy) {
 			std::string FacDirection = "Long";
@@ -153,7 +163,7 @@ orderInfo StrategyPosClose(std::string contract, cwPositionPtr& pPosition, Strat
 
 	//Fac方向 =买 && （最新价格 > 短期价格 || 短期波动率<=长期波动率）
 	if (FacDirection == "Long" && (barQueue.back() > barQueue[barQueue.size() - rs] || stdShort <= stdLong)) {
-		if (ctx.tarContracInfo[contractIndex].Fac == "Mom_std_bar_re_dym")
+		if (tarFutInfo[contract].Fac == "Mom_std_bar_re_dym")
 		{
 			order.volume = ctx.countLimitCur[contract];
 		}
@@ -167,7 +177,7 @@ orderInfo StrategyPosClose(std::string contract, cwPositionPtr& pPosition, Strat
 	//Fac方向 =卖 && （最新价格 < 短期价格 || 短期波动率<=长期波动率）
 	else if (FacDirection == "Short" && (barQueue.back() < barQueue[barQueue.size() - rs] || stdShort <= stdLong))
 	{
-		if (ctx.tarContracInfo[contractIndex].Fac == "Mom_std_bar_re_dym")
+		if (tarFutInfo[contract].Fac == "Mom_std_bar_re_dym")
 		{
 			order.volume = ctx.countLimitCur[contract];
 		}

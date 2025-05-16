@@ -19,7 +19,7 @@
 #include "utils.hpp"
 
 static std::map<std::string, futInfMng> tarFutInfo; // 策略上下文
-static barInfo comBarInfo;                          // 策略上下文
+static barInfo comBarInfo;                          // barINfo
 static std::map<std::string, int> countLimitCur;    // 合约对应交易数量
 
 cwStrategyDemo::cwStrategyDemo()
@@ -49,15 +49,6 @@ void cwStrategyDemo::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKi
 	if (IsNormalTradingTime(hour, minute))
 	{
 		UpdateCtx(pPriceData, ctx, currentContract);
-
-		// 计算标准差
-		// 计算 stdShort
-		std::vector<double> retBarSubsetShort(std::prev(ctx.retBar[currentContract].end(), ctx.tarContracInfo[contractIndex].Rs), ctx.retBar[currentContract].end());
-		double stdShort = SampleStd(retBarSubsetShort);
-
-		// 计算 stdLong
-		std::vector<double> retBarSubsetLong(std::prev(ctx.retBar[currentContract].end(), ctx.tarContracInfo[contractIndex].Rl), ctx.retBar[currentContract].end());
-		double stdLong = SampleStd(retBarSubsetLong);
 
 		std::map<std::string, cwPositionPtr> PositionMap;
 		GetPositions(PositionMap);
@@ -158,7 +149,8 @@ void cwStrategyDemo::OnRtnOrder(cwOrderPtr pOrder, cwOrderPtr pOriginOrder)
 	}
 	else if (pOrder->OrderStatus == '8') { // 已报
 		std::cout << "[AutoClose] 已报: " << pOrder->InstrumentID << std::endl;
-	}}
+	}
+}
 
 	void cwStrategyDemo::OnOrderCanceled(cwOrderPtr pOrder)
 	{

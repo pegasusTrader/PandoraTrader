@@ -23,7 +23,16 @@ struct orderInfo
 
 struct barInfo 
 {          
-	std::map<std::string, std::deque<double>> queueBar;  // 收盘价数据(已复权)
 	std::map<std::string, std::deque<double>> barFlow;  // 收盘价数据(未复权)
+	std::map<std::string, std::deque<double>> queueBar;  // 收盘价数据(已复权)
 	std::map<std::string, std::deque<double>> retBar;   // 收益率数据
+};
+
+struct StrategyContext {
+	std::string contract;
+	barInfo comBarInfo;
+	std::map<std::string, futInfMng> tarFutInfo;
+	double stdLong;
+	double stdShort;
+	std::map<std::string, int> countLimitCur;
 };
