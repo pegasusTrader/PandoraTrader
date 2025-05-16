@@ -78,12 +78,17 @@ void cwStrategyDemo::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKi
 			}
 			std::cout << "等待挂单成交，" << WaitOrderList.size() << " 单剩余。" << std::endl;
 		}
-		else if (pPos == 0)
+		else if (pPos != 0 && !WaitOrderList.empty()) //有持仓&&有挂单
 		{
-			std::cout << "持仓全部清空或没有持仓" << std::endl;
-			return;
+			std::cout << "持仓未清空，" << WaitOrderList.size() << " 单剩余。" << std::endl;
+			cwSleep(5000);
 		}
-		else //有持仓&&有挂单
+		else if (pPos == 0 && !WaitOrderList.empty()) //无持仓&&有挂单
+		{
+			std::cout << "持仓全部清空，" << WaitOrderList.size() << " 单剩余。" << std::endl;
+			cwSleep(5000);
+		}
+		else                                          //有持仓&&有挂单
 		{
 			std::cout << "持仓未清空，" << WaitOrderList.size() << " 单剩余。" << std::endl;
 			cwSleep(5000);
