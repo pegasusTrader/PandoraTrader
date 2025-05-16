@@ -33,11 +33,11 @@ public:
 	//当前时间
 	std::string m_strCurrentUpdateTime;
 	// sqlLiteHelp
-	void UpdateCtx(cwMarketDataPtr pPriceData,StrategyContext &ctx, std::string& currentContract);
-	
+	void UpdateCtx(cwMarketDataPtr pPriceData);
+
 	// 开仓交易 条件
-	orderInfo StrategyPosOpen(std::string contract, std::map<std::string, futInfMng>& tarFutInfo, barInfo& comBarInfo, std::map<std::string, int>& countLimitCur);
+	orderInfo StrategyPosOpen(std::string contract, orderInfo& order);
 
 	// 平仓交易 条件
-	orderInfo StrategyPosClose(std::string contract, cwPositionPtr pPos, std::map<std::string, futInfMng>& tarFutInfo, barInfo& comBarInfo, std::map<std::string, int>& countLimitCur);
+	orderInfo StrategyPosClose(std::string contract, cwPositionPtr pPos, orderInfo& order);
 };

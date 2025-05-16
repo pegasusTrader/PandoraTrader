@@ -111,7 +111,7 @@ void cwStrategyDemo::OnRtnTrade(cwTradePtr pTrade)
 
 void cwStrategyDemo::OnRtnOrder(cwOrderPtr pOrder, cwOrderPtr pOriginOrder)
 {
-	
+
 }
 
 void cwStrategyDemo::OnOrderCanceled(cwOrderPtr pOrder)
@@ -204,64 +204,64 @@ void cwStrategyDemo::UpdateBarData() {
 
 void cwStrategyDemo::AutoCloseAllPositionsLoop() {
 
-		//定义map，用于保存持仓信息 
-		std::map<std::string, cwPositionPtr> CurrentPosMap;
-		//定义map，用于保存挂单信息 
-		std::map<cwActiveOrderKey, cwOrderPtr> WaitOrderList;
+	//定义map，用于保存持仓信息 
+	std::map<std::string, cwPositionPtr> CurrentPosMap;
+	//定义map，用于保存挂单信息 
+	std::map<cwActiveOrderKey, cwOrderPtr> WaitOrderList;
 
+	while (true) {
+		GetPositionsAndActiveOrders(CurrentPosMap, WaitOrderList);
+		if (CurrentPosMap.empty()) {
+			std::cout << "没有持仓" << std::endl;
+			break;
+		}
+
+		for (auto& [id, pos] : CurrentPosMap) {
+			if (pos->LongPosition->TotalPosition > 0) {
+				auto& lp = pos->LongPosition;
+				double price = GetLastestMarketData(id)->BidPrice1;
+				EasyInputMultiOrder(id.c_str(), -lp->TotalPosition, price); // 平昨多
+			}
+			if (pos->ShortPosition->TotalPosition > 0) {
+				auto& sp = pos->ShortPosition;
+				double price = GetLastestMarketData(id)->AskPrice1;
+				EasyInputMultiOrder(id.c_str(), sp->TotalPosition, price); // 平昨空
+			}
+		}
+
+		// 等待所有订单完成
 		while (true) {
-			GetPositionsAndActiveOrders(CurrentPosMap, WaitOrderList);
-			if (CurrentPosMap.empty()) {
-				std::cout << "没有持仓" << std::endl;
+			if (!WaitOrderList.empty()) {
+				cwSleep(1000);
+				GetPositionsAndActiveOrders(CurrentPosMap, WaitOrderList); // 更新
+			}
+			else {
+				std::cout << "订单全部成交&没有昨日订单" << std::endl;
 				break;
-			}
-
-			for (auto& [id, pos] : CurrentPosMap) {
-				if (pos->LongPosition->TotalPosition > 0) {
-					auto& lp = pos->LongPosition;
-					double price = GetLastestMarketData(id)->BidPrice1;
-					EasyInputMultiOrder(id.c_str(), -lp->TotalPosition, price); // 平昨多
-				}
-				if (pos->ShortPosition->TotalPosition > 0) {
-					auto& sp = pos->ShortPosition;
-					double price = GetLastestMarketData(id)->AskPrice1;
-					EasyInputMultiOrder(id.c_str(), sp->TotalPosition, price); // 平昨空
-				}
-			}
-
-			// 等待所有订单完成
-			while (true) {
-				if (!WaitOrderList.empty()) {
-					cwSleep(1000);
-					GetPositionsAndActiveOrders(CurrentPosMap, WaitOrderList); // 更新
-				}
-				else {
-					std::cout << "订单全部成交&没有昨日订单" << std::endl;
-					break;
-				}
 			}
 		}
 	}
+}
 
-void cwStrategyDemo::UpdateCtx(cwMarketDataPtr pPriceData, StrategyContext & ctx, std::string & currentContract)
-	{
-		//barFolw更新
-		ctx.barFlow[currentContract].push_back(pPriceData->LastPrice);
-		//queueBar更新
-		int contractIndex = findIndex<futInfMng>(ctx.tarContracInfo, [currentContract](const futInfMng& item) {return item.contract == currentContract; });
-		ctx.queueBar[currentContract].push_back(pPriceData->LastPrice / ctx.tarContracInfo[contractIndex].accfactor);
-		//ret更新
-		double last = ctx.queueBar[currentContract][ctx.queueBar[currentContract].size() - 1];
-		double secondLast = ctx.queueBar[currentContract][ctx.queueBar[currentContract].size() - 2];
-		ctx.retBar[currentContract].push_back(last / secondLast - 1);
-		//删除首位元素
-		ctx.barFlow[currentContract].pop_front();
-		ctx.queueBar[currentContract].pop_front();
-		ctx.retBar[currentContract].pop_front();
-	}
+void cwStrategyDemo::UpdateCtx(cwMarketDataPtr pPriceData)
+{
+	//barFolw更新
+	comBarInfo.barFlow[pPriceData->InstrumentID].push_back(pPriceData->LastPrice);
+	//queueBar更新
+
+	comBarInfo.queueBar[pPriceData->InstrumentID].push_back(pPriceData->LastPrice / tarFutInfo[pPriceData->InstrumentID].accfactor);
+	//ret更新
+	double last = comBarInfo.queueBar[pPriceData->InstrumentID][comBarInfo.queueBar[pPriceData->InstrumentID].size() - 1];
+	double secondLast = comBarInfo.queueBar[pPriceData->InstrumentID][comBarInfo.queueBar[pPriceData->InstrumentID].size() - 2];
+	comBarInfo.retBar[pPriceData->InstrumentID].push_back(last / secondLast - 1);
+	//删除首位元素
+	comBarInfo.barFlow[pPriceData->InstrumentID].pop_front();
+	comBarInfo.queueBar[pPriceData->InstrumentID].pop_front();
+	comBarInfo.retBar[pPriceData->InstrumentID].pop_front();
+}
 
 //// 开仓交易 条件
-orderInfo cwStrategyDemo::StrategyPosOpen(std::string contract, std::map<std::string, futInfMng>& tarFutInfo, barInfo& comBarInfo, std::map<std::string, int>& countLimitCur) {
+orderInfo cwStrategyDemo::StrategyPosOpen(std::string contract, orderInfo& order) {
 
 	// 计算标准差
 	// 计算 stdShort
@@ -273,10 +273,9 @@ orderInfo cwStrategyDemo::StrategyPosOpen(std::string contract, std::map<std::st
 	double stdLong = SampleStd(retBarSubsetLong);
 
 	orderInfo order;
-	auto& barQueue = comBarInfo.queueBar[contract];
-	size_t rs = tarFutInfo[contract].Rs;
 	// 最新价格 < 短期价格 && 短期波动率 > 长期波动率
-	if (barQueue.back() < barQueue[barQueue.size() - rs] && stdShort > stdLong) {
+	auto& barQueue = comBarInfo.queueBar[contract];
+	if (barQueue.back() < barQueue[barQueue.size() - tarFutInfo[contract].Rs] && stdShort > stdLong) {
 		int tarVolume = countLimitCur[contract];
 		if (tarFutInfo[contract].Fac == "Mom_std_bar_re_dym")
 		{
@@ -309,7 +308,7 @@ orderInfo cwStrategyDemo::StrategyPosOpen(std::string contract, std::map<std::st
 }
 
 //// 平仓交易 条件
-orderInfo cwStrategyDemo::StrategyPosClose(std::string contract, cwPositionPtr pPos, std::map<std::string, futInfMng>& tarFutInfo, barInfo& comBarInfo, std::map<std::string, int>& countLimitCur) {
+orderInfo cwStrategyDemo::StrategyPosClose(std::string contract, cwPositionPtr pPos, orderInfo& order) {
 	// 计算标准差
 // 计算 stdShort
 	std::vector<double> retBarSubsetShort(std::prev(comBarInfo.retBar[contract].end(), tarFutInfo[contract].Rs), comBarInfo.retBar[contract].end());
