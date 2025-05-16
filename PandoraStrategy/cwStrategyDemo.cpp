@@ -21,9 +21,7 @@
 static std::map<std::string, futInfMng> tarFutInfo; // 策略上下文
 static barInfo comBarInfo;                          // barINfo
 static std::map<std::string, int> countLimitCur;    // 合约对应交易数量
-static std::set<std::string> pendingCloseContracts; // 记录正在清仓的合约
-static std::set<std::string> ClearingInstruments;
-static std::map<cwActiveOrderKey, cwOrderPtr> WaitOrderList;
+static std::map<cwActiveOrderKey, cwOrderPtr> WaitOrderList; // 挂单列表（全局）
 
 
 
@@ -106,6 +104,41 @@ void cwStrategyDemo::OnRtnTrade(cwTradePtr pTrade)
 
 void cwStrategyDemo::OnRtnOrder(cwOrderPtr pOrder, cwOrderPtr pOriginOrder)
 {
+	if (pOrder == nullptr) return;
+	// 构造挂单的 key
+	cwActiveOrderKey key(pOrder->OrderRef, pOrder->InstrumentID);
+
+	// 我们只关心在 WaitOrderList 中追踪的挂单
+	auto it = WaitOrderList.find(key);
+	if (it == WaitOrderList.end()) return;
+
+
+	auto status = pOrder->OrderStatus;// 报单状态（主要判断是否结束）
+	auto submitStatus = pOrder->OrderSubmitStatus;// 报单提交状态（主要判断是否结束）
+
+	if (status == CW_FTDC_OST_AllTraded ||   // 全部成交
+		status == CW_FTDC_OST_Canceled)    // 撤单     
+	{
+		// 日志记录
+		std::cout << "Order Finished - InstrumentID: " << pOrder->InstrumentID
+			<< ", Ref: " << pOrder->OrderRef
+			<< ", Status: " << status << std::endl;
+
+		// 移除该挂单
+		WaitOrderList.erase(it);
+	}
+	else if (submitStatus == CW_FTDC_OSS_InsertRejected)// 拒单
+	{
+		// 日志记录
+		std::cout << "Order Finished - InstrumentID: " << pOrder->InstrumentID
+			<< ", Ref: " << pOrder->OrderRef
+			<< ", Status: " << submitStatus << std::endl;
+	}
+	else {
+		// 可选：你也可以更新该挂单的信息（部分成交数量等）
+	}
+
+
 
 }
 
