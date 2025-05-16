@@ -79,15 +79,15 @@ void UpdateBarData(std::map<std::string, futInfMng>& tarFutInfo, barInfo& comBar
 }
 
 //// 开仓交易 条件
-orderInfo StrategyPosOpen(std::map<std::string, futInfMng>& tarFutInfo, barInfo& comBarInfo, std::map<std::string, int>& countLimitCur) {
+orderInfo StrategyPosOpen(std::string contract, std::map<std::string, futInfMng>& tarFutInfo, barInfo& comBarInfo, std::map<std::string, int>& countLimitCur) {
 
 	// 计算标准差
 	// 计算 stdShort
-	std::vector<double> retBarSubsetShort(std::prev(ctx.retBar[currentContract].end(), ctx.tarContracInfo[contractIndex].Rs), ctx.retBar[currentContract].end());
+	std::vector<double> retBarSubsetShort(std::prev(comBarInfo.retBar[contract].end(), tarFutInfo[contract].Rs), comBarInfo.retBar[contract].end());
 	double stdShort = SampleStd(retBarSubsetShort);
 
 	// 计算 stdLong
-	std::vector<double> retBarSubsetLong(std::prev(ctx.retBar[currentContract].end(), ctx.tarContracInfo[contractIndex].Rl), ctx.retBar[currentContract].end());
+	std::vector<double> retBarSubsetLong(std::prev(comBarInfo.retBar[contract].end(), tarFutInfo[contract].Rl), comBarInfo.retBar[contract].end());
 	double stdLong = SampleStd(retBarSubsetLong);
 
 	orderInfo order;
@@ -127,14 +127,14 @@ orderInfo StrategyPosOpen(std::map<std::string, futInfMng>& tarFutInfo, barInfo&
 }
 
 //// 平仓交易 条件
-orderInfo StrategyPosClose(std::map<std::string, futInfMng>& tarFutInfo, barInfo& comBarInfo, std::map<std::string, int>& countLimitCur) {
+orderInfo StrategyPosClose(std::string contract, cwPositionPtr pPos, std::map<std::string, futInfMng>& tarFutInfo, barInfo& comBarInfo, std::map<std::string, int>& countLimitCur) {
 	// 计算标准差
-	// 计算 stdShort
-	std::vector<double> retBarSubsetShort(std::prev(ctx.retBar[currentContract].end(), ctx.tarContracInfo[contractIndex].Rs), ctx.retBar[currentContract].end());
+// 计算 stdShort
+	std::vector<double> retBarSubsetShort(std::prev(comBarInfo.retBar[contract].end(), tarFutInfo[contract].Rs), comBarInfo.retBar[contract].end());
 	double stdShort = SampleStd(retBarSubsetShort);
 
 	// 计算 stdLong
-	std::vector<double> retBarSubsetLong(std::prev(ctx.retBar[currentContract].end(), ctx.tarContracInfo[contractIndex].Rl), ctx.retBar[currentContract].end());
+	std::vector<double> retBarSubsetLong(std::prev(comBarInfo.retBar[contract].end(), tarFutInfo[contract].Rs), comBarInfo.retBar[contract].end());
 	double stdLong = SampleStd(retBarSubsetLong);
 	orderInfo order;
 	auto& barQueue = comBarInfo.queueBar[contract];
@@ -142,20 +142,20 @@ orderInfo StrategyPosClose(std::map<std::string, futInfMng>& tarFutInfo, barInfo
 	std::string FacDirection;
 	if (tarFutInfo[contract].Fac == "Mom_std_bar_re_dym")
 	{
-		if (pPosition->LongPosition->PosiDirection == CW_FTDC_D_Buy) {
+		if (pPos->LongPosition->PosiDirection == CW_FTDC_D_Buy) {
 			std::string FacDirection = "Long";
 		}
-		else if (pPosition->ShortPosition->PosiDirection == CW_FTDC_D_Sell)
+		else if (pPos->ShortPosition->PosiDirection == CW_FTDC_D_Sell)
 		{
 			std::string FacDirection = "Short";
 		}
 	}
 	else
 	{
-		if (pPosition->LongPosition->PosiDirection == CW_FTDC_D_Buy) {
+		if (pPos->LongPosition->PosiDirection == CW_FTDC_D_Buy) {
 			std::string FacDirection = "Short";
 		}
-		else if (pPosition->ShortPosition->PosiDirection == CW_FTDC_D_Sell)
+		else if (pPos->ShortPosition->PosiDirection == CW_FTDC_D_Sell)
 		{
 			std::string FacDirection = "Long";
 		}
@@ -165,28 +165,28 @@ orderInfo StrategyPosClose(std::map<std::string, futInfMng>& tarFutInfo, barInfo
 	if (FacDirection == "Long" && (barQueue.back() > barQueue[barQueue.size() - rs] || stdShort <= stdLong)) {
 		if (tarFutInfo[contract].Fac == "Mom_std_bar_re_dym")
 		{
-			order.volume = ctx.countLimitCur[contract];
+			order.volume = countLimitCur[contract];
 		}
 		else
 		{
-			order.volume = -ctx.countLimitCur[contract];
+			order.volume = -countLimitCur[contract];
 		}
 		order.szInstrumentID = contract;
-		order.price = ctx.barFlow[contract].back();
+		order.price = comBarInfo.barFlow[contract].back();
 	}
 	//Fac方向 =卖 && （最新价格 < 短期价格 || 短期波动率<=长期波动率）
 	else if (FacDirection == "Short" && (barQueue.back() < barQueue[barQueue.size() - rs] || stdShort <= stdLong))
 	{
 		if (tarFutInfo[contract].Fac == "Mom_std_bar_re_dym")
 		{
-			order.volume = ctx.countLimitCur[contract];
+			order.volume = countLimitCur[contract];
 		}
 		else
 		{
-			order.volume = -ctx.countLimitCur[contract];
+			order.volume = -countLimitCur[contract];
 		}
 		order.szInstrumentID = contract;
-		order.price = ctx.barFlow[contract].back();
+		order.price = comBarInfo.barFlow[contract].back();
 	}
 	return order;
 }
