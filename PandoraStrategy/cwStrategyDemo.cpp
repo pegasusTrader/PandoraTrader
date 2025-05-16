@@ -22,6 +22,9 @@ static std::map<std::string, futInfMng> tarFutInfo; // 策略上下文
 static barInfo comBarInfo;                          // barINfo
 static std::map<std::string, int> countLimitCur;    // 合约对应交易数量
 static std::set<std::string> pendingCloseContracts; // 记录正在清仓的合约
+static std::set<std::string> ClearingInstruments;
+static std::map<cwActiveOrderKey, cwOrderPtr> WaitOrderList;
+
 
 
 cwStrategyDemo::cwStrategyDemo()
@@ -63,13 +66,11 @@ void cwStrategyDemo::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKi
 	}
 	else if (IsClosingTime(hour, minute))
 	{
-		if (pendingCloseContracts.count(pPriceData->InstrumentID)) return; // 已在清仓中，跳过重复发单
-
 		cwPositionPtr pPos = nullptr;
 		std::map<cwActiveOrderKey, cwOrderPtr> WaitOrderList;
-		GetPositionsAndActiveOrders(pPriceData->InstrumentID, pPos, WaitOrderList);
+		GetPositionsAndActiveOrders(pPriceData->InstrumentID, pPos, WaitOrderList); // 获取指定持仓和挂单列表
 
-		if (pPos == nullptr) { std::cout << "没有持仓" << std::endl; return; } // 没有持仓，跳过
+		if (!WaitOrderList.empty() || pPos == 0) { return; };                       // 指定合约有活跃订单或者指定合约没有持仓，跳过重复发单
 
 		bool hasClose = false;
 		if (pPos->LongPosition->TotalPosition > 0) {
@@ -77,11 +78,10 @@ void cwStrategyDemo::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKi
 			hasClose = true;
 		}
 		if (pPos->ShortPosition->TotalPosition > 0) {
-			EasyInputMultiOrder(pPriceData->InstrumentID, pPos->ShortPosition->TotalPosition, pPriceData->BidPrice1);
+			EasyInputMultiOrder(pPriceData->InstrumentID, pPos->ShortPosition->TotalPosition, pPriceData->AskPrice1);
 			hasClose = true;
 		}
 		if (hasClose) {
-			pendingCloseContracts.insert(pPriceData->InstrumentID);
 			std::cout << "[Close] 发出平仓指令: " << pPriceData->InstrumentID << std::endl;
 		}
 	}
@@ -204,36 +204,39 @@ void cwStrategyDemo::AutoCloseAllPositionsLoop() {
 	//定义map，用于保存挂单信息 
 	std::map<cwActiveOrderKey, cwOrderPtr> WaitOrderList;
 
-	while (true) {
+	int waitCount = 0;
+	const int maxWait = 60;
+
+	while (true)
+	{
 		GetPositionsAndActiveOrders(CurrentPosMap, WaitOrderList);
-		if (CurrentPosMap.empty()) {
-			std::cout << "没有持仓" << std::endl;
+		if (!CurrentPosMap.empty() && WaitOrderList.empty())//有持仓&&无挂单 执行逻辑
+		{
+			for (auto& [id, pos] : CurrentPosMap) {
+				auto md = GetLastestMarketData(id);
+				if (!md) continue;
+
+				if (pos->LongPosition->TotalPosition > 0) {
+					double price = md->BidPrice1;
+					if (price > 1e-6) { EasyInputMultiOrder(id.c_str(), -pos->LongPosition->TotalPosition, price); }// 平昨多
+
+				}
+				if (pos->ShortPosition->TotalPosition > 0) {
+					double price = md->AskPrice1;
+					if (price > 1e-6) { EasyInputMultiOrder(id.c_str(), pos->ShortPosition->TotalPosition, price); }// 平昨空
+				}
+			}
+		}
+		else if (CurrentPosMap.empty())
+		{
+			std::cout << "持仓全部清空或没有持仓" << std::endl;
 			break;
 		}
-
-		for (auto& [id, pos] : CurrentPosMap) {
-			if (pos->LongPosition->TotalPosition > 0) {
-				auto& lp = pos->LongPosition;
-				double price = GetLastestMarketData(id)->BidPrice1;
-				EasyInputMultiOrder(id.c_str(), -lp->TotalPosition, price); // 平昨多
-			}
-			if (pos->ShortPosition->TotalPosition > 0) {
-				auto& sp = pos->ShortPosition;
-				double price = GetLastestMarketData(id)->AskPrice1;
-				EasyInputMultiOrder(id.c_str(), sp->TotalPosition, price); // 平昨空
-			}
-		}
-
-		// 等待所有订单完成
-		while (true) {
-			if (!WaitOrderList.empty()) {
-				cwSleep(1000);
-				GetPositionsAndActiveOrders(CurrentPosMap, WaitOrderList); // 更新
-			}
-			else {
-				std::cout << "订单全部成交&没有昨日订单" << std::endl;
-				break;
-			}
+		else
+		{
+			std::cout << "等待挂单成交，" << WaitOrderList.size() << " 单剩余。" << std::endl;
+			cwSleep(5000);
+			continue;
 		}
 	}
 }
