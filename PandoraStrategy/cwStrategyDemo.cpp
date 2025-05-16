@@ -25,6 +25,7 @@ static std::map<cwActiveOrderKey, cwOrderPtr> WaitOrderList; // 挂单列表（全局）
 
 
 
+
 cwStrategyDemo::cwStrategyDemo()
 {
 }
@@ -65,28 +66,25 @@ void cwStrategyDemo::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKi
 	else if (IsClosingTime(hour, minute))
 	{
 		cwPositionPtr pPos = nullptr;
-		std::map<cwActiveOrderKey, cwOrderPtr> WaitOrderList;
 		GetPositionsAndActiveOrders(pPriceData->InstrumentID, pPos, WaitOrderList); // 获取指定持仓和挂单列表
 
-		if (pPos != 0 && WaitOrderList.empty())  //有持仓&&无挂单 执行逻辑
+		if (!pPos && WaitOrderList.empty())  //有持仓&&无挂单 执行逻辑
 		{
-			if (pPos->LongPosition->TotalPosition > 0) {
-				EasyInputMultiOrder(pPriceData->InstrumentID, -pPos->LongPosition->TotalPosition, pPriceData->BidPrice1);
-			}
-			if (pPos->ShortPosition->TotalPosition > 0) {
-				EasyInputMultiOrder(pPriceData->InstrumentID, pPos->ShortPosition->TotalPosition, pPriceData->AskPrice1);
-			}
-			std::cout << "等待挂单成交，" << WaitOrderList.size() << " 单剩余。" << std::endl;
+			std::cout << "准备平仓，无挂单，开始下单..." << std::endl;
+			double bid = pPriceData->BidPrice1;
+			double ask = pPriceData->AskPrice1;
+			if (pPos->LongPosition->TotalPosition > 0 && bid > 1e-6) { EasyInputMultiOrder(pPriceData->InstrumentID, -pPos->LongPosition->TotalPosition, bid); }
+			if (pPos->ShortPosition->TotalPosition > 0 && ask > 1e-6) { EasyInputMultiOrder(pPriceData->InstrumentID, pPos->ShortPosition->TotalPosition, ask); }
 		}
-		else if (pPos == 0 && WaitOrderList.empty()) //无持仓&&无挂单
+		else if (pPos && WaitOrderList.empty()) //无持仓&&无挂单
 		{
-			std::cout << "持仓全部清空，" << WaitOrderList.size() << " 单剩余。" << std::endl;
-			cwSleep(5000);
+			std::cout << "持仓已全部清空。" << std::endl;
 			return;
 		}
 		else //有持仓||有挂单
 		{
 			std::cout << "持仓未清空，" << WaitOrderList.size() << " 单剩余。" << std::endl;
+			std::cout << "等待挂单成交中..." << std::endl;
 			cwSleep(5000);
 		}
 	}
@@ -241,8 +239,6 @@ void cwStrategyDemo::AutoCloseAllPositionsLoop() {
 
 	//定义map，用于保存持仓信息 
 	std::map<std::string, cwPositionPtr> CurrentPosMap;
-	//定义map，用于保存挂单信息 
-	std::map<cwActiveOrderKey, cwOrderPtr> WaitOrderList;
 
 	int waitCount = 0;
 	const int maxWait = 60;
