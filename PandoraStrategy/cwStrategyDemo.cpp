@@ -266,14 +266,20 @@ void cwStrategyDemo::AutoCloseAllPositionsLoop() {
 				}
 			}
 		}
-		else if (CurrentPosMap.empty())
+		else if (CurrentPosMap.empty() && WaitOrderList.empty()) //无持仓&&无挂单
 		{
-			std::cout << "持仓全部清空或没有持仓" << std::endl;
+			std::cout << "没有持仓和挂单" << std::endl;
 			break;
 		}
-		else
+		else if (CurrentPosMap.empty() && !WaitOrderList.empty()) //无持仓&&有挂单
 		{
-			std::cout << "等待挂单成交，" << WaitOrderList.size() << " 单剩余。" << std::endl;
+			std::cout << "没有持仓，" << WaitOrderList.size() << " 单剩余。" << std::endl;
+			cwSleep(5000);
+			continue;
+		}
+		else  //有持仓&&有挂单
+		{
+			std::cout << "持仓未清空，" << WaitOrderList.size() << " 单剩余。" << std::endl;
 			cwSleep(5000);
 			continue;
 		}
