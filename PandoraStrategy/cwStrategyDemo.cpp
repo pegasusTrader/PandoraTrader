@@ -22,6 +22,7 @@ static std::map<std::string, futInfMng> tarFutInfo; // 策略上下文
 static barInfo comBarInfo;                          // barINfo
 static std::map<std::string, int> countLimitCur;    // 合约对应交易数量
 static std::map<cwActiveOrderKey, cwOrderPtr> WaitOrderList; // 挂单列表（全局）
+static std::map<std::string, bool> instrumentCloseFlag;// 是否触发收盘平仓
 
 
 
@@ -63,12 +64,12 @@ void cwStrategyDemo::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKi
 			StrategyPosClose(pPriceData, PositionMap[pPriceData->InstrumentID], order);
 		}
 	}
-	else if (IsClosingTime(hour, minute))
+	else if (IsClosingTime(hour, minute) && !instrumentCloseFlag[pPriceData->InstrumentID])
 	{
 		cwPositionPtr pPos = nullptr;
 		GetPositionsAndActiveOrders(pPriceData->InstrumentID, pPos, WaitOrderList); // 获取指定持仓和挂单列表
 
-		if (!pPos && WaitOrderList.empty())  //有持仓&&无挂单 执行逻辑
+		if (pPos && WaitOrderList.empty())  //有持仓&&无挂单 执行逻辑
 		{
 			std::cout << "准备平仓，无挂单，开始下单..." << std::endl;
 			double bid = pPriceData->BidPrice1;
@@ -76,9 +77,10 @@ void cwStrategyDemo::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKi
 			if (pPos->LongPosition->TotalPosition > 0 && bid > 1e-6) { EasyInputMultiOrder(pPriceData->InstrumentID, -pPos->LongPosition->TotalPosition, bid); }
 			if (pPos->ShortPosition->TotalPosition > 0 && ask > 1e-6) { EasyInputMultiOrder(pPriceData->InstrumentID, pPos->ShortPosition->TotalPosition, ask); }
 		}
-		else if (pPos && WaitOrderList.empty()) //无持仓&&无挂单
+		else if (!pPos && WaitOrderList.empty()) //无持仓&&无挂单
 		{
 			std::cout << "持仓已全部清空。" << std::endl;
+			instrumentCloseFlag[pPriceData->InstrumentID] = true;
 			return;
 		}
 		else //有持仓||有挂单
@@ -172,7 +174,8 @@ void cwStrategyDemo::UpdateBarData() {
 
 	//创建数据库连接
 	sqlite3* mydb = OpenDatabase("dm.db");
-	if (mydb) {
+	if (mydb) 
+	{
 		std::string tar_contract_sql = "SELECT * FROM futureinfo;";
 		sqlite3_stmt* stmt = nullptr;
 		if (sqlite3_prepare_v2(mydb, tar_contract_sql.c_str(), -1, &stmt, nullptr) == SQLITE_OK) {
@@ -233,6 +236,7 @@ void cwStrategyDemo::UpdateBarData() {
 		}
 		CloseDatabase(mydb);  // 最后关闭数据库连接
 	}
+	for (const auto& futInfMng : tarFutInfo) { instrumentCloseFlag[futInfMng.first] = false; }
 }
 
 void cwStrategyDemo::AutoCloseAllPositionsLoop() {
