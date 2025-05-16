@@ -1,4 +1,4 @@
-#include "cwStrategyDemo.h"
+ï»¿#include "cwStrategyDemo.h"
 #include <chrono>
 #include <ctime>
 #include <iomanip>
@@ -18,11 +18,11 @@
 #include "IndayStrategy.hpp"
 #include "utils.hpp"
 
-static std::map<std::string, futInfMng> tarFutInfo; // ²ßÂÔÉÏÏÂÎÄ
+static std::map<std::string, futInfMng> tarFutInfo; // ç­–ç•¥ä¸Šä¸‹æ–‡
 static barInfo comBarInfo;                          // barINfo
-static std::map<std::string, int> countLimitCur;    // ºÏÔ¼¶ÔÓ¦½»Ò×ÊıÁ¿
-static std::map<cwActiveOrderKey, cwOrderPtr> WaitOrderList; // ¹Òµ¥ÁĞ±í£¨È«¾Ö£©
-static std::map<std::string, bool> instrumentCloseFlag;// ÊÇ·ñ´¥·¢ÊÕÅÌÆ½²Ö
+static std::map<std::string, int> countLimitCur;    // åˆçº¦å¯¹åº”äº¤æ˜“æ•°é‡
+static std::map<cwActiveOrderKey, cwOrderPtr> WaitOrderList; // æŒ‚å•åˆ—è¡¨ï¼ˆå…¨å±€ï¼‰
+static std::map<std::string, bool> instrumentCloseFlag;// æ˜¯å¦è§¦å‘æ”¶ç›˜å¹³ä»“
 
 
 
@@ -67,26 +67,26 @@ void cwStrategyDemo::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKi
 	else if (IsClosingTime(hour, minute) && !instrumentCloseFlag[pPriceData->InstrumentID])
 	{
 		cwPositionPtr pPos = nullptr;
-		GetPositionsAndActiveOrders(pPriceData->InstrumentID, pPos, WaitOrderList); // »ñÈ¡Ö¸¶¨³Ö²ÖºÍ¹Òµ¥ÁĞ±í
+		GetPositionsAndActiveOrders(pPriceData->InstrumentID, pPos, WaitOrderList); // è·å–æŒ‡å®šæŒä»“å’ŒæŒ‚å•åˆ—è¡¨
 
-		if (pPos && WaitOrderList.empty())  //ÓĞ³Ö²Ö&&ÎŞ¹Òµ¥ Ö´ĞĞÂß¼­
+		if (pPos && WaitOrderList.empty())  //æœ‰æŒä»“&&æ— æŒ‚å• æ‰§è¡Œé€»è¾‘
 		{
-			std::cout << "×¼±¸Æ½²Ö£¬ÎŞ¹Òµ¥£¬¿ªÊ¼ÏÂµ¥..." << std::endl;
+			std::cout << "å‡†å¤‡å¹³ä»“ï¼Œæ— æŒ‚å•ï¼Œå¼€å§‹ä¸‹å•..." << std::endl;
 			double bid = pPriceData->BidPrice1;
 			double ask = pPriceData->AskPrice1;
 			if (pPos->LongPosition->TotalPosition > 0 && bid > 1e-6) { EasyInputMultiOrder(pPriceData->InstrumentID, -pPos->LongPosition->TotalPosition, bid); }
 			if (pPos->ShortPosition->TotalPosition > 0 && ask > 1e-6) { EasyInputMultiOrder(pPriceData->InstrumentID, pPos->ShortPosition->TotalPosition, ask); }
-			std::cout << "[" << pPriceData->InstrumentID << "] Çå²ÖÖ¸ÁîÒÑ·¢ËÍ¡£" << std::endl;
+			std::cout << "[" << pPriceData->InstrumentID << "] æ¸…ä»“æŒ‡ä»¤å·²å‘é€ã€‚" << std::endl;
 		}
-		else if (!pPos && WaitOrderList.empty()) //ÎŞ³Ö²Ö&&ÎŞ¹Òµ¥
+		else if (!pPos && WaitOrderList.empty()) //æ— æŒä»“&&æ— æŒ‚å•
 		{
-			std::cout << "[" << pPriceData->InstrumentID << "] ³Ö²ÖÇå¿ÕÍê±Ï¡£" << std::endl;
+			std::cout << "[" << pPriceData->InstrumentID << "] æŒä»“æ¸…ç©ºå®Œæ¯•ã€‚" << std::endl;
 			instrumentCloseFlag[pPriceData->InstrumentID] = true;
 			return;
 		}
-		else //ÓĞ³Ö²Ö||ÓĞ¹Òµ¥
+		else //æœ‰æŒä»“||æœ‰æŒ‚å•
 		{
-			std::cout << "[" << pPriceData->InstrumentID << "] µÈ´ı¹Òµ¥³É½»ÖĞ£¬¹Òµ¥Êı£º" << WaitOrderList.size() << std::endl;
+			std::cout << "[" << pPriceData->InstrumentID << "] ç­‰å¾…æŒ‚å•æˆäº¤ä¸­ï¼ŒæŒ‚å•æ•°ï¼š" << WaitOrderList.size() << std::endl;
 			cwSleep(5000);
 		}
 	}
@@ -112,37 +112,37 @@ void cwStrategyDemo::OnRtnTrade(cwTradePtr pTrade)
 void cwStrategyDemo::OnRtnOrder(cwOrderPtr pOrder, cwOrderPtr pOriginOrder)
 {
 	if (pOrder == nullptr) return;
-	// ¹¹Ôì¹Òµ¥µÄ key
+	// æ„é€ æŒ‚å•çš„ key
 	cwActiveOrderKey key(pOrder->OrderRef, pOrder->InstrumentID);
 
-	// ÎÒÃÇÖ»¹ØĞÄÔÚ WaitOrderList ÖĞ×·×ÙµÄ¹Òµ¥
+	// æˆ‘ä»¬åªå…³å¿ƒåœ¨ WaitOrderList ä¸­è¿½è¸ªçš„æŒ‚å•
 	auto it = WaitOrderList.find(key);
 	if (it == WaitOrderList.end()) return;
 
 
-	auto status = pOrder->OrderStatus;// ±¨µ¥×´Ì¬£¨Ö÷ÒªÅĞ¶ÏÊÇ·ñ½áÊø£©
-	auto submitStatus = pOrder->OrderSubmitStatus;// ±¨µ¥Ìá½»×´Ì¬£¨Ö÷ÒªÅĞ¶ÏÊÇ·ñ½áÊø£©
+	auto status = pOrder->OrderStatus;// æŠ¥å•çŠ¶æ€ï¼ˆä¸»è¦åˆ¤æ–­æ˜¯å¦ç»“æŸï¼‰
+	auto submitStatus = pOrder->OrderSubmitStatus;// æŠ¥å•æäº¤çŠ¶æ€ï¼ˆä¸»è¦åˆ¤æ–­æ˜¯å¦ç»“æŸï¼‰
 
-	if (status == CW_FTDC_OST_AllTraded ||   // È«²¿³É½»
-		status == CW_FTDC_OST_Canceled)    // ³·µ¥     
+	if (status == CW_FTDC_OST_AllTraded ||   // å…¨éƒ¨æˆäº¤
+		status == CW_FTDC_OST_Canceled)    // æ’¤å•     
 	{
-		// ÈÕÖ¾¼ÇÂ¼
+		// æ—¥å¿—è®°å½•
 		std::cout << "Order Finished - InstrumentID: " << pOrder->InstrumentID
 			<< ", Ref: " << pOrder->OrderRef
 			<< ", Status: " << status << std::endl;
 
-		// ÒÆ³ı¸Ã¹Òµ¥
+		// ç§»é™¤è¯¥æŒ‚å•
 		WaitOrderList.erase(it);
 	}
-	else if (submitStatus == CW_FTDC_OSS_InsertRejected)// ¾Üµ¥
+	else if (submitStatus == CW_FTDC_OSS_InsertRejected)// æ‹’å•
 	{
-		// ÈÕÖ¾¼ÇÂ¼
+		// æ—¥å¿—è®°å½•
 		std::cout << "Order Finished - InstrumentID: " << pOrder->InstrumentID
 			<< ", Ref: " << pOrder->OrderRef
 			<< ", Status: " << submitStatus << std::endl;
 	}
 	else {
-		// ¿ÉÑ¡£ºÄãÒ²¿ÉÒÔ¸üĞÂ¸Ã¹Òµ¥µÄĞÅÏ¢£¨²¿·Ö³É½»ÊıÁ¿µÈ£©
+		// å¯é€‰ï¼šä½ ä¹Ÿå¯ä»¥æ›´æ–°è¯¥æŒ‚å•çš„ä¿¡æ¯ï¼ˆéƒ¨åˆ†æˆäº¤æ•°é‡ç­‰ï¼‰
 	}
 
 
@@ -151,9 +151,9 @@ void cwStrategyDemo::OnRtnOrder(cwOrderPtr pOrder, cwOrderPtr pOriginOrder)
 
 void cwStrategyDemo::OnOrderCanceled(cwOrderPtr pOrder)
 {
-	if (pOrder->OrderStatus == '5') { // ¾Üµ¥
-		std::cout << "[AutoClose] ¾Üµ¥: " << pOrder->InstrumentID << std::endl;
-		//pendingContracts.erase(pOrder->InstrumentID); // Ç¿ÖÆÒÆ³ı£¬±ÜÃâ×èÈû
+	if (pOrder->OrderStatus == '5') { // æ‹’å•
+		std::cout << "[AutoClose] æ‹’å•: " << pOrder->InstrumentID << std::endl;
+		//pendingContracts.erase(pOrder->InstrumentID); // å¼ºåˆ¶ç§»é™¤ï¼Œé¿å…é˜»å¡
 	}
 
 }
@@ -172,21 +172,21 @@ void cwStrategyDemo::OnReady()
 
 void cwStrategyDemo::UpdateBarData() {
 
-	//´´½¨Êı¾İ¿âÁ¬½Ó
+	//åˆ›å»ºæ•°æ®åº“è¿æ¥
 	sqlite3* mydb = OpenDatabase("dm.db");
-	if (mydb) 
+	if (mydb)
 	{
 		std::string tar_contract_sql = "SELECT * FROM futureinfo;";
 		sqlite3_stmt* stmt = nullptr;
 		if (sqlite3_prepare_v2(mydb, tar_contract_sql.c_str(), -1, &stmt, nullptr) == SQLITE_OK) {
 			while (sqlite3_step(stmt) == SQLITE_ROW) {
-				std::string contract = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));//Ä¿±êºÏÔ¼
-				int multiple = sqlite3_column_int(stmt, 1);//ºÏÔ¼³ËÊı
+				std::string contract = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));//ç›®æ ‡åˆçº¦
+				int multiple = sqlite3_column_int(stmt, 1);//åˆçº¦ä¹˜æ•°
 				std::string Fac = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));//Fac
 				int Rs = sqlite3_column_int(stmt, 3); // ...
 				int Rl = sqlite3_column_int(stmt, 4); // ...
-				std::string code = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 5)); //Ä¿±êºÏÔ¼´úÂë
-				double accfactor = sqlite3_column_double(stmt, 6);//±£Ö¤½ğÂÊ
+				std::string code = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 5)); //ç›®æ ‡åˆçº¦ä»£ç 
+				double accfactor = sqlite3_column_double(stmt, 6);//ä¿è¯é‡‘ç‡
 				tarFutInfo[contract] = { contract, multiple, Fac, Rs, Rl, code, accfactor };
 			}
 		}
@@ -229,19 +229,19 @@ void cwStrategyDemo::UpdateBarData() {
 		}
 
 		for (const auto& futInfMng : tarFutInfo) {
-			int comboMultiple = 2;  // ×éºÏ²ßÂÔ×ö¼¸±¶¸Ü¸Ë
-			int tarCount = tarFutInfo.size();  // Ä¿±êºÏÔ¼ÊıÁ¿
-			double numLimit = comboMultiple * 1000000 / tarCount / comBarInfo.barFlow[futInfMng.first].back() / futInfMng.second.multiple;  // ²ßÂÔ¸Ü¸ËÊı£¬1000000 Îª²ßÂÔ»ù±¾×Ê½ğµ¥Î»£¬ 20ÎªÄ¿Ç°¸²¸ÇÆ·ÖÖµÄ½üËÆÖµ£¬ ÊÕÅÌ¼Û¸ñ£¬±£Ö¤½ğ³ËÊı
-			countLimitCur[futInfMng.first] = (numLimit >= 1) ? static_cast<int>(numLimit) : 1;  // ÕûÊı È¡ÉáÒ»ÏÂ
+			int comboMultiple = 2;  // ç»„åˆç­–ç•¥åšå‡ å€æ æ†
+			int tarCount = tarFutInfo.size();  // ç›®æ ‡åˆçº¦æ•°é‡
+			double numLimit = comboMultiple * 1000000 / tarCount / comBarInfo.barFlow[futInfMng.first].back() / futInfMng.second.multiple;  // ç­–ç•¥æ æ†æ•°ï¼Œ1000000 ä¸ºç­–ç•¥åŸºæœ¬èµ„é‡‘å•ä½ï¼Œ 20ä¸ºç›®å‰è¦†ç›–å“ç§çš„è¿‘ä¼¼å€¼ï¼Œ æ”¶ç›˜ä»·æ ¼ï¼Œä¿è¯é‡‘ä¹˜æ•°
+			countLimitCur[futInfMng.first] = (numLimit >= 1) ? static_cast<int>(numLimit) : 1;  // æ•´æ•° å–èˆä¸€ä¸‹
 		}
-		CloseDatabase(mydb);  // ×îºó¹Ø±ÕÊı¾İ¿âÁ¬½Ó
+		CloseDatabase(mydb);  // æœ€åå…³é—­æ•°æ®åº“è¿æ¥
 	}
 	for (const auto& futInfMng : tarFutInfo) { instrumentCloseFlag[futInfMng.first] = false; }
 }
 
 void cwStrategyDemo::AutoCloseAllPositionsLoop() {
 
-	//¶¨Òåmap£¬ÓÃÓÚ±£´æ³Ö²ÖĞÅÏ¢ 
+	//å®šä¹‰mapï¼Œç”¨äºä¿å­˜æŒä»“ä¿¡æ¯ 
 	std::map<std::string, cwPositionPtr> CurrentPosMap;
 
 	int waitCount = 0;
@@ -250,49 +250,79 @@ void cwStrategyDemo::AutoCloseAllPositionsLoop() {
 	while (waitCount++ < maxWait)
 	{
 		GetPositionsAndActiveOrders(CurrentPosMap, WaitOrderList);
-		if (!CurrentPosMap.empty() && WaitOrderList.empty())//ÓĞ³Ö²Ö&&ÎŞ¹Òµ¥ Ö´ĞĞÂß¼­
-		{
-			for (auto& [id, pos] : CurrentPosMap) {
-				auto md = GetLastestMarketData(id);
-				if (!md) continue;
+		bool allCleared = true;
 
-				if (pos->LongPosition->TotalPosition > 0) {
-					double price = md->BidPrice1;
-					if (price > 1e-6) { EasyInputMultiOrder(id.c_str(), -pos->LongPosition->TotalPosition, price); }// Æ½×ò¶à
+		for (auto& [id, pos] : CurrentPosMap) {
+			auto md = GetLastestMarketData(id);
+			if (!md) {
+				std::cout << "[" << id << "] æ— æœ‰æ•ˆè¡Œæƒ…æ•°æ®ï¼Œè·³è¿‡ã€‚" << std::endl;
+				allCleared = false;
+				continue;
+			}
 
+			// æ£€æŸ¥è¯¥åˆçº¦æ˜¯å¦å­˜åœ¨æŒ‚å•
+			bool hasPendingOrder = false;
+			for (auto& [key, order] : WaitOrderList) {
+				if (key.InstrumentID == id) {
+					hasPendingOrder = true;
+					break;
 				}
-				if (pos->ShortPosition->TotalPosition > 0) {
-					double price = md->AskPrice1;
-					if (price > 1e-6) { EasyInputMultiOrder(id.c_str(), pos->ShortPosition->TotalPosition, price); }// Æ½×ò¿Õ
+			}
+
+			if (hasPendingOrder) {
+				std::cout << "[" << id << "] å­˜åœ¨æŒ‚å•ï¼Œç­‰å¾…æˆäº¤ä¸­..." << std::endl;
+				allCleared = false;
+				continue;
+			}
+
+			// æ— æŒ‚å•ï¼Œæœ‰æŒä»“ï¼Œå‘å‡ºå¹³ä»“å•
+			if (pos->LongPosition->TotalPosition > 0) {
+				double bid = md->BidPrice1;
+				if (bid > 1e-6) {
+					EasyInputMultiOrder(id.c_str(), -pos->LongPosition->TotalPosition, bid);
+					std::cout << "[" << id << "] å¹³å¤šä»“ -> æ•°é‡: " << pos->LongPosition->TotalPosition << ", ä»·æ ¼: " << bid << std::endl;
+					allCleared = false;
+				}
+			}
+			if (pos->ShortPosition->TotalPosition > 0) {
+				double ask = md->AskPrice1;
+				if (ask > 1e-6) {
+					EasyInputMultiOrder(id.c_str(), pos->ShortPosition->TotalPosition, ask);
+					std::cout << "[" << id << "] å¹³ç©ºä»“ -> æ•°é‡: " << pos->ShortPosition->TotalPosition << ", ä»·æ ¼: " << ask << std::endl;
+					allCleared = false;
 				}
 			}
 		}
-		else if (CurrentPosMap.empty() && WaitOrderList.empty()) //ÎŞ³Ö²Ö&&ÎŞ¹Òµ¥->ÍË³ö
-		{
-			std::cout << "Ã»ÓĞ³Ö²ÖºÍ¹Òµ¥" << std::endl;
+		// æ—¥å¿—æ—¶é—´æˆ³
+		std::time_t now = std::time(nullptr);
+		std::cout << "[" << std::put_time(std::localtime(&now), "%H:%M:%S") << "] ç¬¬ " << waitCount << " è½®æ£€æŸ¥ã€‚" << std::endl;
+
+		if (allCleared) {
+			std::cout << "æ‰€æœ‰æŒä»“å·²æ¸…ç©ºï¼Œæ— æŒ‚å•ã€‚é€€å‡ºæ¸…ä»“å¾ªç¯ã€‚" << std::endl;
 			break;
 		}
-		else  //ÓĞ³Ö²Ö||ÓĞ¹Òµ¥
-		{
-			std::cout << "³Ö²ÖÎ´Çå¿Õ£¬" << WaitOrderList.size() << " µ¥Ê£Óà¡£" << std::endl;
+		else {
+			std::cout << "æŒä»“æœªæ¸…ç©ºæˆ–æŒ‚å•æœªæˆäº¤ï¼Œç­‰å¾… 5 ç§’..." << std::endl;
 			cwSleep(5000);
-			continue;
 		}
+	}
+	if (waitCount >= maxWait) {
+		std::cout << "è¶…è¿‡æœ€å¤§ç­‰å¾…æ¬¡æ•°ï¼Œå¯èƒ½ä»æœ‰æœªæ¸…ä»“æŒä»“ï¼Œè¯·äººå·¥æ£€æŸ¥ã€‚" << std::endl;
 	}
 }
 
 void cwStrategyDemo::UpdateCtx(cwMarketDataPtr pPriceData)
 {
-	//barFolw¸üĞÂ
+	//barFolwæ›´æ–°
 	comBarInfo.barFlow[pPriceData->InstrumentID].push_back(pPriceData->LastPrice);
-	//queueBar¸üĞÂ
+	//queueBaræ›´æ–°
 
 	comBarInfo.queueBar[pPriceData->InstrumentID].push_back(pPriceData->LastPrice / tarFutInfo[pPriceData->InstrumentID].accfactor);
-	//ret¸üĞÂ
+	//retæ›´æ–°
 	double last = comBarInfo.queueBar[pPriceData->InstrumentID][comBarInfo.queueBar[pPriceData->InstrumentID].size() - 1];
 	double secondLast = comBarInfo.queueBar[pPriceData->InstrumentID][comBarInfo.queueBar[pPriceData->InstrumentID].size() - 2];
 	comBarInfo.retBar[pPriceData->InstrumentID].push_back(last / secondLast - 1);
-	//É¾³ıÊ×Î»ÔªËØ
+	//åˆ é™¤é¦–ä½å…ƒç´ 
 	comBarInfo.barFlow[pPriceData->InstrumentID].pop_front();
 	comBarInfo.queueBar[pPriceData->InstrumentID].pop_front();
 	comBarInfo.retBar[pPriceData->InstrumentID].pop_front();
@@ -300,17 +330,17 @@ void cwStrategyDemo::UpdateCtx(cwMarketDataPtr pPriceData)
 
 orderInfo cwStrategyDemo::StrategyPosOpen(cwMarketDataPtr pPriceData, orderInfo& order) {
 
-	// ¼ÆËã±ê×¼²î
-	// ¼ÆËã stdShort
+	// è®¡ç®—æ ‡å‡†å·®
+	// è®¡ç®— stdShort
 	std::vector<double> retBarSubsetShort(std::prev(comBarInfo.retBar[pPriceData->InstrumentID].end(), tarFutInfo[pPriceData->InstrumentID].Rs), comBarInfo.retBar[pPriceData->InstrumentID].end());
 	double stdShort = SampleStd(retBarSubsetShort);
 
-	// ¼ÆËã stdLong
+	// è®¡ç®— stdLong
 	std::vector<double> retBarSubsetLong(std::prev(comBarInfo.retBar[pPriceData->InstrumentID].end(), tarFutInfo[pPriceData->InstrumentID].Rl), comBarInfo.retBar[pPriceData->InstrumentID].end());
 	double stdLong = SampleStd(retBarSubsetLong);
 
 	orderInfo order;
-	// ×îĞÂ¼Û¸ñ < ¶ÌÆÚ¼Û¸ñ && ¶ÌÆÚ²¨¶¯ÂÊ > ³¤ÆÚ²¨¶¯ÂÊ
+	// æœ€æ–°ä»·æ ¼ < çŸ­æœŸä»·æ ¼ && çŸ­æœŸæ³¢åŠ¨ç‡ > é•¿æœŸæ³¢åŠ¨ç‡
 	auto& barQueue = comBarInfo.queueBar[pPriceData->InstrumentID];
 	if (barQueue.back() < barQueue[barQueue.size() - tarFutInfo[pPriceData->InstrumentID].Rs] && stdShort > stdLong) {
 		int tarVolume = countLimitCur[pPriceData->InstrumentID];
@@ -326,7 +356,7 @@ orderInfo cwStrategyDemo::StrategyPosOpen(cwMarketDataPtr pPriceData, orderInfo&
 		order.price = comBarInfo.barFlow[pPriceData->InstrumentID].back();
 
 	}
-	// ×îĞÂ¼Û¸ñ > ¶ÌÆÚ¼Û¸ñ && ¶ÌÆÚ²¨¶¯ÂÊ > ³¤ÆÚ²¨¶¯ÂÊ
+	// æœ€æ–°ä»·æ ¼ > çŸ­æœŸä»·æ ¼ && çŸ­æœŸæ³¢åŠ¨ç‡ > é•¿æœŸæ³¢åŠ¨ç‡
 	else if (barQueue.back() > barQueue[barQueue.size() - 500] && stdShort > stdLong) {
 		int tarVolume = countLimitCur[pPriceData->InstrumentID];
 		if (tarFutInfo[pPriceData->InstrumentID].Fac == "Mom_std_bar_re_dym")
@@ -345,12 +375,12 @@ orderInfo cwStrategyDemo::StrategyPosOpen(cwMarketDataPtr pPriceData, orderInfo&
 }
 
 orderInfo cwStrategyDemo::StrategyPosClose(cwMarketDataPtr pPriceData, cwPositionPtr pPos, orderInfo& order) {
-	// ¼ÆËã±ê×¼²î
-	// ¼ÆËã stdShort
+	// è®¡ç®—æ ‡å‡†å·®
+	// è®¡ç®— stdShort
 	std::vector<double> retBarSubsetShort(std::prev(comBarInfo.retBar[pPriceData->InstrumentID].end(), tarFutInfo[pPriceData->InstrumentID].Rs), comBarInfo.retBar[pPriceData->InstrumentID].end());
 	double stdShort = SampleStd(retBarSubsetShort);
 
-	// ¼ÆËã stdLong
+	// è®¡ç®— stdLong
 	std::vector<double> retBarSubsetLong(std::prev(comBarInfo.retBar[pPriceData->InstrumentID].end(), tarFutInfo[pPriceData->InstrumentID].Rs), comBarInfo.retBar[pPriceData->InstrumentID].end());
 	double stdLong = SampleStd(retBarSubsetLong);
 	orderInfo order;
@@ -378,7 +408,7 @@ orderInfo cwStrategyDemo::StrategyPosClose(cwMarketDataPtr pPriceData, cwPositio
 		}
 	}
 
-	//Fac·½Ïò =Âò && £¨×îĞÂ¼Û¸ñ > ¶ÌÆÚ¼Û¸ñ || ¶ÌÆÚ²¨¶¯ÂÊ<=³¤ÆÚ²¨¶¯ÂÊ£©
+	//Facæ–¹å‘ =ä¹° && ï¼ˆæœ€æ–°ä»·æ ¼ > çŸ­æœŸä»·æ ¼ || çŸ­æœŸæ³¢åŠ¨ç‡<=é•¿æœŸæ³¢åŠ¨ç‡ï¼‰
 	if (FacDirection == "Long" && (barQueue.back() > barQueue[barQueue.size() - rs] || stdShort <= stdLong)) {
 		if (tarFutInfo[pPriceData->InstrumentID].Fac == "Mom_std_bar_re_dym")
 		{
@@ -391,7 +421,7 @@ orderInfo cwStrategyDemo::StrategyPosClose(cwMarketDataPtr pPriceData, cwPositio
 		order.szInstrumentID = pPriceData->InstrumentID;
 		order.price = comBarInfo.barFlow[pPriceData->InstrumentID].back();
 	}
-	//Fac·½Ïò =Âô && £¨×îĞÂ¼Û¸ñ < ¶ÌÆÚ¼Û¸ñ || ¶ÌÆÚ²¨¶¯ÂÊ<=³¤ÆÚ²¨¶¯ÂÊ£©
+	//Facæ–¹å‘ =å– && ï¼ˆæœ€æ–°ä»·æ ¼ < çŸ­æœŸä»·æ ¼ || çŸ­æœŸæ³¢åŠ¨ç‡<=é•¿æœŸæ³¢åŠ¨ç‡ï¼‰
 	else if (FacDirection == "Short" && (barQueue.back() < barQueue[barQueue.size() - rs] || stdShort <= stdLong))
 	{
 		if (tarFutInfo[pPriceData->InstrumentID].Fac == "Mom_std_bar_re_dym")
