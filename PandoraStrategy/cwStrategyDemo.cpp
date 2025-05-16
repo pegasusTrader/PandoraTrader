@@ -76,17 +76,17 @@ void cwStrategyDemo::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKi
 			double ask = pPriceData->AskPrice1;
 			if (pPos->LongPosition->TotalPosition > 0 && bid > 1e-6) { EasyInputMultiOrder(pPriceData->InstrumentID, -pPos->LongPosition->TotalPosition, bid); }
 			if (pPos->ShortPosition->TotalPosition > 0 && ask > 1e-6) { EasyInputMultiOrder(pPriceData->InstrumentID, pPos->ShortPosition->TotalPosition, ask); }
+			std::cout << "[" << pPriceData->InstrumentID << "] 清仓指令已发送。" << std::endl;
 		}
 		else if (!pPos && WaitOrderList.empty()) //无持仓&&无挂单
 		{
-			std::cout << "持仓已全部清空。" << std::endl;
+			std::cout << "[" << pPriceData->InstrumentID << "] 持仓清空完毕。" << std::endl;
 			instrumentCloseFlag[pPriceData->InstrumentID] = true;
 			return;
 		}
 		else //有持仓||有挂单
 		{
-			std::cout << "持仓未清空，" << WaitOrderList.size() << " 单剩余。" << std::endl;
-			std::cout << "等待挂单成交中..." << std::endl;
+			std::cout << "[" << pPriceData->InstrumentID << "] 等待挂单成交中，挂单数：" << WaitOrderList.size() << std::endl;
 			cwSleep(5000);
 		}
 	}

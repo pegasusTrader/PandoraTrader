@@ -1,0 +1,47 @@
+要实现 lastCloseAttemptTime 控制清仓尝试的逻辑，推荐使用一个合适的数据结构（如 std::map<std::string, int>）来记录每个合约上一次尝试清仓的时间，然后每隔 N 秒重试一次。
+
+
+std::map<std::string, int> lastCloseAttemptTime;  // 合约 -> 上次清仓尝试时间戳（秒）
+const int CloseRetryInterval = 5;  // 每隔 5 秒重试一次
+
+2. 获取当前时间（秒）
+int GetCurrentTimeInSeconds() {
+	time_t now = time(nullptr);
+	return static_cast<int>(now);
+}
+
+if (IsClosingTime(hour, minute) && !hasTriggeredClose[instrumentID]) {
+    int now = GetCurrentTimeInSeconds();
+
+    // 首次尝试 或 超过重试间隔
+    if (lastCloseAttemptTime[instrumentID] == 0 || 
+        now - lastCloseAttemptTime[instrumentID] >= CloseRetryInterval) {
+
+        lastCloseAttemptTime[instrumentID] = now;  // 更新尝试时间
+
+        cwPositionPtr pPos = nullptr;
+        std::map<cwActiveOrderKey, cwOrderPtr> WaitOrderList;
+        GetPositionsAndActiveOrders(instrumentID, pPos, WaitOrderList);
+
+        if (pPos && WaitOrderList.empty()) {
+            double bid = pPriceData->BidPrice1;
+            double ask = pPriceData->AskPrice1;
+
+            if (pPos->LongPosition->TotalPosition > 0 && bid > 1e-6)
+                EasyInputMultiOrder(instrumentID.c_str(), -pPos->LongPosition->TotalPosition, bid);
+
+            if (pPos->ShortPosition->TotalPosition > 0 && ask > 1e-6)
+                EasyInputMultiOrder(instrumentID.c_str(), pPos->ShortPosition->TotalPosition, ask);
+
+            std::cout << "[" << instrumentID << "] 清仓指令已发送。" << std::endl;
+        }
+        else if (!pPos && WaitOrderList.empty()) {
+            std::cout << "[" << instrumentID << "] 持仓清空完毕。" << std::endl;
+            hasTriggeredClose[instrumentID] = true;
+        }
+        else {
+            std::cout << "[" << instrumentID << "] 等待挂单成交中，挂单数：" << WaitOrderList.size() << std::endl;
+        }
+    }
+}
+
