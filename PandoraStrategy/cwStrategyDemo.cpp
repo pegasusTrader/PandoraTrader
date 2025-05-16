@@ -114,29 +114,95 @@ void cwStrategyDemo::OnRtnOrder(cwOrderPtr pOrder, cwOrderPtr pOriginOrder)
 	
 }
 
-	void cwStrategyDemo::OnOrderCanceled(cwOrderPtr pOrder)
+void cwStrategyDemo::OnOrderCanceled(cwOrderPtr pOrder)
+{
+	if (pOrder->OrderStatus == '5') { // 拒单
+		std::cout << "[AutoClose] 拒单: " << pOrder->InstrumentID << std::endl;
+		//pendingContracts.erase(pOrder->InstrumentID); // 强制移除，避免阻塞
+	}
+
+}
+
+void cwStrategyDemo::OnReady()
+{
+
+	AutoCloseAllPositionsLoop();
+	UpdateBarData(tarFutInfo, comBarInfo, countLimitCur);
+
+	for (auto& futInfMng : tarFutInfo)
 	{
-		if (pOrder->OrderStatus == '5') { // 拒单
-			std::cout << "[AutoClose] 拒单: " << pOrder->InstrumentID << std::endl;
-			//pendingContracts.erase(pOrder->InstrumentID); // 强制移除，避免阻塞
+		SubcribeKindle(futInfMng.first.c_str(), cwKINDLE_TIMESCALE_1MIN, 50);
+	};
+}
+
+void cwStrategyDemo::UpdateBarData() {
+
+	//创建数据库连接
+	sqlite3* mydb = OpenDatabase("dm.db");
+	if (mydb) {
+		std::string tar_contract_sql = "SELECT * FROM futureinfo;";
+		sqlite3_stmt* stmt = nullptr;
+		if (sqlite3_prepare_v2(mydb, tar_contract_sql.c_str(), -1, &stmt, nullptr) == SQLITE_OK) {
+			while (sqlite3_step(stmt) == SQLITE_ROW) {
+				std::string contract = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));//目标合约
+				int multiple = sqlite3_column_int(stmt, 1);//合约乘数
+				std::string Fac = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));//Fac
+				int Rs = sqlite3_column_int(stmt, 3); // ...
+				int Rl = sqlite3_column_int(stmt, 4); // ...
+				std::string code = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 5)); //目标合约代码
+				double accfactor = sqlite3_column_double(stmt, 6);//保证金率
+				tarFutInfo[contract] = { contract, multiple, Fac, Rs, Rl, code, accfactor };
+			}
+		}
+		else if (sqlite3_prepare_v2(mydb, tar_contract_sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
+			std::cerr << "SQL prepare failed: " << sqlite3_errmsg(mydb) << std::endl;
+		}
+		sqlite3_finalize(stmt);
+
+		for (auto& futInfMng : tarFutInfo) {
+			std::string ret_sql = std::format("SELECT ret FROM {} ORDER BY tradingday,timestamp ", futInfMng.first);
+			sqlite3_stmt* stmt = nullptr;
+			if (sqlite3_prepare_v2(mydb, ret_sql.c_str(), -1, &stmt, nullptr) == SQLITE_OK) {
+				while (sqlite3_step(stmt) == SQLITE_ROW) {
+					comBarInfo.retBar[futInfMng.first].push_back(sqlite3_column_double(stmt, 0));
+				}
+			}
+			sqlite3_finalize(stmt);
 		}
 
+		for (auto& futInfMng : tarFutInfo) {
+			std::string closeprice_sql = std::format("SELECT closeprice FROM {} ORDER BY tradingday,timestamp ", futInfMng.first);
+			sqlite3_stmt* stmt = nullptr;
+			if (sqlite3_prepare_v2(mydb, closeprice_sql.c_str(), -1, &stmt, nullptr) == SQLITE_OK) {
+				while (sqlite3_step(stmt) == SQLITE_ROW) {
+					comBarInfo.barFlow[futInfMng.first].push_back(sqlite3_column_double(stmt, 0));
+				}
+			}
+			sqlite3_finalize(stmt);
+		}
+
+		for (auto& futInfMng : tarFutInfo) {
+			std::string real_close_sql = std::format("SELECT real_close FROM {} ORDER BY tradingday,timestamp ", futInfMng.first);
+			sqlite3_stmt* stmt = nullptr;
+			if (sqlite3_prepare_v2(mydb, real_close_sql.c_str(), -1, &stmt, nullptr) == SQLITE_OK) {
+				while (sqlite3_step(stmt) == SQLITE_ROW) {
+					comBarInfo.queueBar[futInfMng.first].push_back(sqlite3_column_double(stmt, 0));
+				}
+			}
+			sqlite3_finalize(stmt);
+		}
+
+		for (const auto& futInfMng : tarFutInfo) {
+			int comboMultiple = 2;  // 组合策略做几倍杠杆
+			int tarCount = tarFutInfo.size();  // 目标合约数量
+			double numLimit = comboMultiple * 1000000 / tarCount / comBarInfo.barFlow[futInfMng.first].back() / futInfMng.second.multiple;  // 策略杠杆数，1000000 为策略基本资金单位， 20为目前覆盖品种的近似值， 收盘价格，保证金乘数
+			countLimitCur[futInfMng.first] = (numLimit >= 1) ? static_cast<int>(numLimit) : 1;  // 整数 取舍一下
+		}
+		CloseDatabase(mydb);  // 最后关闭数据库连接
 	}
+}
 
-	void cwStrategyDemo::OnReady()
-	{
-
-		AutoCloseAllPositionsLoop();
-		UpdateBarData(tarFutInfo, comBarInfo, countLimitCur);
-
-		for (auto& futInfMng : tarFutInfo)
-		{
-			SubcribeKindle(futInfMng.first.c_str(), cwKINDLE_TIMESCALE_1MIN, 50);
-		};
-	}
-
-
-	void cwStrategyDemo::AutoCloseAllPositionsLoop() {
+void cwStrategyDemo::AutoCloseAllPositionsLoop() {
 
 		//定义map，用于保存持仓信息 
 		std::map<std::string, cwPositionPtr> CurrentPosMap;
@@ -177,7 +243,7 @@ void cwStrategyDemo::OnRtnOrder(cwOrderPtr pOrder, cwOrderPtr pOriginOrder)
 		}
 	}
 
-	void cwStrategyDemo::UpdateCtx(cwMarketDataPtr pPriceData, StrategyContext & ctx, std::string & currentContract)
+void cwStrategyDemo::UpdateCtx(cwMarketDataPtr pPriceData, StrategyContext & ctx, std::string & currentContract)
 	{
 		//barFolw更新
 		ctx.barFlow[currentContract].push_back(pPriceData->LastPrice);
@@ -194,5 +260,116 @@ void cwStrategyDemo::OnRtnOrder(cwOrderPtr pOrder, cwOrderPtr pOriginOrder)
 		ctx.retBar[currentContract].pop_front();
 	}
 
+//// 开仓交易 条件
+orderInfo cwStrategyDemo::StrategyPosOpen(std::string contract, std::map<std::string, futInfMng>& tarFutInfo, barInfo& comBarInfo, std::map<std::string, int>& countLimitCur) {
 
+	// 计算标准差
+	// 计算 stdShort
+	std::vector<double> retBarSubsetShort(std::prev(comBarInfo.retBar[contract].end(), tarFutInfo[contract].Rs), comBarInfo.retBar[contract].end());
+	double stdShort = SampleStd(retBarSubsetShort);
+
+	// 计算 stdLong
+	std::vector<double> retBarSubsetLong(std::prev(comBarInfo.retBar[contract].end(), tarFutInfo[contract].Rl), comBarInfo.retBar[contract].end());
+	double stdLong = SampleStd(retBarSubsetLong);
+
+	orderInfo order;
+	auto& barQueue = comBarInfo.queueBar[contract];
+	size_t rs = tarFutInfo[contract].Rs;
+	// 最新价格 < 短期价格 && 短期波动率 > 长期波动率
+	if (barQueue.back() < barQueue[barQueue.size() - rs] && stdShort > stdLong) {
+		int tarVolume = countLimitCur[contract];
+		if (tarFutInfo[contract].Fac == "Mom_std_bar_re_dym")
+		{
+			order.volume = countLimitCur[contract];
+		}
+		else
+		{
+			order.volume = -countLimitCur[contract];
+		}
+		order.szInstrumentID = contract;
+		order.price = comBarInfo.barFlow[contract].back();
+
+	}
+	// 最新价格 > 短期价格 && 短期波动率 > 长期波动率
+	else if (barQueue.back() > barQueue[barQueue.size() - 500] && stdShort > stdLong) {
+		int tarVolume = countLimitCur[contract];
+		if (tarFutInfo[contract].Fac == "Mom_std_bar_re_dym")
+		{
+			order.volume = countLimitCur[contract];
+		}
+		else
+		{
+			order.volume = -countLimitCur[contract];
+		}
+		order.szInstrumentID = contract;
+		order.price = comBarInfo.barFlow[contract].back();
+
+	}
+	return order;
+}
+
+//// 平仓交易 条件
+orderInfo cwStrategyDemo::StrategyPosClose(std::string contract, cwPositionPtr pPos, std::map<std::string, futInfMng>& tarFutInfo, barInfo& comBarInfo, std::map<std::string, int>& countLimitCur) {
+	// 计算标准差
+// 计算 stdShort
+	std::vector<double> retBarSubsetShort(std::prev(comBarInfo.retBar[contract].end(), tarFutInfo[contract].Rs), comBarInfo.retBar[contract].end());
+	double stdShort = SampleStd(retBarSubsetShort);
+
+	// 计算 stdLong
+	std::vector<double> retBarSubsetLong(std::prev(comBarInfo.retBar[contract].end(), tarFutInfo[contract].Rs), comBarInfo.retBar[contract].end());
+	double stdLong = SampleStd(retBarSubsetLong);
+	orderInfo order;
+	auto& barQueue = comBarInfo.queueBar[contract];
+	size_t rs = tarFutInfo[contract].Rs;
+	std::string FacDirection;
+	if (tarFutInfo[contract].Fac == "Mom_std_bar_re_dym")
+	{
+		if (pPos->LongPosition->PosiDirection == CW_FTDC_D_Buy) {
+			std::string FacDirection = "Long";
+		}
+		else if (pPos->ShortPosition->PosiDirection == CW_FTDC_D_Sell)
+		{
+			std::string FacDirection = "Short";
+		}
+	}
+	else
+	{
+		if (pPos->LongPosition->PosiDirection == CW_FTDC_D_Buy) {
+			std::string FacDirection = "Short";
+		}
+		else if (pPos->ShortPosition->PosiDirection == CW_FTDC_D_Sell)
+		{
+			std::string FacDirection = "Long";
+		}
+	}
+
+	//Fac方向 =买 && （最新价格 > 短期价格 || 短期波动率<=长期波动率）
+	if (FacDirection == "Long" && (barQueue.back() > barQueue[barQueue.size() - rs] || stdShort <= stdLong)) {
+		if (tarFutInfo[contract].Fac == "Mom_std_bar_re_dym")
+		{
+			order.volume = countLimitCur[contract];
+		}
+		else
+		{
+			order.volume = -countLimitCur[contract];
+		}
+		order.szInstrumentID = contract;
+		order.price = comBarInfo.barFlow[contract].back();
+	}
+	//Fac方向 =卖 && （最新价格 < 短期价格 || 短期波动率<=长期波动率）
+	else if (FacDirection == "Short" && (barQueue.back() < barQueue[barQueue.size() - rs] || stdShort <= stdLong))
+	{
+		if (tarFutInfo[contract].Fac == "Mom_std_bar_re_dym")
+		{
+			order.volume = countLimitCur[contract];
+		}
+		else
+		{
+			order.volume = -countLimitCur[contract];
+		}
+		order.szInstrumentID = contract;
+		order.price = comBarInfo.barFlow[contract].back();
+	}
+	return order;
+}
 
