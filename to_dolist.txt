@@ -45,3 +45,9 @@ if (IsClosingTime(hour, minute) && !hasTriggeredClose[instrumentID]) {
     }
 }
 
+
+onbar 里面的开仓判断
+定时器
+日期打印（用线程安全的）
+是否挪到 price update里面
+
