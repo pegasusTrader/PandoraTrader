@@ -26,7 +26,6 @@ cwStrategyDemo::cwStrategyDemo()
 {
 }
 
-
 cwStrategyDemo::~cwStrategyDemo()
 {
 }

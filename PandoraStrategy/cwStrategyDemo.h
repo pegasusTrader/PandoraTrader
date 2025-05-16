@@ -13,10 +13,8 @@ public:
 	//MarketData SPI
 	///行情更新
 	virtual void PriceUpdate(cwMarketDataPtr pPriceData);
-
 	//当生成一根新K线的时候，会调用该回调
 	virtual void OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKindleStrategy::cwKindleSeriesPtr pKindleSeries);
-
 	//Trade SPI
 	///成交回报
 	virtual void OnRtnTrade(cwTradePtr pTrade);
@@ -32,12 +30,10 @@ public:
 	void AutoCloseAllPositionsLoop();
 	//当前时间
 	std::string m_strCurrentUpdateTime;
-	// sqlLiteHelp
+	// bar更新
 	void UpdateCtx(cwMarketDataPtr pPriceData);
-
 	// 开仓交易 条件
 	orderInfo StrategyPosOpen(cwMarketDataPtr, orderInfo& order);
-
 	// 平仓交易 条件
 	orderInfo StrategyPosClose(cwMarketDataPtr pPriceData, cwPositionPtr pPos, orderInfo& order);
 };
