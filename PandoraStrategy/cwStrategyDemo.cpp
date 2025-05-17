@@ -53,13 +53,16 @@ void cwStrategyDemo::PriceUpdate(cwMarketDataPtr pPriceData)
 
 			GetPositionsAndActiveOrders(pPriceData->InstrumentID, pPos, WaitOrderList); // 获取指定持仓和挂单列表
 
-			if (!pPos && !IsPendingOrder(pPriceData->InstrumentID))  // 情况 1：无持仓 + 无挂单 => 清仓完毕
+			bool hasPos = (pPos && (pPos->LongPosition->TotalPosition > 0 || pPos->ShortPosition->TotalPosition > 0));
+			bool hasOrder = IsPendingOrder(pPriceData->InstrumentID);
+
+			if (!hasPos && !hasOrder)  // 情况 1：无持仓 + 无挂单 => 清仓完毕
 			{
 				std::cout << "[" << pPriceData->InstrumentID << "] 持仓清空完毕。" << std::endl;
 				instrumentCloseFlag[pPriceData->InstrumentID] = true;
 				return;
 			}
-			else if (pPos && !IsPendingOrder(pPriceData->InstrumentID))  // 情况 2：有持仓 + 无挂单 => 初次挂清仓单
+			else if (hasPos && !hasOrder)  // 情况 2：有持仓 + 无挂单 => 初次挂清仓单
 			{
 				TryAggressiveClose(pPriceData, pPos);
 				std::cout << "[" << pPriceData->InstrumentID << "] 清仓指令已发送。" << std::endl;
