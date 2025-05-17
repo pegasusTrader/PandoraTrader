@@ -22,10 +22,10 @@ static std::map<std::string, futInfMng> tarFutInfo; // 策略上下文
 static barInfo comBarInfo;                          // barINfo
 static std::map<std::string, int> countLimitCur;    // 合约对应交易数量
 
-static std::map<cwActiveOrderKey, cwOrderPtr> WaitOrderList; // 挂单列表（全局）
+static std::map<cwActiveOrderKey, cwOrderPtr> WaitOrderList;           // 挂单列表（全局）
 static std::unordered_map<std::string, bool> instrumentCloseFlag;      // 是否触发收盘平仓
 static std::unordered_map<std::string, int> lastCloseAttemptTime;      // 合约->上次清仓尝试时间戳（秒）
-static std::unordered_map<std::string, int> closeAttemptCount;    // 用于控制重挂频率（每个合约）
+static std::unordered_map<std::string, int> closeAttemptCount;         // 用于控制重挂频率（每个合约）
 
 cwStrategyDemo::cwStrategyDemo()
 {
@@ -50,14 +50,9 @@ void cwStrategyDemo::PriceUpdate(cwMarketDataPtr pPriceData)
 			lastCloseAttemptTime[pPriceData->InstrumentID] = now;                       // 更新尝试时间
 
 			cwPositionPtr pPos = nullptr;
+
 			GetPositionsAndActiveOrders(pPriceData->InstrumentID, pPos, WaitOrderList); // 获取指定持仓和挂单列表
 
-			if (++closeAttemptCount[pPriceData->InstrumentID] > 10)  // 安全保护：最大尝试次数，防止异常行情下挂死
-			{
-				std::cout << "[" << pPriceData->InstrumentID << "] 尝试清仓超过限制，标记为清仓完毕。" << std::endl;
-				instrumentCloseFlag[pPriceData->InstrumentID] = true;
-				return;
-			}
 			if (!pPos && !IsPendingOrder(pPriceData->InstrumentID))  // 情况 1：无持仓 + 无挂单 => 清仓完毕
 			{
 				std::cout << "[" << pPriceData->InstrumentID << "] 持仓清空完毕。" << std::endl;
@@ -72,15 +67,23 @@ void cwStrategyDemo::PriceUpdate(cwMarketDataPtr pPriceData)
 			}
 			else  // 情况 3：有挂单 或 有持仓 => 撤单 + 重新挂清仓单
 			{
-				for (auto& [key, order] : WaitOrderList) {
-					if (key.InstrumentID == pPriceData->InstrumentID) {
-						CancelOrder(order);
-					}
+				if (++closeAttemptCount[pPriceData->InstrumentID] > 3) {
+					std::cout << "[" << pPriceData->InstrumentID << "] 超过最大等待次数，可能仍有未清仓持仓，请人工检查。" << std::endl;
+					instrumentCloseFlag[pPriceData->InstrumentID] = true;
+					return;
 				}
-				std::cout << "[" << pPriceData->InstrumentID << "] 撤销未成交挂单，准备重新挂单..." << std::endl;
-				if (pPos) { TryAggressiveClose(pPriceData, pPos); }
-				int count = std::count_if(WaitOrderList.begin(), WaitOrderList.end(), [&](const auto& pair) { return pair.first.InstrumentID == pPriceData->InstrumentID; });
-				std::cout << "[" << pPriceData->InstrumentID << "] 等待挂单成交中，挂单数：" << count << std::endl;
+				else
+				{
+					for (auto& [key, order] : WaitOrderList) {
+						if (key.InstrumentID == pPriceData->InstrumentID) {
+							CancelOrder(order);
+						}
+					}
+					std::cout << "[" << pPriceData->InstrumentID << "] 撤销未成交挂单，准备重新挂单..." << std::endl;
+					if (pPos) { TryAggressiveClose(pPriceData, pPos); }
+					int count = std::count_if(WaitOrderList.begin(), WaitOrderList.end(), [&](const auto& pair) { return pair.first.InstrumentID == pPriceData->InstrumentID; });
+					std::cout << "[" << pPriceData->InstrumentID << "] 等待挂单成交中，挂单数：" << count << std::endl;
+				}
 			}
 		}
 	}
