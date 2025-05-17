@@ -282,6 +282,7 @@ void cwStrategyDemo::AutoCloseAllPositionsLoop() {
 
 			for (auto& [id, pos] : CurrentPosMap) 
 			{
+				if (instrumentCloseFlag[id]) continue;
 				auto md = GetLastestMarketData(id);
 				if (!md) { std::cout << "[" << id << "] 无有效行情数据，跳过。" << std::endl;continue; }
 
