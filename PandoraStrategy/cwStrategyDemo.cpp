@@ -43,6 +43,9 @@ void cwStrategyDemo::PriceUpdate(cwMarketDataPtr pPriceData)
 	auto minute = _timePara.minute;
 	auto second = _timePara.second;
 
+	std::deque<cwOrderPtr> longorder;
+	std::deque<cwOrderPtr> shortorder;
+
 	if (IsClosingTime(hour, minute) && !instrumentCloseFlag[pPriceData->InstrumentID])
 	{
 		int now = GetCurrentTimeInSeconds();
@@ -56,10 +59,9 @@ void cwStrategyDemo::PriceUpdate(cwMarketDataPtr pPriceData)
 
 			if (pPos && WaitOrderList.empty())  //有持仓&&无挂单 执行逻辑
 			{
-				std::cout << "准备平仓，无挂单，开始下单..." << std::endl;
 				double bid = pPriceData->BidPrice1;
 				double ask = pPriceData->AskPrice1;
-
+				CW_FTDC_OPT_AskPrice1;
 				if (pPos->LongPosition->TotalPosition > 0 && bid > 1e-6) { EasyInputMultiOrder(pPriceData->InstrumentID, -pPos->LongPosition->TotalPosition, bid); }
 				if (pPos->ShortPosition->TotalPosition > 0 && ask > 1e-6) { EasyInputMultiOrder(pPriceData->InstrumentID, pPos->ShortPosition->TotalPosition, ask); }
 
@@ -73,6 +75,26 @@ void cwStrategyDemo::PriceUpdate(cwMarketDataPtr pPriceData)
 			}
 			else //有持仓||有挂单
 			{
+				for (auto& [key, order] : WaitOrderList) {
+					if (key.InstrumentID == pPriceData->InstrumentID) {
+						CancelOrder(order);
+					}
+				}
+				std::cout << "[" << pPriceData->InstrumentID << "] 撤销未成交挂单，准备重新挂单..." << std::endl;
+
+				double aggressiveBid = pPriceData->BidPrice1 + GetTickSize(pPriceData->InstrumentID);
+				double aggressiveAsk = pPriceData->AskPrice1 -GetTickSize(pPriceData->InstrumentID);
+
+				if (pPos->LongPosition->TotalPosition > 0 && aggressiveBid > 1e-6)
+				{
+					EasyInputMultiOrder(pPriceData->InstrumentID, -pPos->LongPosition->TotalPosition, aggressiveBid); // 重新挂 Bid
+				}
+
+				if (pPos->ShortPosition->TotalPosition > 0 && aggressiveAsk > 1e-6)
+				{
+					EasyInputMultiOrder(pPriceData->InstrumentID, pPos->ShortPosition->TotalPosition, aggressiveAsk); // 重新挂 Ask
+				}
+
 				std::cout << "[" << pPriceData->InstrumentID << "] 等待挂单成交中，挂单数：" << WaitOrderList.size() << std::endl;
 			}
 		}
