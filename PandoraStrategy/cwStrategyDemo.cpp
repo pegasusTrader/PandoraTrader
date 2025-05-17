@@ -478,5 +478,3 @@ bool cwStrategyDemo::IsPendingOrder(std::string instrumentID)
 	}
 	return false;
 }
-
-
