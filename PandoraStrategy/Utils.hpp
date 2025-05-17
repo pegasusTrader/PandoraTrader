@@ -100,4 +100,12 @@ inline bool IsAfterMarket(int hour, int minute) { return hour == 15 && minute >=
 
 inline int GetCurrentTimeInSeconds() { time_t now = std::time(nullptr);return static_cast<int>(now); }
 
+inline bool AllInstrumentClosed(const std::map<std::string, bool>& instrumentCloseFlag) {
+	for (const auto& [id, flag] : instrumentCloseFlag) {
+		if (!flag) return false; // 有一个没完成，立即返回 false
+	}
+	return true;
+}
+
+
 

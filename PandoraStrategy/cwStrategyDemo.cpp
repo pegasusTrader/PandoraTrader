@@ -263,75 +263,61 @@ void cwStrategyDemo::UpdateBarData() {
 }
 
 void cwStrategyDemo::AutoCloseAllPositionsLoop() {
-
-
 	std::map<std::string, cwPositionPtr> CurrentPosMap; //定义map，用于保存持仓信息 
-	std::map<std::string, int> pendingRetryCounter; // 合约 -> 活跃挂单保留轮数
+	std::map<std::string, int> pendingRetryCounter;     // 合约 -> 活跃挂单保留轮数
+	std::map<std::string, bool> instrumentCloseFlag;    // 是否触发收盘平仓
 
-	int waitCount = 0;
-	const int maxWait = 60;
-	const int maxPendingRetryBeforeCancel = 3;  // 同一挂单在盘口超过3轮就撤单重挂
+	GetPositions(CurrentPosMap);
+	for (auto& [id, pos] : CurrentPosMap) {
+		instrumentCloseFlag[id] = false;
+	}
 
-	while (waitCount++ < maxWait)
+	while (true)
 	{
-		auto [hour, minute, second] = IsTradingTime();
-		GetPositionsAndActiveOrders(CurrentPosMap, WaitOrderList);
-		bool allCleared = true;
+		if (!AllInstrumentClosed(instrumentCloseFlag)) {
+			auto [hour, minute, second] = IsTradingTime();
+			GetPositionsAndActiveOrders(CurrentPosMap, WaitOrderList);
 
-		for (auto& [id, pos] : CurrentPosMap) {
-			auto md = GetLastestMarketData(id);
-			if (!md) {
-				std::cout << "[" << id << "] 无有效行情数据，跳过。" << std::endl;
-				allCleared = false;
-				continue;
-			}
-			if (!CurrentPosMap[id]) // 情况 1: 无持仓 + 无挂单 => 清仓完毕
-			{
-				std::cout << "[" << id << "] 持仓清空完毕。" << std::endl;
-				allCleared = false;
-				continue;
-			}
-			else if (CurrentPosMap[id] && !IsPendingOrder(id)) {  //情况 2: 有持仓, 无挂单，发出平仓单
-				TryAggressiveClose(md, CurrentPosMap[id]);
-				std::cout << "[" << md->InstrumentID << "] 清仓指令已发送。" << std::endl;
-				allCleared = false;
-			}
-			else  // 情况 3: 有挂单 或 有持仓 => 撤单 + 重新挂清仓单
-			{
-				pendingRetryCounter[id]++;
-				if (pendingRetryCounter[id] >= maxPendingRetryBeforeCancel) {
-					std::cout << "[" << id << "] 挂单存在超过 " << maxPendingRetryBeforeCancel << " 轮，可能挂死，撤单重挂。" << std::endl;
-					for (auto& [key, order] : WaitOrderList) {
-						if (key.InstrumentID == id) {
-							CancelOrder(order); //撤单
-						}
-					}
-					pendingRetryCounter[id] = 0;
-					if (CurrentPosMap[id]) { TryAggressiveClose(md, CurrentPosMap[id]); }//重新挂
-					allCleared = false;
-				}
-				else {
-					std::cout << "[" << id << "] 存在挂单，等待成交中...（挂单已存在 " << pendingRetryCounter[id] << " 轮）" << std::endl;
-					allCleared = false;
+			for (auto& [id, pos] : CurrentPosMap) {
+				auto md = GetLastestMarketData(id);
+				if (!md) {
+					std::cout << "[" << id << "] 无有效行情数据，跳过。" << std::endl;
 					continue;
 				}
+				if (!CurrentPosMap[id]) // 情况 1: 无持仓 + 无挂单 => 清仓完毕
+				{
+					std::cout << "[" << id << "] 持仓清空完毕。" << std::endl;
+					instrumentCloseFlag[id] = true;
+					continue;
+				}
+				else if (CurrentPosMap[id] && !IsPendingOrder(id)) {  //情况 2: 有持仓, 无挂单，发出平仓单
+					TryAggressiveClose(md, CurrentPosMap[id]);
+					std::cout << "[" << md->InstrumentID << "] 清仓指令已发送。" << std::endl;
+				}
+				else  // 情况 3: 有挂单 或 有持仓 => 撤单 + 重新挂清仓单
+				{
+					if (++pendingRetryCounter[id] >= 3) {
+						std::cout << "[" << id << "] 挂单存在超过 " << "3" << " 轮，可能挂死，撤单重挂。" << std::endl;
+						for (auto& [key, order] : WaitOrderList) {
+							if (key.InstrumentID == id) {
+								CancelOrder(order); //撤单
+							}
+						}
+						if (CurrentPosMap[id]) { TryAggressiveClose(md, CurrentPosMap[id]); }//重新挂
+					}
+					else {
+						std::cout << "[" << id << "] 存在挂单，等待成交中...（挂单已存在 " << pendingRetryCounter[id] << " 轮）" << std::endl;
+						continue;
+					}
+				}
+				cwSleep(5000);
 			}
-
 		}
-		// 日志时间戳
-		std::cout << "[" << "hour:minute:second" << "] 第 " << waitCount << " 轮检查。" << std::endl;
-
-		if (allCleared) {
-			std::cout << "所有持仓已清空，无挂单。退出清仓循环。" << std::endl;
+		else
+		{
+			std::cout << "清仓完成||没有持仓" << std::endl;
 			break;
 		}
-		else {
-			std::cout << "持仓未清空或挂单未成交，等待 5 秒..." << std::endl;
-			cwSleep(5000);
-		}
-	}
-	if (waitCount >= maxWait) {
-		std::cout << "超过最大等待次数，可能仍有未清仓持仓，请人工检查。" << std::endl;
 	}
 }
 
