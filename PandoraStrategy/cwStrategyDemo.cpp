@@ -80,7 +80,6 @@ void cwStrategyDemo::PriceUpdate(cwMarketDataPtr pPriceData)
 				std::cout << "[" << pPriceData->InstrumentID << "] 撤销未成交挂单，准备重新挂单..." << std::endl;
 				if (pPos) { TryAggressiveClose(pPriceData, pPos); }
 				int count = std::count_if(WaitOrderList.begin(), WaitOrderList.end(), [&](const auto& pair) { return pair.first.InstrumentID == pPriceData->InstrumentID; });
-
 				std::cout << "[" << pPriceData->InstrumentID << "] 等待挂单成交中，挂单数：" << count << std::endl;
 			}
 		}
@@ -269,6 +268,7 @@ void cwStrategyDemo::AutoCloseAllPositionsLoop() {
 
 	while (waitCount++ < maxWait)
 	{
+		auto [hour, minute, second] = IsTradingTime();
 		GetPositionsAndActiveOrders(CurrentPosMap, WaitOrderList);
 		bool allCleared = true;
 
@@ -279,18 +279,18 @@ void cwStrategyDemo::AutoCloseAllPositionsLoop() {
 				allCleared = false;
 				continue;
 			}
-			if (!CurrentPosMap[id])
+			if (!CurrentPosMap[id]) // 情况 1: 无持仓 + 无挂单 => 清仓完毕
 			{
-				std::cout << "[" << id << "] 存在挂单，等待成交中...（挂单已存在 " << pendingRetryCounter[id] << " 轮）" << std::endl;
+				std::cout << "[" << id << "] 持仓清空完毕。" << std::endl;
 				allCleared = false;
 				continue;
 			}
-			else if (CurrentPosMap[id] && !IsPendingOrder(id)) {  // 无挂单，有持仓，发出平仓单
+			else if (CurrentPosMap[id] && !IsPendingOrder(id)) {  //情况 2: 有持仓, 无挂单，发出平仓单
 				TryAggressiveClose(md, CurrentPosMap[id]);
 				std::cout << "[" << md->InstrumentID << "] 清仓指令已发送。" << std::endl;
 				allCleared = false;
 			}
-			else  // 情况 3：有挂单 或 有持仓 => 撤单 + 重新挂清仓单
+			else  // 情况 3: 有挂单 或 有持仓 => 撤单 + 重新挂清仓单
 			{
 				pendingRetryCounter[id]++;
 				if (pendingRetryCounter[id] >= maxPendingRetryBeforeCancel) {
@@ -305,7 +305,7 @@ void cwStrategyDemo::AutoCloseAllPositionsLoop() {
 					allCleared = false;
 				}
 				else {
-					std::cout << "[" << id << "] 存在挂单，等待成交中...（挂单已存在 "<< pendingRetryCounter[id] << " 轮）" << std::endl;
+					std::cout << "[" << id << "] 存在挂单，等待成交中...（挂单已存在 " << pendingRetryCounter[id] << " 轮）" << std::endl;
 					allCleared = false;
 					continue;
 				}
@@ -313,8 +313,7 @@ void cwStrategyDemo::AutoCloseAllPositionsLoop() {
 
 		}
 		// 日志时间戳
-		std::time_t now = std::time(nullptr);
-		std::cout << "[" << std::put_time(std::localtime(&now), "%H:%M:%S") << "] 第 " << waitCount << " 轮检查。" << std::endl;
+		std::cout << "[" << "hour:minute:second" << "] 第 " << waitCount << " 轮检查。" << std::endl;
 
 		if (allCleared) {
 			std::cout << "所有持仓已清空，无挂单。退出清仓循环。" << std::endl;
