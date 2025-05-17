@@ -268,35 +268,31 @@ void cwStrategyDemo::AutoCloseAllPositionsLoop() {
 	std::map<std::string, bool> instrumentCloseFlag;    // 是否触发收盘平仓
 
 	GetPositions(CurrentPosMap);
-	for (auto& [id, pos] : CurrentPosMap) {
-		instrumentCloseFlag[id] = false;
-	}
+	for (auto& [id, pos] : CurrentPosMap) { instrumentCloseFlag[id] = false; }
 
 	while (true)
 	{
-		if (!AllInstrumentClosed(instrumentCloseFlag)) {
+		if (!AllInstrumentClosed(instrumentCloseFlag)) 
+		{
 			auto [hour, minute, second] = IsTradingTime();
 			GetPositionsAndActiveOrders(CurrentPosMap, WaitOrderList);
 
 			for (auto& [id, pos] : CurrentPosMap) {
 				auto md = GetLastestMarketData(id);
-				if (!md) {
-					std::cout << "[" << id << "] 无有效行情数据，跳过。" << std::endl;
-					continue;
-				}
+				if (!md) { std::cout << "[" << id << "] 无有效行情数据，跳过。" << std::endl;continue; }
 				if (!CurrentPosMap[id]) // 情况 1: 无持仓 + 无挂单 => 清仓完毕
 				{
 					std::cout << "[" << id << "] 持仓清空完毕。" << std::endl;
 					instrumentCloseFlag[id] = true;
 					continue;
 				}
-				else if (CurrentPosMap[id] && !IsPendingOrder(id)) {  //情况 2: 有持仓, 无挂单，发出平仓单
+				else if (CurrentPosMap[id] && !IsPendingOrder(id)) {  //情况 2: 有持仓 + 无挂单 => 发出平仓单
 					TryAggressiveClose(md, CurrentPosMap[id]);
 					std::cout << "[" << md->InstrumentID << "] 清仓指令已发送。" << std::endl;
 				}
 				else  // 情况 3: 有挂单 或 有持仓 => 撤单 + 重新挂清仓单
 				{
-					if (++pendingRetryCounter[id] >= 3) {
+					if (++pendingRetryCounter[id] <= 3) {
 						std::cout << "[" << id << "] 挂单存在超过 " << "3" << " 轮，可能挂死，撤单重挂。" << std::endl;
 						for (auto& [key, order] : WaitOrderList) {
 							if (key.InstrumentID == id) {
@@ -306,16 +302,17 @@ void cwStrategyDemo::AutoCloseAllPositionsLoop() {
 						if (CurrentPosMap[id]) { TryAggressiveClose(md, CurrentPosMap[id]); }//重新挂
 					}
 					else {
-						std::cout << "[" << id << "] 存在挂单，等待成交中...（挂单已存在 " << pendingRetryCounter[id] << " 轮）" << std::endl;
+						std::cout << id << "没有清仓完成" << std::endl;
+						instrumentCloseFlag[id] = true;
 						continue;
 					}
 				}
-				cwSleep(5000);
 			}
+			cwSleep(5000);
 		}
 		else
 		{
-			std::cout << "清仓完成||没有持仓" << std::endl;
+			std::cout << "所有持仓已清空，无挂单。退出清仓循环。" << std::endl;
 			break;
 		}
 	}
