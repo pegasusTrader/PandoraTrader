@@ -56,19 +56,22 @@ void cwStrategyDemo::PriceUpdate(cwMarketDataPtr pPriceData)
 			bool hasPos = (pPos && (pPos->LongPosition->TotalPosition > 0 || pPos->ShortPosition->TotalPosition > 0));
 			bool hasOrder = IsPendingOrder(pPriceData->InstrumentID);
 
-			if (!hasPos && !hasOrder)  // 情况 1：无持仓 + 无挂单 => 清仓完毕
+			// 情况 1：无持仓 + 无挂单 => 清仓完毕
+			if (!hasPos && !hasOrder)  
 			{
 				std::cout << "[" << pPriceData->InstrumentID << "] 持仓清空完毕。" << std::endl;
 				instrumentCloseFlag[pPriceData->InstrumentID] = true;
 				return;
 			}
-			else if (hasPos && !hasOrder)  // 情况 2：有持仓 + 无挂单 => 初次挂清仓单
+			// 情况 2：有持仓 + 无挂单 => 初次挂清仓单
+			else if (hasPos && !hasOrder) 
 			{
 				TryAggressiveClose(pPriceData, pPos);
 				std::cout << "[" << pPriceData->InstrumentID << "] 清仓指令已发送。" << std::endl;
 				return;
 			}
-			else  // 情况 3：有挂单 或 有持仓 => 撤单 + 重新挂清仓单
+			// 情况 3：有挂单 或 有持仓 => 撤单 + 重新挂清仓单
+			else 
 			{
 				if (++closeAttemptCount[pPriceData->InstrumentID] > 3) {
 					std::cout << "[" << pPriceData->InstrumentID << "] 超过最大等待次数，可能仍有未清仓持仓，请人工检查。" << std::endl;
@@ -272,39 +275,46 @@ void cwStrategyDemo::AutoCloseAllPositionsLoop() {
 
 	while (true)
 	{
-		if (!AllInstrumentClosed(instrumentCloseFlag)) 
+		if (!AllInstrumentClosed(instrumentCloseFlag))
 		{
 			auto [hour, minute, second] = IsTradingTime();
 			GetPositionsAndActiveOrders(CurrentPosMap, WaitOrderList);
 
-			for (auto& [id, pos] : CurrentPosMap) {
+			for (auto& [id, pos] : CurrentPosMap) 
+			{
 				auto md = GetLastestMarketData(id);
 				if (!md) { std::cout << "[" << id << "] 无有效行情数据，跳过。" << std::endl;continue; }
-				if (!CurrentPosMap[id]) // 情况 1: 无持仓 + 无挂单 => 清仓完毕
+
+				bool noLong = pos->LongPosition->TotalPosition == 0;
+				bool noShort = pos->ShortPosition->TotalPosition == 0;
+				bool noOrder = !IsPendingOrder(id);
+
+				// 情况 1: 无持仓 + 无挂单 => 清仓完毕
+				if (noLong && noShort && noOrder) 
 				{
 					std::cout << "[" << id << "] 持仓清空完毕。" << std::endl;
 					instrumentCloseFlag[id] = true;
 					continue;
 				}
-				else if (CurrentPosMap[id] && !IsPendingOrder(id)) {  //情况 2: 有持仓 + 无挂单 => 发出平仓单
+				//情况 2: 有持仓 + 无挂单 => 发出平仓单
+				else if ((!noLong || !noShort) && noOrder) { 
 					TryAggressiveClose(md, CurrentPosMap[id]);
 					std::cout << "[" << md->InstrumentID << "] 清仓指令已发送。" << std::endl;
 				}
-				else  // 情况 3: 有挂单 或 有持仓 => 撤单 + 重新挂清仓单
+				// 情况 3: 有挂单 或 有持仓 => 撤单 + 重新挂清仓单
+				else  
 				{
-					if (++pendingRetryCounter[id] <= 3) {
-						std::cout << "[" << id << "] 挂单存在超过 " << "3" << " 轮，可能挂死，撤单重挂。" << std::endl;
-						for (auto& [key, order] : WaitOrderList) {
-							if (key.InstrumentID == id) {
-								CancelOrder(order); //撤单
-							}
-						}
-						if (CurrentPosMap[id]) { TryAggressiveClose(md, CurrentPosMap[id]); }//重新挂
-					}
-					else {
-						std::cout << id << "没有清仓完成" << std::endl;
+					if (pendingRetryCounter[id] >= 3) {
+						std::cout << "[" << id << "] 超过最大尝试次数，清仓失败。" << std::endl;
 						instrumentCloseFlag[id] = true;
 						continue;
+					}
+					else {
+						++pendingRetryCounter[id];
+						std::cout << "[" << id << "] 存在挂单，撤单重挂（尝试第 " << pendingRetryCounter[id] << " 次）" << std::endl;
+						
+						for (auto& [key, order] : WaitOrderList) { if (key.InstrumentID == id) { CancelOrder(order); } }// 撤单
+						if (CurrentPosMap[id]) { TryAggressiveClose(md, CurrentPosMap[id]); }//重挂
 					}
 				}
 			}
