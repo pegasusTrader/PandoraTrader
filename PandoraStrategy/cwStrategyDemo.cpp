@@ -98,10 +98,7 @@ void cwStrategyDemo::PriceUpdate(cwMarketDataPtr pPriceData)
 void cwStrategyDemo::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKindleStrategy::cwKindleSeriesPtr pKindleSeries) {
 	if (pPriceData.get() == NULL) { return; }
 
-	timePara _timePara = IsTradingTime();
-	auto hour = _timePara.hour;
-	auto minute = _timePara.minute;
-	auto second = _timePara.second;
+	auto [hour, minute, second] = IsTradingTime();
 
 	if (IsNormalTradingTime(hour, minute))
 	{
