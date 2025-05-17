@@ -94,11 +94,10 @@ inline bool IsNormalTradingTime(int hour, int minute) {
 		(time >= 1330 && time < 1445);    // ÏÂÎç
 }
 
-inline bool IsClosingTime(int hour, int minute) {
-	return (hour == 14 && minute >= 45) || (hour == 15 && minute == 0);
-}
+inline bool IsClosingTime(int hour, int minute) { return (hour == 14 && minute >= 45) || (hour == 15 && minute == 0); }
 
-inline bool IsAfterMarket(int hour, int minute) {
-	return hour == 15 && minute >= 0 && minute < 10;
-}
+inline bool IsAfterMarket(int hour, int minute) { return hour == 15 && minute >= 0 && minute < 10; }
+
+inline int GetCurrentTimeInSeconds() { time_t now = std::time(nullptr);return static_cast<int>(now); }
+
 
