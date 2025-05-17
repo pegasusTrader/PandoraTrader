@@ -29,7 +29,7 @@ public:
 	// 自动平昨仓函数
 	void AutoCloseAllPositionsLoop();
 
-	std::map<std::string, std::deque<cwOrderPtr>> TryAggressiveClose(cwMarketDataPtr pPriceData, cwPositionPtr pPos);
+	void TryAggressiveClose(cwMarketDataPtr pPriceData, cwPositionPtr pPos);
 	//当前时间
 	std::string m_strCurrentUpdateTime;
 	// bar更新
