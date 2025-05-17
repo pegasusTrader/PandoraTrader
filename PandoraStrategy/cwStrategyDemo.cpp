@@ -80,11 +80,8 @@ void cwStrategyDemo::PriceUpdate(cwMarketDataPtr pPriceData)
 						CancelOrder(order);
 					}
 				}
-
 				std::cout << "[" << pPriceData->InstrumentID << "] 撤销未成交挂单，准备重新挂单..." << std::endl;
-
 				if (pPos) { TryAggressiveClose(pPriceData, pPos); }
-
 				std::cout << "[" << pPriceData->InstrumentID << "] 等待挂单成交中，挂单数：" << WaitOrderList.size() << std::endl;
 			}
 		}
