@@ -142,7 +142,8 @@ void cwStrategyDemo::OnRtnOrder(cwOrderPtr pOrder, cwOrderPtr pOriginOrder)
 		// 可选：你也可以更新该挂单的信息（部分成交数量等）
 	}
 
-}       
+}
+
 void cwStrategyDemo::OnOrderCanceled(cwOrderPtr pOrder)
 {
 	if (pOrder->OrderStatus == '5') { // 拒单
@@ -150,6 +151,7 @@ void cwStrategyDemo::OnOrderCanceled(cwOrderPtr pOrder)
 		//pendingContracts.erase(pOrder->InstrumentID); // 强制移除，避免阻塞
 	}
 }
+
 void cwStrategyDemo::OnReady()
 {
 
