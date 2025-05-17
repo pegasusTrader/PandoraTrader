@@ -257,13 +257,14 @@ void cwStrategyDemo::UpdateBarData() {
 	for (const auto& futInfMng : tarFutInfo) { instrumentCloseFlag[futInfMng.first] = false; }
 }
 
-void cwStrategyDemo::AutoCloseAllPositionsLoop() {
-
-	//定义map，用于保存持仓信息 
-	std::map<std::string, cwPositionPtr> CurrentPosMap;
+void cwStrategyDemo::AutoCloseAllPositionsLoop() 
+{
+	std::map<std::string, cwPositionPtr> CurrentPosMap; //定义map，用于保存持仓信息 
+	std::map<std::string, int> retryCounter; // 每个合约挂单重试计数器
 
 	int waitCount = 0;
 	const int maxWait = 60;
+	const int maxRetryBeforeReorder = 3;  // 连续几轮没有挂单就重挂
 
 	while (waitCount++ < maxWait)
 	{
@@ -278,7 +279,7 @@ void cwStrategyDemo::AutoCloseAllPositionsLoop() {
 				continue;
 			}
 
-			// 检查该合约是否存在挂单
+			// 检查是否有挂单
 			bool hasPendingOrder = false;
 			for (auto& [key, order] : WaitOrderList) {
 				if (key.InstrumentID == id) {
@@ -287,30 +288,43 @@ void cwStrategyDemo::AutoCloseAllPositionsLoop() {
 				}
 			}
 
+			bool hasPosition = pos->LongPosition->TotalPosition > 0 || pos->ShortPosition->TotalPosition > 0;
+
+			if (!hasPosition) {
+				retryCounter.erase(id); // 无持仓了，清理计数
+				continue;
+			}
+
 			if (hasPendingOrder) {
 				std::cout << "[" << id << "] 存在挂单，等待成交中..." << std::endl;
+				retryCounter[id] = 0; // 挂单存在，计数归零
 				allCleared = false;
 				continue;
 			}
 
-			// 无挂单，有持仓，发出平仓单
-			if (pos->LongPosition->TotalPosition > 0) {
-				double bid = md->BidPrice1;
-				if (bid > 1e-6) {
-					EasyInputMultiOrder(id.c_str(), -pos->LongPosition->TotalPosition, bid);
-					std::cout << "[" << id << "] 平多仓 -> 数量: " << pos->LongPosition->TotalPosition << ", 价格: " << bid << std::endl;
+			// 没有挂单，说明有可能前面的挂单没有成交也没留存，进行重挂判断
+			retryCounter[id]++;
+			if (retryCounter[id] >= maxRetryBeforeReorder) {
+				std::cout << "[" << id << "] 长时间未成交，重新挂单。" << std::endl;
+
+				if (pos->LongPosition->TotalPosition > 0 && md->BidPrice1 > 1e-6) {
+					EasyInputMultiOrder(id.c_str(), -pos->LongPosition->TotalPosition, md->BidPrice1);
+					std::cout << "[" << id << "] 平多仓 -> 数量: " << pos->LongPosition->TotalPosition << ", 价格: " << md->BidPrice1 << std::endl;
 					allCleared = false;
 				}
+				if (pos->ShortPosition->TotalPosition > 0 && md->AskPrice1 > 1e-6) {
+					EasyInputMultiOrder(id.c_str(), pos->ShortPosition->TotalPosition, md->AskPrice1);
+					std::cout << "[" << id << "] 平空仓 -> 数量: " << pos->ShortPosition->TotalPosition << ", 价格: " << md->AskPrice1 << std::endl;
+					allCleared = false;
+				}
+				retryCounter[id] = 0; // 重挂后计数归零
 			}
-			if (pos->ShortPosition->TotalPosition > 0) {
-				double ask = md->AskPrice1;
-				if (ask > 1e-6) {
-					EasyInputMultiOrder(id.c_str(), pos->ShortPosition->TotalPosition, ask);
-					std::cout << "[" << id << "] 平空仓 -> 数量: " << pos->ShortPosition->TotalPosition << ", 价格: " << ask << std::endl;
-					allCleared = false;
-				}
+			else {
+				std::cout << "[" << id << "] 没有挂单，等待达到重挂条件...（当前: " << retryCounter[id] << "）" << std::endl;
+				allCleared = false;
 			}
 		}
+
 		// 日志时间戳
 		std::time_t now = std::time(nullptr);
 		std::cout << "[" << std::put_time(std::localtime(&now), "%H:%M:%S") << "] 第 " << waitCount << " 轮检查。" << std::endl;
@@ -324,10 +338,12 @@ void cwStrategyDemo::AutoCloseAllPositionsLoop() {
 			cwSleep(5000);
 		}
 	}
+
 	if (waitCount >= maxWait) {
 		std::cout << "超过最大等待次数，可能仍有未清仓持仓，请人工检查。" << std::endl;
 	}
 }
+
 
 void cwStrategyDemo::UpdateCtx(cwMarketDataPtr pPriceData)
 {
@@ -356,8 +372,6 @@ void cwStrategyDemo::TryAggressiveClose(cwMarketDataPtr pPriceData, cwPositionPt
 
 orderInfo cwStrategyDemo::StrategyPosOpen(cwMarketDataPtr pPriceData, orderInfo& order)
 {
-
-	// 计算标准差
 	// 计算 stdShort
 	std::vector<double> retBarSubsetShort(std::prev(comBarInfo.retBar[pPriceData->InstrumentID].end(), tarFutInfo[pPriceData->InstrumentID].Rs), comBarInfo.retBar[pPriceData->InstrumentID].end());
 	double stdShort = SampleStd(retBarSubsetShort);
