@@ -46,8 +46,56 @@ void cwStrategyDemo::PriceUpdate(cwMarketDataPtr pPriceData)
 	auto [hour, minute, second] = IsTradingTime();
 
 	if (IsNormalTradingTime(hour, minute)) {
-		// cwOrderInfo[pPriceData->InstrumentID]
-		// 下单
+		std::string instrument = pPriceData->InstrumentID;
+
+		auto it = cwOrderInfo.find(instrument);
+		if (it == cwOrderInfo.end()) return; // 没有信号
+
+		orderInfo& info = it->second;
+
+		cwPositionPtr pPos = nullptr;
+		GetPositionsAndActiveOrders(pPriceData->InstrumentID, pPos, WaitOrderList); // 获取指定持仓和挂单列表
+
+		bool hasOrder = IsPendingOrder(pPriceData->InstrumentID);
+
+		int now = GetCurrentTimeInSeconds();
+
+		if (lastCloseAttemptTime[pPriceData->InstrumentID] == 0 || now - lastCloseAttemptTime[pPriceData->InstrumentID] >= 5)
+		{
+			lastCloseAttemptTime[pPriceData->InstrumentID] = now;
+
+			bool result = (info.volume == pPos->LongPosition->TodayPosition) ? true : (info.volume == pPos->ShortPosition->TodayPosition) ? true : false;
+
+			if (result) {
+				cwOrderInfo.erase(instrument);
+			}
+			else {
+				if (!hasOrder) {
+					EasyInputOrder(info.szInstrumentID.c_str(), info.volume, info.price);
+					//cwOrderInfo.erase(instrument); //这个好像不能在这里erase
+					return;
+				}
+				else if (hasOrder)
+				{
+					if (++closeAttemptCount[pPriceData->InstrumentID] > 3) {
+						std::cout << "[" << pPriceData->InstrumentID << "] 超过最大次数，还未挂上单子，请人工检查。" << std::endl;
+						return;
+					}
+					else
+					{
+						for (auto& [key, order] : WaitOrderList) {
+							if (key.InstrumentID == pPriceData->InstrumentID) {
+								CancelOrder(order);
+							}
+						}
+						std::cout << "[" << pPriceData->InstrumentID << "] 撤销未成交挂单，准备重新挂单..." << std::endl;
+						if (pPos) { TryAggressiveClose(pPriceData, pPos); }
+						int count = std::count_if(WaitOrderList.begin(), WaitOrderList.end(), [&](const auto& pair) { return pair.first.InstrumentID == pPriceData->InstrumentID; });
+						std::cout << "[" << pPriceData->InstrumentID << "] 等待挂单成交中，挂单数：" << count << std::endl;
+					}
+				}
+			}
+		}
 	}
 
 	if (IsClosingTime(hour, minute) && !instrumentCloseFlag[pPriceData->InstrumentID])
