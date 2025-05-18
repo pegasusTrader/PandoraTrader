@@ -1,0 +1,68 @@
+第一步：获取最近60天交易日序列
+把这些交易日存在一个vector里面
+std::vector<std::string> tradeDate;
+
+第二步：获取日期字符串映射
+std::map<std::string, std::string> calendar;
+
+第三步：加载当天策略配置参数：（这其实是加载策略信息）**********
+std::map<std::string, paraMng> verDictCur
+合约：长周期，短周期
+
+第四步：需要参与交易的交易代码 
+std::vector<std::string> tarCateList;（通过verDictCur而来）
+
+第五步：加载合约信息
+ std::map<std::string, futInfMng> futInfDict;**************
+
+第六步：好像生成了一个字典
+key是tradeDate value是trade_date -1
+
+第七步：主力合约的乘数和累计乘数
+std::unordered_map<mainCtrKeys, mainCtrValues> MainInf
+key：date 和 contract date都是同一天 contract 是要交易的合约
+value：合约代码  复权银子 累计复权银子
+
+
+目标交易合约代码
+std::map<std::string, std::string> codeTractCur; // 目标交易合约 是code
+static std::map<std::string, std::string> codeTractCur; // 目标交易合约（contract和code配对）
+
+目标合约因子数据
+ std::map<std::string, double> factorDictCur; （code 和 accfactor）
+
+
+对日期进行循环：
+得到barflow，合约：对印的分钟数
+
+对barflow进行复权，使得数据连续
+
+复权后的价格变成收益率数据
+
+算出需要多少张合约：
+100000 / 品种/（价格*手数*保证金比例）
+
+
+                [价格更新]
+                     ↓
+             是否为收盘时间？
+                     ↓
+       是否已完成清仓（flag）？
+                     ↓
+    ┌────────────┬────────────┐
+    │            │            │
+无持仓 + 无挂单 有持仓 + 无挂单   有挂单（可能有持仓）
+    │            │            │
+更新 flag     下第一次挂单     判断尝试次数 > MaxRetry ?
+                                 ↓
+                          是：放弃清仓 + log
+                          否：撤单 + 重新挂单
+
+
+
+
+
+
+
+
+

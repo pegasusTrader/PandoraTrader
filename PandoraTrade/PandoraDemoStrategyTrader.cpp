@@ -9,20 +9,21 @@
 //This software is provided "as is" with no expressed or implied warranty.I accept no liability for any damage or loss of business that this software may cause.
 //
 
-//#define EMPTYSTRATEGY
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/xml_parser.hpp>
+#include <filesystem>
 
 #include <thread>
 #include <iostream>
 
+#include <cstring>
+#include <string>
 #include <string.h>
+#include <stdio.h>
 #include "cwFtdMdSpi.h"
 #include "cwFtdTradeSpi.h"
-//#include "cwMarketDataReceiver.h"
-#ifdef EMPTYSTRATEGY
-#include "cwEmptyStrategy.h"
-#else
+
 #include "cwStrategyDemo.h"
-#endif
 #include "tinyxml.h"
 #include "cwBasicCout.h"
 #include "cwVersion.h"
@@ -34,24 +35,13 @@
 #endif // WIN32
 
 
-//本程序互斥量，用于判断是否有该程序在运行
-#ifdef WIN32
-HANDLE  m_hAppMutex(NULL);
-#endif
+#define MAX_PATH 260
 
-#ifndef MAX_PATH
-#define MAX_PATH          260
-#endif // !MAX_PATH
 
 //price Server
 cwFtdMdSpi				m_mdCollector;
 cwFtdTradeSpi			m_TradeChannel;
-#ifdef EMPTYSTRATEGY
-cwEmptyStrategy			m_cwStategy;
-#else
 cwStrategyDemo			m_cwStategy;
-#endif
-
 cwBasicCout				m_cwShow;
 
 //XML Config Parameter
@@ -75,159 +65,51 @@ std::string				m_strStrategyConfigFile;
 std::string				m_strHisDataFolder;
 
 
-#ifdef WIN32
-#define GetCharElement(Type, Name) const char * psz##Name = Element->Attribute(#Name);\
-if (psz##Name != NULL)\
-{\
-	strcpy_s(m_sz##Type##Name, psz##Name);\
-}
-#else
-#define GetCharElement(Type, Name) const char * psz##Name = Element->Attribute(#Name);\
-if (psz##Name != NULL)\
-{\
-	strcpy(m_sz##Type##Name, psz##Name);\
-}
-#endif // WIN32
+namespace fs = std::filesystem;
 
 
 bool ReadXmlConfigFile()
 {
-	char exeFullPath[MAX_PATH];
-	memset(exeFullPath, 0, MAX_PATH);
-	std::string strFullPath;
-#ifdef WIN32
-	WCHAR TexeFullPath[MAX_PATH] = { 0 };
+	// 创建一个 property_tree 对象
+	boost::property_tree::ptree pt;
 
-	GetModuleFileName(NULL, TexeFullPath, MAX_PATH);
-	int iLength;
-	//获取字节长度   
-	iLength = WideCharToMultiByte(CP_ACP, 0, TexeFullPath, -1, NULL, 0, NULL, NULL);
-	//将tchar值赋给_char    
-	WideCharToMultiByte(CP_ACP, 0, TexeFullPath, -1, exeFullPath, iLength, NULL, NULL);
-#else
-	size_t cnt = readlink("/proc/self/exe", exeFullPath, MAX_PATH);
-	if (cnt < 0 || cnt >= MAX_PATH)
-	{
-		printf("***Error***\n");
-		exit(-1);
-	}
-#endif // WIN32
+	// 从 XML 文件中读取数据
+	boost::property_tree::read_xml("PandoraTraderConfig.xml", pt);
 
-	strFullPath = exeFullPath;
-	strFullPath = strFullPath.substr(0, strFullPath.find_last_of("/\\"));
+	// 访问 XML 中的 MD 数据
+	std::string Front = pt.get<std::string>("Config.User.MarketDataServer.<xmlattr>.Front");
+	std::string BrokerID = pt.get<std::string>("Config.User.MarketDataServer.<xmlattr>.BrokerID");
+	std::string UserID = pt.get<std::string>("Config.User.MarketDataServer.<xmlattr>.UserID");
+	std::string PassWord = pt.get<std::string>("Config.User.MarketDataServer.<xmlattr>.PassWord");
 
-#ifdef WIN32
-	strFullPath.append("\\PandoraTraderConfig.xml");
-#else
-	strFullPath.append("/PandoraTraderConfig.xml");
-#endif // WIN32
+	snprintf(m_szMdFront, sizeof(m_szMdFront), "%s", Front.c_str());
+	snprintf(m_szMdBrokerID, sizeof(m_szMdBrokerID), "%s", BrokerID.c_str());
+	snprintf(m_szMdUserID, sizeof(m_szMdUserID), "%s", UserID.c_str());
+	snprintf(m_szMdPassWord, sizeof(m_szMdPassWord), "%s", PassWord.c_str());
 
-	m_cwShow.AddLog("Get Account Config File : %s", strFullPath.c_str());
+	//// 访问 XML 中的 TD 数据
+	std::string Front_ = pt.get<std::string>("Config.User.TradeServer.<xmlattr>.Front");
+	std::string BrokerID_ = pt.get<std::string>("Config.User.TradeServer.<xmlattr>.BrokerID");
+	std::string UserID_ = pt.get<std::string>("Config.User.TradeServer.<xmlattr>.UserID");
+	std::string PassWord_ = pt.get<std::string>("Config.User.TradeServer.<xmlattr>.PassWord");
+	std::string ProductInfo_ = pt.get<std::string>("Config.User.TradeServer.<xmlattr>.ProductInfo");
+	std::string AppID_ = pt.get<std::string>("Config.User.TradeServer.<xmlattr>.AppID");
+	std::string AuthCode_ = pt.get<std::string>("Config.User.TradeServer.<xmlattr>.AuthCode");
 
-	TiXmlDocument doc(strFullPath.c_str());
-	bool loadOkay = doc.LoadFile(TIXML_ENCODING_LEGACY);
-
-	if (!loadOkay)
-	{
-		m_cwShow.AddLog("Load PandoraTraderConfig File Failed ! ");
-		return false;
-	}
-
-	TiXmlNode* RootNode = doc.RootElement();
-	if (RootNode != NULL)
-	{
-		//Read General
-		TiXmlNode* ChildNode = RootNode->FirstChild("User");
-		if (ChildNode != NULL)
-		{
-			TiXmlNode* SubChildNode = ChildNode->FirstChild("MarketDataServer");
-			if (SubChildNode != NULL)
-			{
-				TiXmlElement * Element = SubChildNode->ToElement();
-				GetCharElement(Md, Front);
-				GetCharElement(Md, BrokerID);
-				GetCharElement(Md, UserID);
-				GetCharElement(Md, PassWord);
-			}
-
-			SubChildNode = ChildNode->FirstChild("TradeServer");
-			if (SubChildNode != NULL)
-			{
-				TiXmlElement * Element = SubChildNode->ToElement();
-				GetCharElement(Td, Front);
-				GetCharElement(Td, BrokerID);
-				GetCharElement(Td, UserID);
-				GetCharElement(Td, PassWord);
-				GetCharElement(Td, ProductInfo);
-				GetCharElement(Td, AppID);
-				GetCharElement(Td, AuthCode);
-				GetCharElement(Td, DllPath);
-			}
-		}
-
-		ChildNode = RootNode->FirstChild("Subscription");
-		if (ChildNode != NULL)
-		{
-			TiXmlNode* SubChildNode = ChildNode->FirstChild("Instrument");
-			while (SubChildNode != NULL)
-			{
-				TiXmlElement * Element = SubChildNode->ToElement();
-				const char * pszTemp = Element->Attribute("ID");
-				if (pszTemp != NULL)
-				{
-					m_SubscribeInstrument.push_back(pszTemp);
-				}
-				SubChildNode = SubChildNode->NextSibling("Instrument");
-			}
-		}
-
-		m_strStrategyConfigFile.clear();
-		ChildNode = RootNode->FirstChild("StrategyConfigFile");
-		if (ChildNode != NULL)
-		{
-			TiXmlElement * Element = ChildNode->ToElement();
-			const char * pszTemp = Element->GetText();
-			if (pszTemp != NULL)
-			{
-				m_strStrategyConfigFile = pszTemp;
-			}
-		}
-
-		m_strHisDataFolder.clear();
-		ChildNode = RootNode->FirstChild("HisDataFolder");
-		if (ChildNode != nullptr)
-		{
-			TiXmlElement * Element = ChildNode->ToElement();
-			const char * pszTemp = Element->GetText();
-			if (pszTemp != NULL)
-			{
-				m_strHisDataFolder = pszTemp;
-			}
-		}
-	}
+	snprintf(m_szTdFront, sizeof(m_szTdFront), "%s", Front_.c_str());
+	snprintf(m_szTdBrokerID, sizeof(m_szTdBrokerID), "%s", BrokerID_.c_str());
+	snprintf(m_szTdUserID, sizeof(m_szTdUserID), "%s", UserID_.c_str());
+	snprintf(m_szTdPassWord, sizeof(m_szTdPassWord), "%s", PassWord_.c_str());
+	snprintf(m_szTdProductInfo, sizeof(m_szTdProductInfo), "%s", ProductInfo_.c_str());
+	snprintf(m_szTdAppID, sizeof(m_szTdAppID), "%s", AppID_.c_str());
+	snprintf(m_szTdAuthCode, sizeof(m_szTdAuthCode), "%s", AuthCode_.c_str());
 
 	return true;
 }
 
-void ResetParameter()
-{
-	memset(m_szMdFront, 0, sizeof(m_szMdFront));
-	memset(m_szMdBrokerID, 0, sizeof(m_szMdBrokerID));
-	memset(m_szMdUserID, 0, sizeof(m_szMdUserID));
-	memset(m_szMdPassWord, 0, sizeof(m_szMdPassWord));
-
-	memset(m_szTdFront, 0, sizeof(m_szTdFront));
-	memset(m_szTdBrokerID, 0, sizeof(m_szTdBrokerID));
-	memset(m_szTdUserID, 0, sizeof(m_szTdUserID));
-	memset(m_szTdPassWord, 0, sizeof(m_szTdPassWord));
-	memset(m_szTdProductInfo, 0, sizeof(m_szTdProductInfo));
-	memset(m_szTdAppID, 0, sizeof(m_szTdAppID));
-	memset(m_szTdAuthCode, 0, sizeof(m_szTdAuthCode));
-}
-
 unsigned int PriceServerThread()
 {
-	
+
 	m_mdCollector.SetUserLoginField(m_szMdBrokerID, m_szMdUserID, m_szMdPassWord);
 	m_mdCollector.SubscribeMarketData(m_SubscribeInstrument);
 
@@ -248,72 +130,12 @@ unsigned int TradeServerThread()
 	return 0;
 }
 
-#ifdef WIN32
-bool CtrlHandler(DWORD fdwCtrlType)
-{
-	switch (fdwCtrlType)
-	{
-		// Handle the CTRL-C signal.   
-	case CTRL_C_EVENT:
-		printf("Ctrl-C event\n\n");
-		//Beep(750, 300);
-		return(TRUE);
-
-		// CTRL-CLOSE: confirm that the user wants to exit.   
-	case CTRL_CLOSE_EVENT:
-		//Beep(600, 200);
-		//printf("Ctrl-Close event\n\n");
-		m_mdCollector.DisConnect();
-		m_TradeChannel.DisConnect();
-
-#ifdef WIN32
-		if (m_hAppMutex != NULL)
-		{
-			ReleaseMutex(m_hAppMutex);
-			CloseHandle(m_hAppMutex);
-			m_hAppMutex = NULL;
-		}
-#endif
-		return(TRUE);
-
-		// Pass other signals to the next handler.   
-	case CTRL_BREAK_EVENT:
-		//Beep(900, 200);
-		printf("Ctrl-Break event\n\n");
-		return FALSE;
-
-	case CTRL_LOGOFF_EVENT:
-		//Beep(1000, 200);
-		printf("Ctrl-Logoff event\n\n");
-		return FALSE;
-
-	case CTRL_SHUTDOWN_EVENT:
-		//Beep(750, 500);
-		printf("Ctrl-Shutdown event\n\n");
-		return FALSE;
-
-	default:
-		return FALSE;
-	}
-}
-#endif // WIN32
-
 int main()
 {
-
-#ifdef WIN32
-	if (!SetConsoleCtrlHandler((PHANDLER_ROUTINE)CtrlHandler, TRUE))
-	{
-		printf("\nThe Control Handler is uninstalled.\n");
-		return 0;
-	}
-#endif // WIN32
 	std::string strStrategyName = m_cwStategy.GetStrategyName();
 
-	m_cwShow.AddLog("Welcome To Pandora Trader !!");
-	m_cwShow.AddLog("Powered By PandoraTrader:");
-	m_cwShow.AddLog("GitHub: https://github.com/pegasusTrader/PandoraTrader");
-	m_cwShow.AddLog("Gitee: https://gitee.com/wuchangsheng/PandoraTrader");
+	m_cwShow.AddLog("start:______");
+	m_cwShow.AddLog("Powered By shibusama:");
 
 	m_cwShow.AddLog("Current Version:%s", GetPandoraTraderVersion());
 	m_cwShow.AddLog("Init Config From File!");
@@ -330,62 +152,12 @@ int main()
 			m_cwShow.AddLog("%d . ", nCnt);
 			nCnt++;
 		}
-
 		return -1;
 	}
+
 	m_cwShow.AddLog("User: %s ProductInfo:%s", m_szTdUserID, m_szTdProductInfo);
 
-
-	//设置mutex 防止一个程序开多个
-	std::string strAppMutexName;
-	strAppMutexName = m_szTdUserID;
-	strAppMutexName.append("_");
-	strAppMutexName += m_cwStategy.GetStrategyName().c_str();
-
-#ifdef WIN32
-	int  unicodeLen = ::MultiByteToWideChar(CP_ACP,	0, strAppMutexName.c_str(),	-1,	NULL, 0);
-	wchar_t  * TAppMutexName = new wchar_t[unicodeLen + 1];
-	memset(TAppMutexName, 0, (unicodeLen + 1)*sizeof(wchar_t));
-	::MultiByteToWideChar(CP_ACP, 0, strAppMutexName.c_str(), -1,(LPWSTR)TAppMutexName,	unicodeLen);
-
-	//声明互斥体，同一个名称只能声明一次，如果声明两次，将返回ERROR_ALREADY_EXISTS错误。
-	m_hAppMutex = ::CreateMutex(NULL, TRUE, TAppMutexName);
-	if (m_hAppMutex == NULL || GetLastError() == ERROR_ALREADY_EXISTS)
-	{
-		m_cwShow.AddLog("已经检测到一样的策略程序在运行，请不要重复打开策略程序！");
-		m_cwShow.AddLog("程序将在5秒后自动退出！！");
-		CloseHandle(m_hAppMutex);
-		m_hAppMutex = NULL;
-		delete [] TAppMutexName;
-
-		int nCnt = 0;
-		while (nCnt < 6)
-		{
-			cwSleep(1000);
-			m_cwShow.AddLog("%d . ", nCnt);
-			nCnt++;
-		}
-		
-		return -1;
-	}
-
-	delete [] TAppMutexName;
-#endif
-
-	if (m_strHisDataFolder.size() > 0)
-	{
-		m_cwStategy.InitialHisKindleFromHisKindleFolder(m_strHisDataFolder.c_str());
-	}
-
-	if (m_strStrategyConfigFile.size() == 0)
-	{
-		m_cwStategy.InitialStrategy(NULL);
-	}
-	else
-	{
-		m_cwStategy.InitialStrategy(m_strStrategyConfigFile.c_str());
-	}
-
+	//m_cwStategy.UpdateBarData();
 
 	m_TradeChannel.RegisterBasicStrategy(dynamic_cast<cwBasicStrategy*>(&m_cwStategy));
 
@@ -396,32 +168,58 @@ int main()
 
 	std::thread m_TradeServerThread = std::thread(TradeServerThread);
 
-	
+
 	int iCnt = 0;
 	while (1)
 	{
-		
 		iCnt++;
 		if (iCnt % 20 == 0)
 		{
 			if (iCnt % 80 == 0)
 			{
-				m_cwShow.AddLog("%s %s Md:%s Trade:%s",
-					m_szTdUserID, strStrategyName.c_str(), 
+				m_cwShow.AddLog("%s\t%s\tMd:%s\tTrade:%s",
+					m_szTdUserID, strStrategyName.c_str(),
 					m_mdCollector.GetCurrentStatusString(),
 					m_TradeChannel.GetCurrentStatusString());
 			}
+			std::map<std::string, cwPositionPtr> m_PositionMap = m_TradeChannel.GetPosition();
+			if (!m_PositionMap.empty())
+			{
+				m_cwShow.AddLog("%-12s %-10s %-8s %-12s %-12s %-14s %-10s",
+					"InstrumentID", "Direction", "Volume", "OpenPriceAvg", "MktProfit", "ExchangeMargin", "OpenCost");
+				for (const auto& [instrumentID, pos] : m_PositionMap)
+				{
+					if (pos->LongPosition->TotalPosition > 0)
+					{
+						auto& p = pos->LongPosition;
+						m_cwShow.AddLog("%-12s %-10s %-8d %-12.1f %-12.1f %-14.1f %-10.1f",
+							instrumentID.c_str(), "Long",
+							p->TotalPosition, p->AveragePosPrice,
+							p->PositionProfit, p->ExchangeMargin, p->OpenCost);
+					}
+					if (pos->ShortPosition->TotalPosition > 0)
+					{
+						auto& p = pos->ShortPosition;
+						m_cwShow.AddLog("%-12s %-10s %-8d %-12.1f %-12.1f %-14.1f %-10.1f",
+							instrumentID.c_str(), "Short",
+							p->TotalPosition, p->AveragePosPrice,
+							p->PositionProfit, p->ExchangeMargin, p->OpenCost);
+					}
+				}
+			}
+			m_cwShow.AddLog("\n");
 			cwAccountPtr pAccount = m_TradeChannel.GetAccount();
 			if (pAccount.get() != NULL)
 			{
-				m_cwShow.AddLog("%s Total:%.2f Available:%.2f PL:%.2f Fee:%.2f",
+				m_cwShow.AddLog("%s\tTotal:%.2f\tAvailable:%.2f\tPL:%.2f\tFee:%.2f",
 					m_cwStategy.m_strCurrentUpdateTime.c_str(),
 					pAccount->Balance, pAccount->Available,
 					pAccount->CloseProfit + pAccount->PositionProfit - pAccount->Commission,
 					pAccount->Commission);
 			}
+
 		}
 		cwSleep(1000);
 	}
-    return 0;
+	return 0;
 }

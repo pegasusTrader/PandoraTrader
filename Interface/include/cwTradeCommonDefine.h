@@ -141,7 +141,7 @@ typedef double		cwFtdcUnderlyingMultipleType;
 ///cwFtdcRatioType是一个比率类型
 typedef double		cwFtdcRatioType;
 ///cwFtdcBrokerIDType是一个经纪公司代码类型
-typedef char		cwFtdcBrokerIDType[11];
+typedef char		cwFtdcBrokerIDType[64];
 ///cwFtdcInvestorIDType是一个投资者代码类型
 typedef char		cwFtdcInvestorIDType[19];
 ///cwFtdcOrderRefType是一个报单引用类型
@@ -149,7 +149,7 @@ typedef char		cwFtdcOrderRefType[23];
 ///cwFtdcUserIDType是一个用户代码类型
 typedef char		cwFtdcUserIDType[16];
 ///cwFtdcPasswordType是一个密码类型
-typedef char		cwFtdcPasswordType[41];
+typedef char		cwFtdcPasswordType[100];
 ///cwFtdcCombOffsetFlagType是一个组合开平标志类型
 typedef char		cwFtdcCombOffsetFlagType[5];
 ///cwFtdcCombHedgeFlagType是一个组合投机套保标志类型
