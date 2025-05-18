@@ -22,10 +22,14 @@ static std::map<std::string, futInfMng> tarFutInfo; // 策略上下文
 static barInfo comBarInfo;                          // barINfo
 static std::map<std::string, int> countLimitCur;    // 合约对应交易数量
 
+//清仓所需全局变量
 static std::map<cwActiveOrderKey, cwOrderPtr> WaitOrderList;           // 挂单列表（全局）
 static std::unordered_map<std::string, bool> instrumentCloseFlag;      // 是否触发收盘平仓
 static std::unordered_map<std::string, int> lastCloseAttemptTime;      // 合约->上次清仓尝试时间戳（秒）
 static std::unordered_map<std::string, int> closeAttemptCount;         // 用于控制重挂频率（每个合约）
+
+//交易所需全局变量
+static std::unordered_map<std::string, orderInfo> cwOrderInfo;
 
 cwStrategyDemo::cwStrategyDemo()
 {
@@ -40,6 +44,11 @@ void cwStrategyDemo::PriceUpdate(cwMarketDataPtr pPriceData)
 	if (pPriceData.get() == NULL) { return; }
 
 	auto [hour, minute, second] = IsTradingTime();
+
+	if (IsNormalTradingTime(hour, minute)) {
+		// cwOrderInfo[pPriceData->InstrumentID]
+		// 下单
+	}
 
 	if (IsClosingTime(hour, minute) && !instrumentCloseFlag[pPriceData->InstrumentID])
 	{
@@ -57,21 +66,21 @@ void cwStrategyDemo::PriceUpdate(cwMarketDataPtr pPriceData)
 			bool hasOrder = IsPendingOrder(pPriceData->InstrumentID);
 
 			// 情况 1：无持仓 + 无挂单 => 清仓完毕
-			if (!hasPos && !hasOrder)  
+			if (!hasPos && !hasOrder)
 			{
 				std::cout << "[" << pPriceData->InstrumentID << "] 持仓清空完毕。" << std::endl;
 				instrumentCloseFlag[pPriceData->InstrumentID] = true;
 				return;
 			}
 			// 情况 2：有持仓 + 无挂单 => 初次挂清仓单
-			else if (hasPos && !hasOrder) 
+			else if (hasPos && !hasOrder)
 			{
 				TryAggressiveClose(pPriceData, pPos);
 				std::cout << "[" << pPriceData->InstrumentID << "] 清仓指令已发送。" << std::endl;
 				return;
 			}
 			// 情况 3：有挂单 或 有持仓 => 撤单 + 重新挂清仓单
-			else 
+			else
 			{
 				if (++closeAttemptCount[pPriceData->InstrumentID] > 3) {
 					std::cout << "[" << pPriceData->InstrumentID << "] 超过最大等待次数，可能仍有未清仓持仓，请人工检查。" << std::endl;
@@ -103,17 +112,19 @@ void cwStrategyDemo::OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKi
 	if (IsNormalTradingTime(hour, minute))
 	{
 		UpdateCtx(pPriceData);
-		std::map<std::string, cwPositionPtr> PositionMap;
-		GetPositions(PositionMap);
-		orderInfo order;
 
-		if (PositionMap.empty())
+		cwPositionPtr pPos = nullptr;
+
+		GetPositionsAndActiveOrders(pPriceData->InstrumentID, pPos, WaitOrderList); // 获取指定持仓和挂单列表
+
+
+		if (!pPos)
 		{
-			StrategyPosOpen(pPriceData, order);
+			StrategyPosOpen(pPriceData, cwOrderInfo);
 		}
 		else
 		{
-			StrategyPosClose(pPriceData, PositionMap[pPriceData->InstrumentID], order);
+			StrategyPosClose(pPriceData, pPos, cwOrderInfo);
 		}
 	}
 	else if (IsAfterMarket(hour, minute))
@@ -277,7 +288,7 @@ void cwStrategyDemo::AutoCloseAllPositionsLoop() {
 			auto [hour, minute, second] = IsTradingTime();
 			GetPositionsAndActiveOrders(CurrentPosMap, WaitOrderList);
 
-			for (auto& [id, pos] : CurrentPosMap) 
+			for (auto& [id, pos] : CurrentPosMap)
 			{
 				if (instrumentCloseFlag[id]) continue;
 				auto md = GetLastestMarketData(id);
@@ -288,19 +299,19 @@ void cwStrategyDemo::AutoCloseAllPositionsLoop() {
 				bool noOrder = !IsPendingOrder(id);
 
 				// 情况 1: 无持仓 + 无挂单 => 清仓完毕
-				if (noLong && noShort && noOrder) 
+				if (noLong && noShort && noOrder)
 				{
 					std::cout << "[" << id << "] 持仓清空完毕。" << std::endl;
 					instrumentCloseFlag[id] = true;
 					continue;
 				}
 				//情况 2: 有持仓 + 无挂单 => 发出平仓单
-				else if ((!noLong || !noShort) && noOrder) { 
+				else if ((!noLong || !noShort) && noOrder) {
 					TryAggressiveClose(md, CurrentPosMap[id]);
 					std::cout << "[" << md->InstrumentID << "] 清仓指令已发送。" << std::endl;
 				}
 				// 情况 3: 有挂单 或 有持仓 => 撤单 + 重新挂清仓单
-				else  
+				else
 				{
 					if (pendingRetryCounter[id] >= 3) {
 						std::cout << "[" << id << "] 超过最大尝试次数，清仓失败。" << std::endl;
@@ -310,7 +321,7 @@ void cwStrategyDemo::AutoCloseAllPositionsLoop() {
 					else {
 						++pendingRetryCounter[id];
 						std::cout << "[" << id << "] 存在挂单，撤单重挂（尝试第 " << pendingRetryCounter[id] << " 次）" << std::endl;
-						
+
 						for (auto& [key, order] : WaitOrderList) { if (key.InstrumentID == id) { CancelOrder(order); } }// 撤单
 						if (CurrentPosMap[id]) { TryAggressiveClose(md, CurrentPosMap[id]); }//重挂
 					}
@@ -359,7 +370,7 @@ void cwStrategyDemo::TryAggressiveClose(cwMarketDataPtr pPriceData, cwPositionPt
 	}// 重新挂 Ask
 }
 
-orderInfo cwStrategyDemo::StrategyPosOpen(cwMarketDataPtr pPriceData, orderInfo& order)
+void cwStrategyDemo::StrategyPosOpen(cwMarketDataPtr pPriceData, std::unordered_map<std::string, orderInfo>& cwOrderInfo)
 {
 	// 计算 stdShort
 	std::vector<double> retBarSubsetShort(std::prev(comBarInfo.retBar[pPriceData->InstrumentID].end(), tarFutInfo[pPriceData->InstrumentID].Rs), comBarInfo.retBar[pPriceData->InstrumentID].end());
@@ -369,7 +380,6 @@ orderInfo cwStrategyDemo::StrategyPosOpen(cwMarketDataPtr pPriceData, orderInfo&
 	std::vector<double> retBarSubsetLong(std::prev(comBarInfo.retBar[pPriceData->InstrumentID].end(), tarFutInfo[pPriceData->InstrumentID].Rl), comBarInfo.retBar[pPriceData->InstrumentID].end());
 	double stdLong = SampleStd(retBarSubsetLong);
 
-	orderInfo order;
 	// 最新价格 < 短期价格 && 短期波动率 > 长期波动率
 	auto& barQueue = comBarInfo.queueBar[pPriceData->InstrumentID];
 	if (barQueue.back() < barQueue[barQueue.size() - tarFutInfo[pPriceData->InstrumentID].Rs] && stdShort > stdLong)
@@ -377,14 +387,14 @@ orderInfo cwStrategyDemo::StrategyPosOpen(cwMarketDataPtr pPriceData, orderInfo&
 		int tarVolume = countLimitCur[pPriceData->InstrumentID];
 		if (tarFutInfo[pPriceData->InstrumentID].Fac == "Mom_std_bar_re_dym")
 		{
-			order.volume = countLimitCur[pPriceData->InstrumentID];
+			cwOrderInfo[pPriceData->InstrumentID].volume = countLimitCur[pPriceData->InstrumentID];
 		}
 		else
 		{
-			order.volume = -countLimitCur[pPriceData->InstrumentID];
+			cwOrderInfo[pPriceData->InstrumentID].volume = -countLimitCur[pPriceData->InstrumentID];
 		}
-		order.szInstrumentID = pPriceData->InstrumentID;
-		order.price = comBarInfo.barFlow[pPriceData->InstrumentID].back();
+		cwOrderInfo[pPriceData->InstrumentID].szInstrumentID = pPriceData->InstrumentID;
+		cwOrderInfo[pPriceData->InstrumentID].price = comBarInfo.barFlow[pPriceData->InstrumentID].back();
 
 	}
 	// 最新价格 > 短期价格 && 短期波动率 > 长期波动率
@@ -393,19 +403,18 @@ orderInfo cwStrategyDemo::StrategyPosOpen(cwMarketDataPtr pPriceData, orderInfo&
 		int tarVolume = countLimitCur[pPriceData->InstrumentID];
 		if (tarFutInfo[pPriceData->InstrumentID].Fac == "Mom_std_bar_re_dym")
 		{
-			order.volume = countLimitCur[pPriceData->InstrumentID];
+			cwOrderInfo[pPriceData->InstrumentID].volume = countLimitCur[pPriceData->InstrumentID];
 		}
 		else
 		{
-			order.volume = -countLimitCur[pPriceData->InstrumentID];
+			cwOrderInfo[pPriceData->InstrumentID].volume = -countLimitCur[pPriceData->InstrumentID];
 		}
-		order.szInstrumentID = pPriceData->InstrumentID;
-		order.price = comBarInfo.barFlow[pPriceData->InstrumentID].back();
+		cwOrderInfo[pPriceData->InstrumentID].szInstrumentID = pPriceData->InstrumentID;
+		cwOrderInfo[pPriceData->InstrumentID].price = comBarInfo.barFlow[pPriceData->InstrumentID].back();
 	}
-	return order;
 }
 
-orderInfo cwStrategyDemo::StrategyPosClose(cwMarketDataPtr pPriceData, cwPositionPtr pPos, orderInfo& order)
+void cwStrategyDemo::StrategyPosClose(cwMarketDataPtr pPriceData, cwPositionPtr pPos, std::unordered_map<std::string, orderInfo>& cwOrderInfo)
 {
 	// 计算标准差
 	// 计算 stdShort
@@ -415,7 +424,6 @@ orderInfo cwStrategyDemo::StrategyPosClose(cwMarketDataPtr pPriceData, cwPositio
 	// 计算 stdLong
 	std::vector<double> retBarSubsetLong(std::prev(comBarInfo.retBar[pPriceData->InstrumentID].end(), tarFutInfo[pPriceData->InstrumentID].Rs), comBarInfo.retBar[pPriceData->InstrumentID].end());
 	double stdLong = SampleStd(retBarSubsetLong);
-	orderInfo order;
 	auto& barQueue = comBarInfo.queueBar[pPriceData->InstrumentID];
 	size_t rs = tarFutInfo[pPriceData->InstrumentID].Rs;
 	std::string FacDirection;
@@ -444,30 +452,29 @@ orderInfo cwStrategyDemo::StrategyPosClose(cwMarketDataPtr pPriceData, cwPositio
 	if (FacDirection == "Long" && (barQueue.back() > barQueue[barQueue.size() - rs] || stdShort <= stdLong)) {
 		if (tarFutInfo[pPriceData->InstrumentID].Fac == "Mom_std_bar_re_dym")
 		{
-			order.volume = countLimitCur[pPriceData->InstrumentID];
+			cwOrderInfo[pPriceData->InstrumentID].volume = countLimitCur[pPriceData->InstrumentID];
 		}
 		else
 		{
-			order.volume = -countLimitCur[pPriceData->InstrumentID];
+			cwOrderInfo[pPriceData->InstrumentID].volume = -countLimitCur[pPriceData->InstrumentID];
 		}
-		order.szInstrumentID = pPriceData->InstrumentID;
-		order.price = comBarInfo.barFlow[pPriceData->InstrumentID].back();
+		cwOrderInfo[pPriceData->InstrumentID].szInstrumentID = pPriceData->InstrumentID;
+		cwOrderInfo[pPriceData->InstrumentID].price = comBarInfo.barFlow[pPriceData->InstrumentID].back();
 	}
 	//Fac方向 =卖 && （最新价格 < 短期价格 || 短期波动率<=长期波动率）
 	else if (FacDirection == "Short" && (barQueue.back() < barQueue[barQueue.size() - rs] || stdShort <= stdLong))
 	{
 		if (tarFutInfo[pPriceData->InstrumentID].Fac == "Mom_std_bar_re_dym")
 		{
-			order.volume = countLimitCur[pPriceData->InstrumentID];
+			cwOrderInfo[pPriceData->InstrumentID].volume = countLimitCur[pPriceData->InstrumentID];
 		}
 		else
 		{
-			order.volume = -countLimitCur[pPriceData->InstrumentID];
+			cwOrderInfo[pPriceData->InstrumentID].volume = -countLimitCur[pPriceData->InstrumentID];
 		}
-		order.szInstrumentID = pPriceData->InstrumentID;
-		order.price = comBarInfo.barFlow[pPriceData->InstrumentID].back();
+		cwOrderInfo[pPriceData->InstrumentID].szInstrumentID = pPriceData->InstrumentID;
+		cwOrderInfo[pPriceData->InstrumentID].price = comBarInfo.barFlow[pPriceData->InstrumentID].back();
 	}
-	return order;
 }
 
 bool cwStrategyDemo::IsPendingOrder(std::string instrumentID)

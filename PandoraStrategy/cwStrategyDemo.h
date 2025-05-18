@@ -35,9 +35,9 @@ public:
 	// bar更新
 	void UpdateCtx(cwMarketDataPtr pPriceData);
 	// 开仓交易 条件
-	orderInfo StrategyPosOpen(cwMarketDataPtr, orderInfo& order);
+	void StrategyPosOpen(cwMarketDataPtr, std::unordered_map<std::string, orderInfo>& cwOrderInfo);
 	// 平仓交易 条件
-	orderInfo StrategyPosClose(cwMarketDataPtr pPriceData, cwPositionPtr pPos, orderInfo& order);
+	void StrategyPosClose(cwMarketDataPtr pPriceData, cwPositionPtr pPos, std::unordered_map<std::string, orderInfo>& cwOrderInfo);
 
 	bool IsPendingOrder(std::string instrumentID);
 };
