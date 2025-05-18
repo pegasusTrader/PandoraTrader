@@ -60,7 +60,7 @@ void cwStrategyDemo::PriceUpdate(cwMarketDataPtr pPriceData)
 
 		int now = GetCurrentTimeInSeconds();
 
-		if (lastCloseAttemptTime[pPriceData->InstrumentID] == 0 || now - lastCloseAttemptTime[pPriceData->InstrumentID] >= 5)
+		if (lastCloseAttemptTime[pPriceData->InstrumentID] == 0 || now - lastCloseAttemptTime[pPriceData->InstrumentID] >= 5) //挂单超时撤单判断是单一的：5秒设置根据合约活跃度动态调整时间；或者基于盘口价差判断是否撤单更具优势。
 		{
 			lastCloseAttemptTime[pPriceData->InstrumentID] = now;
 
@@ -68,6 +68,7 @@ void cwStrategyDemo::PriceUpdate(cwMarketDataPtr pPriceData)
 
 			if (result) {
 				cwOrderInfo.erase(instrument);
+				closeAttemptCount.erase(instrument);
 			}
 			else {
 				if (!hasOrder) {
@@ -118,6 +119,7 @@ void cwStrategyDemo::PriceUpdate(cwMarketDataPtr pPriceData)
 			{
 				std::cout << "[" << pPriceData->InstrumentID << "] 持仓清空完毕。" << std::endl;
 				instrumentCloseFlag[pPriceData->InstrumentID] = true;
+				closeAttemptCount.erase(pPriceData->InstrumentID);
 				return;
 			}
 			// 情况 2：有持仓 + 无挂单 => 初次挂清仓单
