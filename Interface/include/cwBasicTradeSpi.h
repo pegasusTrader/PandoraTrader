@@ -20,7 +20,8 @@
 #define CWCANCELRISK				//撤单次数风控管理
 #define CWDeclarationFeeRISK		//针对申报费的风控管理
 
-#define CWORDERSPEEDLIMIT			//报单速度限制
+//#define CWORDERSPEEDLIMIT			//报单速度限制
+#define CWORDERSPEEDCNT	15			//报单速度限制,每秒15单
 
 #define TRADELOG					//交易日志
 #define UPDATE_ORDERRANKED			//更新管理订单排队位置

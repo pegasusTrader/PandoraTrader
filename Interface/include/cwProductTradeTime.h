@@ -19,7 +19,7 @@
 //品种交易时间
 class cwProductTradeTime
 {
-
+	
 public:
 	cwProductTradeTime();
 	cwProductTradeTime(const char* filename);
@@ -64,6 +64,8 @@ public:
 	bool GetTradeTimeSpace(std::string ProductId, std::string updatetime,
 		cwTradeTimeSpace& iTradeIndex, int& iOpen, int& iClose);
 	bool GetTradeTimeSpace(std::string ProductId, uint32_t hour, uint32_t minute, uint32_t second,
+		cwTradeTimeSpace& iTradeIndex, int& iOpen, int& iClose);
+	inline bool GetTradeTimeSpace(std::vector<TradeTimePtr>& TradeTimeVec, cwPandoraTrader::cwMarketTime& time,
 		cwTradeTimeSpace& iTradeIndex, int& iOpen, int& iClose);
 
 	TradeTimePtr GetTradeTime(std::string ProductId, cwTradeTimeSpace iTradeIndex);

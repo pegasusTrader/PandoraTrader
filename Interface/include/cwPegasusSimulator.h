@@ -48,6 +48,7 @@ public:
 
 	//启动模拟器
 	bool				SimulationStart();
+	bool				NoTradingSimulationStart();				//只回放数据，不提供报单交易相关功能	
 	//启动行情服务
 	virtual bool		StartMarketDataServer();
 

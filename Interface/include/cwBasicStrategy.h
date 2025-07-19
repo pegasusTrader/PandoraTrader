@@ -21,6 +21,8 @@
 #include "cwStrategyLog.h"
 #include "cwBasicCout.h"
 
+//#define BasiStrategyLOG					//下单日志
+
 class cwBasicStrategy
 {
 public:
@@ -195,6 +197,8 @@ public:
 	void					_SetIsSimulation(bool IsSimulation = false) { m_bIsSimulation = IsSimulation; };
 
 	virtual void			_OnSimulationBegin(int64_t timeStamp) = 0;
+	virtual void			_OnSimulationPartEnd(int iSimPartID = 0) = 0;
+	virtual void			_OnSimulationFinished() = 0;
 
 	virtual void			_SetReady() = 0;
 	virtual void			_OnDisConnect() = 0;
@@ -229,8 +233,10 @@ protected:
 
 	bool					_CancelOrder(cwOrderPtr& pOrder);
 
-private:	
 	///系统自用接口信息，请勿操作
+protected:
+	bool									m_bSimulationFinished;
+private:
 	bool									m_bIsSimulation;
 
 	void *									m_pTradeSpi;
@@ -240,7 +246,9 @@ private:
 	cwMDAPIType								m_MdApiType;
 
 	cwProductTradeTime						m_ProductTradeTime;
+	#ifdef BasiStrategyLOG
 	cwStrategyLog							m_BasicStrategyLog;
+#endif
 	cwPandoraTrader::cwChinaTradingCalendar	m_TradingCalendar;
 
 	//Timer	key:TimerID, value:Elapse in ms

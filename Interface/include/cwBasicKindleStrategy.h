@@ -163,6 +163,8 @@ public:
 	void					_SetReady() override;
 	void					_OnDisConnect() override;
 	void					_OnSimulationBegin(int64_t timeStamp) override;
+	void					_OnSimulationPartEnd(int iSimPartID = 0) override;
+	void					_OnSimulationFinished() override;
 	void					_PriceUpdate(cwMarketDataPtr& pPriceData) override;
 	void					_OnRtnTrade(cwTradePtr& pTrade) override;
 	void					_OnRtnOrder(cwOrderPtr& pOrder, cwOrderPtr& pOriginOrder) override;
@@ -219,6 +221,8 @@ private:
 	{
 		EventType_OnReady = 0							//系统Ready回调
 		, EventType_SimulationBegin						//回测开始
+		, EventType_SimulationPartEnd					//回测一个部分结束（一个行情数据文件）
+		, EventType_SimulationFinish					//回测完成
 		, EventType_OnTimer								//定时器回调
 		, EventType_PriceUpdate							//Tick行情更新
 		, EventType_OnBar								//K线更新
@@ -284,7 +288,7 @@ private:
 
 	//工作区工作线程
 	void										_EventTypeWorkingThread(PortfolioWorkBenchPtr pWorkBench);
-	void										_AddEventType(PortfolioWorkBenchPtr pWorkBench, EventTypeStructPtr EventPtr);
+	void										_AddEventType(PortfolioWorkBenchPtr& pWorkBench, EventTypeStructPtr& EventPtr);
 
 
 	//std::deque<EventTypeStructPtr>				m_EventTypeStructDeque;
@@ -304,6 +308,7 @@ private:
 
 	///Index Price and Kindle Update;
 	bool										m_bNeedIndexKindle = false;
+	bool										m_bNeedKindle = false;
 
 	std::unordered_map<std::string, cwMarketDataPtr>									m_FileLastMDCacheMap;
 	//key Product, key InstrumentID

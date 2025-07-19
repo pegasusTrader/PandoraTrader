@@ -83,6 +83,11 @@
 #define		InstrumentIDLength	82
 #define		MARKET_PRICE_DEPTH	5
 
+//< error id = "NONE" value = "0" prompt = "正确" / >
+#define		CW_ERRID_NONE 0						//正确
+//< error id = "INSUFFICIENT_MONEY" value = "31" prompt = "资金不足" / >
+#define		CW_ERRID_INSUFFICIENT_MONEY 31		//资金不足
+
 enum CW_TE_RESUME_TYPE
 {
 	CW_TERT_RESTART = 0,

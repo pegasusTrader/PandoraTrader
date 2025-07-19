@@ -55,11 +55,11 @@ public:
 	///报单操作请求响应
 	virtual void OnRspOrderAction(cwOrderPtr pInputOrderAction, cwRspInfoPtr pRspInfo, int nRequestID, bool bIsLast);
 
-	virtual void OnSimulationPartEnd(int iSimPartID = 0);
-	virtual void OnSimulationFinished();
 
 	void UpdateTradingDay(const char * szTradingDay);
 	void OnSimulationBegin(int64_t timeStamp);
+	void OnSimulationPartEnd(int iSimPartID = 0);
+	void OnSimulationFinished();
 
 	virtual	cwOrderPtr InputLimitOrder(const char * szInstrumentID, cwFtdcDirectionType direction,
 		cwOpenClose openclose, int volume, double price);
