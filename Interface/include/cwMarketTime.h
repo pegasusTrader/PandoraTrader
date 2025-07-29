@@ -18,6 +18,9 @@
 #include <string>
 #include <memory>
 
+namespace cwPandoraTrader
+{
+
 class cwMarketTime
 {
 public:
@@ -60,4 +63,6 @@ private:
 
 	int		m_iStartTime;
 };
-typedef std::shared_ptr<cwMarketTime> cwMarketTimePtr;
+
+} // End cwPandoraTrader NameSpace
+typedef std::shared_ptr<cwPandoraTrader::cwMarketTime> cwMarketTimePtr;

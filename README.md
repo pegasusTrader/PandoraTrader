@@ -1,5 +1,8 @@
 ﻿# PandoraTrader
+浮生着甚苦奔忙，量化之路阻且长。
+行行代码凝心血，十年辛苦不寻常。
 ## A Trade Platform
+
 
 ### 起名由来：
 据百度百科介绍，Pandora 是希腊神话中赫菲斯托斯用粘土做成的第一个女人。  
@@ -264,7 +267,11 @@ cwMarketDataReceiver存下csv文件，cwMarketDataBinaryReceiver存下的是bin�
 核心库代码采用邀请授权机制开放，有C++开发功底的朋友，可以简要描述您自身情况以及参与项目意愿发送邮件到pandoratrader@163.com, 会尽快回复您的诉求。
 
 ### 致谢
-   - tinyxml2 -- https://github.com/leethomason/tinyxml2
+工程开放中使用了第三方库提供代码，降低相关功能开发难度，在此表示衷心的感谢。
+   - tinyxml2 --   https://github.com/pegasusTrader/tinyxml2
+forked form:  https://github.com/leethomason/tinyxml2
+   - ThreadPool -- https://github.com/pegasusTrader/ThreadPool
+forked form:  https://github.com/progschj/ThreadPool
 
 ### 建议反馈：
 如果有什么疑问和建议，您可以发送有邮件给pandoratrader@163.com与作者取得联系。    
@@ -272,6 +279,10 @@ cwMarketDataReceiver存下csv文件，cwMarketDataBinaryReceiver存下的是bin�
 
 ### AI技术与量化
 作者目前在尝试引入AI技术相关内容，如果您在这方面有什么想法，不论是策略还是平台，可以发送有邮件给pandoratrader@163.com与作者取得联系，进一步沟通交流。    
+
+### 后续计划
+计划后续将CTP版本升级到6.7.7，本次更新CTP版本仍为6.5.1
+对此有建议，请发送有邮件(pandoratrader@163.com)说明。
 
 ### 使用授权：
 请在法律和监管允许下使用该平台。

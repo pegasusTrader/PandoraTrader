@@ -19,6 +19,10 @@
 #include "cwBasicTradeSpi.h"
 #include "cwBasicCout.h"
 
+#ifdef CWORDERSPEEDLIMIT
+#include "cwNIndicator.h"
+#endif // CWORDERSPEEDLIMIT
+
 #ifdef _WIN64
 //define something for Windows (64-bit)
 #include "CTPTradeApi64\ThostFtdcTraderApi.h"
@@ -45,7 +49,7 @@
 #endif
 
 //#define CW_USING_DYNAMIC_LOADING_DLL
-#define CW_API_6_5_1
+#define CW_API_6_7_7
 
 #ifndef CW_USING_DYNAMIC_LOADING_DLL
 #ifdef _MSC_VER
@@ -430,7 +434,7 @@ public:
 	///银行发起变更银行账号通知
 	virtual void OnRtnChangeAccountByBank(CThostFtdcChangeAccountField *pChangeAccount);
 
-#ifdef 	CW_API_6_5_1
+#ifdef 	CW_API_6_7_7
 	///请求查询分类合约响应
 	virtual void OnRspQryClassifiedInstrument(CThostFtdcInstrumentField *pInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
 
@@ -558,6 +562,12 @@ protected:
 #ifdef NoCancelTooMuchPerTick
 	uint32_t							m_iLatestUpdateTime;
 #endif // NoCancelTooMuchPerTick
+
+#ifdef CWORDERSPEEDLIMIT
+	typedef std::chrono::steady_clock::time_point cwstdTime;
+	cwPandoraIndicator::cwRingDeque<cwstdTime, CWORDERSPEEDCNT + 1>	m_iOrderTimeDeque;
+#endif // CWORDERSPEEDLIMIT
+
 
 	std::deque<CThostFtdcOrderField>	m_UndealedOrdersDeque;
 	std::deque<CThostFtdcTradeField>	m_UndealedTradesDeque;

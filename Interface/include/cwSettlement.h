@@ -29,7 +29,25 @@ public:
 #pragma region CommenDefine
 #endif // _MSC_VER
 
+	struct SettleInfo
+	{
+		double	dLastPrice = 0.0;
 
+		int		iPosition = 0;
+
+		int		iCancelCount = 0;
+		int		iTradeCount = 0;
+
+		double	dCloseProfit = 0.0;
+		double	dPositionProfit = 0.0;
+		double	dFee = 0.0;
+
+		std::deque<double>	UnClosePositionCostDetailDeque;
+		double	dUnClosePositionCost = 0.0;
+
+		double	dMaxBalance = 0.0;
+		double	dMaxDropDown = 0.0;
+	};
 
 #ifdef _MSC_VER
 #pragma endregion
@@ -87,8 +105,8 @@ public:
 	double													m_dCurMaxBalance;				//截止目前最高权益，计算最大回撤用
 	double													m_dMaxDropDown;					//最大回撤
 
-	double													m_dDefaultFeeRate = 0.0001;		//0.0001;
-
+	double													m_dDefaultFeeRate = 0.0;		//0.0001;
+	double													m_dDefaultFeePerVol = 1.01;
 	void													Analysis();
 	///AnalysisResult
 };

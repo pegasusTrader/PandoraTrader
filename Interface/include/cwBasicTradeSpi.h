@@ -20,8 +20,11 @@
 #define CWCANCELRISK				//撤单次数风控管理
 #define CWDeclarationFeeRISK		//针对申报费的风控管理
 
+//#define CWORDERSPEEDLIMIT			//报单速度限制
+#define CWORDERSPEEDCNT	15			//报单速度限制,每秒15单
+
 #define TRADELOG					//交易日志
-//#define UPDATE_ORDERRANKED		//更新管理订单排队位置
+#define UPDATE_ORDERRANKED			//更新管理订单排队位置
 #define	NoCancelTooMuchPerTick		//在极短时间内不得多次撤单以减少错单
 
 #ifdef UPDATE_ORDERRANKED
@@ -268,6 +271,12 @@ protected:
 	std::unordered_map<std::string, std::set<std::string>>		m_MayCancelOrderRefSetMap;
 #endif // !CWRISK
 #endif //CWDeclarationFeeRISK
+	
+#ifdef CWORDERSPEEDLIMIT
+	uint32_t		m_iCurOrderSpeedLimitTimeStamp = 0;
+	int				m_iThisTimeStampOrderCount = 0;
+#endif //CWORDERSPEEDLIMIT
+	
 	bool														m_bDisConnectExit;
 
 	static	int													m_iTradeApiCount;

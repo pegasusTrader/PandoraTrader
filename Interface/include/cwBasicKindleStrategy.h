@@ -34,42 +34,60 @@ public:
 
 	///MarketData SPI
 	//行情更新（OnBar会先于PriceUpdate回调， 在PriceUpdate已经可以获取更新好的K线）
-	virtual void			PriceUpdate(cwMarketDataPtr pPriceData) {};
+	void					PriceUpdate(cwMarketDataPtr pPriceData) override {};
 	//当生成一根新K线的时候，会调用该回调
 	virtual void			OnBar(cwMarketDataPtr pPriceData, int iTimeScale, cwBasicKindleStrategy::cwKindleSeriesPtr pKindleSeries) {};
 
 	///Trade SPI
 	//成交回报
-	virtual void			OnRtnTrade(cwTradePtr pTrade) {};
+	void					OnRtnTrade(cwTradePtr pTrade) override {};
 	//报单回报, pOrder为最新报单，pOriginOrder为上一次更新报单结构体，有可能为NULL
-	virtual void			OnRtnOrder(cwOrderPtr pOrder, cwOrderPtr pOriginOrder = cwOrderPtr()) {};
+	void					OnRtnOrder(cwOrderPtr pOrder, cwOrderPtr pOriginOrder = cwOrderPtr()) override {};
 	//撤单成功
-	virtual void			OnOrderCanceled(cwOrderPtr pOrder) {};
+	void					OnOrderCanceled(cwOrderPtr pOrder) override {};
 	//报单录入请求响应
-	virtual void			OnRspOrderInsert(cwOrderPtr pOrder, cwRspInfoPtr pRspInfo) {};
+	void					OnRspOrderInsert(cwOrderPtr pOrder, cwRspInfoPtr pRspInfo) override {};
 	//报单操作请求响应
-	virtual void			OnRspOrderCancel(cwOrderPtr pOrder, cwRspInfoPtr pRspInfo) {};
+	void					OnRspOrderCancel(cwOrderPtr pOrder, cwRspInfoPtr pRspInfo) override {};
 
 	///System Call Back
 	//定时器响应
 	//定时器ID, 在SetTimer的时候传给系统，如果InstrumentID传NULL,在回调的时候szInstrumentID为空字符串（“”），
 	//否则传什么合约和TimerId，OnStrategyTimer的szInstrumentID就是那个合约信息
-	virtual void			OnStrategyTimer(int iTimerId, const char * szInstrumentID) {};
+	void					OnStrategyTimer(int iTimerId, const char * szInstrumentID) override {};
 	//当策略交易初始化完成时会调用OnReady, 可以在此函数做策略的初始化操作
-	virtual void			OnReady() {};
+	void					OnReady() override {};
 
 
 	//订阅k线， iTimeScale是k线周期，秒数（如5分钟为300）
 	cwKindleSeriesPtr		SubcribeKindle(const char * szInstrumentID, int iTimeScale, int HisKindleCount = 0);
+	//pParserHisKindle 是个函数指针用于读取历史数据
+	//szFilePath会传入历史数据文件夹路径，其值InitialHisKindleFromHisKindleFolder传入，该函数将K线数据按时间顺序从0-n存放在KindleList中
+	//历史k线处理正常则返回true，遇到问题，则返回false.
+	cwKindleSeriesPtr		SubcribeKindle(const char * szInstrumentID, int iTimeScale,
+		bool(*pParserHisKindle)(const char* szFilePath,
+			const char* szInstrumentID, 
+			const char* szProductID,
+			const char* szExchangeID,
+			std::deque<cwKindleStickPtr>& KindleList));
+	//订阅日线K线
 	cwKindleSeriesPtr		SubcribeDailyKindle(const char * szInstrumentID);
-	//需要合约信息支持
+	cwKindleSeriesPtr		SubcribeDailyKindle(const char* szInstrumentID,
+		bool(*pParserHisKindle)(const char* szFilePath,
+			const char* szInstrumentID,
+			const char* szProductID,
+			const char* szExchangeID,
+			std::deque<cwKindleStickPtr>& KindleList));
+	//订阅指数K线
 	cwKindleSeriesPtr		SubcribeIndexKindle(const char* szProductId, int iTimeScale, int HisKindleCount = 0);
-
+	cwKindleSeriesPtr		SubcribeIndexKindle(const char* szProductId, int iTimeScale, 
+		bool(*pParserHisKindle)(const char* szFilePath,
+			const char* szInstrumentID,
+			const char* szProductID,
+			const char* szExchangeID,
+			std::deque<cwKindleStickPtr>& KindleList));
 	std::string				GetIndexName(const char* szProductId);
 
-	//从tick数据构建历史数据
-	bool					InitialHisKindleFromKinldeFile(const char * szFilePath);
-	bool					InitialHisKindleFromIndexFile(const char * szTickFile);
 
 	bool					InitialHisKindleFromHisKindleFolder(const char* szHisFolder);
 	bool					LoadHisKindleFromHisKindleFile(const char* KindleFilePath, std::deque<cwKindleStickPtr>& KindleList, int iTimeScale = 60);
@@ -142,16 +160,18 @@ public:
 
 
 	///系统自用接口信息，勿动
-	virtual void			_SetReady();
-	virtual void			_OnDisConnect();
-	virtual void			_OnSimulationBegin(int64_t timeStamp);
-	virtual void			_PriceUpdate(cwMarketDataPtr pPriceData);
-	virtual void			_OnRtnTrade(cwTradePtr pTrade);
-	virtual void			_OnRtnOrder(cwOrderPtr pOrder, cwOrderPtr pOriginOrder = cwOrderPtr());
-	virtual void			_OnOrderCanceled(cwOrderPtr pOrder);
-	virtual void			_OnRspOrderInsert(cwOrderPtr pOrder, cwRspInfoPtr pRspInfo);
-	virtual void			_OnRspOrderCancel(cwOrderPtr pOrder, cwRspInfoPtr pRspInfo);
-	virtual void			_OnTimer(int iTimerId, const char * szInstrumentID);
+	void					_SetReady() override;
+	void					_OnDisConnect() override;
+	void					_OnSimulationBegin(int64_t timeStamp) override;
+	void					_OnSimulationPartEnd(int iSimPartID = 0) override;
+	void					_OnSimulationFinished() override;
+	void					_PriceUpdate(cwMarketDataPtr& pPriceData) override;
+	void					_OnRtnTrade(cwTradePtr& pTrade) override;
+	void					_OnRtnOrder(cwOrderPtr& pOrder, cwOrderPtr& pOriginOrder) override;
+	void					_OnOrderCanceled(cwOrderPtr& pOrder) override;
+	void					_OnRspOrderInsert(cwOrderPtr& pOrder, cwRspInfoPtr& pRspInfo) override;
+	void					_OnRspOrderCancel(cwOrderPtr& pOrder, cwRspInfoPtr& pRspInfo) override;
+	void					_OnTimer(int iTimerId, const char * szInstrumentID) override;
 
 	enum cwKINDLE_TIMESCALE:int
 	{
@@ -161,7 +181,7 @@ public:
 		cwKINDLE_TIMESCALE_15MIN = cwKINDLE_TIMESCALE_1MIN * 15,
 		cwKINDLE_TIMESCALE_30MIN = cwKINDLE_TIMESCALE_1MIN * 30,
 		cwKINDLE_TIMESCALE_1HOUR = cwKINDLE_TIMESCALE_1MIN * 60,
-		cwKINDLE_TIMESCALE_DAILY
+		cwKINDLE_TIMESCALE_DAILY = 86400
 	};
 private:
 	///系统自用接口信息，勿动
@@ -201,6 +221,8 @@ private:
 	{
 		EventType_OnReady = 0							//系统Ready回调
 		, EventType_SimulationBegin						//回测开始
+		, EventType_SimulationPartEnd					//回测一个部分结束（一个行情数据文件）
+		, EventType_SimulationFinish					//回测完成
 		, EventType_OnTimer								//定时器回调
 		, EventType_PriceUpdate							//Tick行情更新
 		, EventType_OnBar								//K线更新
@@ -266,7 +288,7 @@ private:
 
 	//工作区工作线程
 	void										_EventTypeWorkingThread(PortfolioWorkBenchPtr pWorkBench);
-	void										_AddEventType(PortfolioWorkBenchPtr pWorkBench, EventTypeStructPtr EventPtr);
+	void										_AddEventType(PortfolioWorkBenchPtr& pWorkBench, EventTypeStructPtr& EventPtr);
 
 
 	//std::deque<EventTypeStructPtr>				m_EventTypeStructDeque;
@@ -286,6 +308,7 @@ private:
 
 	///Index Price and Kindle Update;
 	bool										m_bNeedIndexKindle = false;
+	bool										m_bNeedKindle = false;
 
 	std::unordered_map<std::string, cwMarketDataPtr>									m_FileLastMDCacheMap;
 	//key Product, key InstrumentID

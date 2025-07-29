@@ -23,6 +23,12 @@
 
 #include "cwBasicCout.h"
 
+#ifdef CW_NEW_CSVPARSER
+#include "csv.hpp"
+#else
+#include "csvparser.h"
+#endif
+
 class cwPegasusSimulator :
 	public cwBasicSimulator
 {
@@ -32,12 +38,17 @@ public:
 	~cwPegasusSimulator();
 
 	//初始化模拟器，读取配置和合约信息
-	virtual void		InitialSimulator(const char * pConfigFilePath);
+	void		InitialSimulator(const char * pConfigFilePath) override;
+	//pParserTickDataRow, Only used for cache file
+	void		InitialSimulator(const char* pConfigFilePath,
+		bool(*pParserTickDataRow)(CsvRow* pRow, cwMarketDataPtr& pData));
+
 	//读取配置信息
 	bool				ReadXmlConfigFile();
 
 	//启动模拟器
 	bool				SimulationStart();
+	bool				NoTradingSimulationStart();				//只回放数据，不提供报单交易相关功能	
 	//启动行情服务
 	virtual bool		StartMarketDataServer();
 
@@ -165,9 +176,9 @@ private:
 	std::string												m_strCacheFilePath;
 
 	cwMUTEX													m_CacheWorkingMutex;
-	std::deque<int>											m_CacheWorkingList;
 	std::set<std::string>									m_CacheInstrumentSet;
-	std::map<int, std::string>								m_MarketDataCacheFileMap;
+	//std::map<int, std::string>								m_MarketDataCacheFileMap;
+	//std::deque<int>											m_CacheWorkingList;
 
 	//Result 
 	//Balance Data

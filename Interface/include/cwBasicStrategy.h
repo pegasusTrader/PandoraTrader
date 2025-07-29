@@ -21,6 +21,8 @@
 #include "cwStrategyLog.h"
 #include "cwBasicCout.h"
 
+//#define BasiStrategyLOG					//下单日志
+
 class cwBasicStrategy
 {
 public:
@@ -149,7 +151,9 @@ public:
 	//获取手续费率，会从柜台中查询，在未查询到之前默认返回0，即不收手续费
 	cwCommissionRateDataPtr		GetCommissionRate(const char * szInstrumentID);
 	//获取产品ID 
-	char *    GetProductID(const char * szInstrumentID);
+	char *						GetProductID(const char * szInstrumentID);
+	//获取交易所ID
+	char*						GetExchangeID(const char* szInstrumentID);
 
 	//获取交易时间段，距开盘多少秒和距收盘多少秒
 	//参数：合约名，行情时间（102835->10:28:35),交易阶段， 距该交易时段开盘多少秒，距收盘多少秒
@@ -193,15 +197,17 @@ public:
 	void					_SetIsSimulation(bool IsSimulation = false) { m_bIsSimulation = IsSimulation; };
 
 	virtual void			_OnSimulationBegin(int64_t timeStamp) = 0;
+	virtual void			_OnSimulationPartEnd(int iSimPartID = 0) = 0;
+	virtual void			_OnSimulationFinished() = 0;
 
 	virtual void			_SetReady() = 0;
 	virtual void			_OnDisConnect() = 0;
-	virtual void			_PriceUpdate(cwMarketDataPtr pPriceData) = 0;
-	virtual void			_OnRtnTrade(cwTradePtr pTrade) = 0;
-	virtual void			_OnRtnOrder(cwOrderPtr pOrder, cwOrderPtr pOriginOrder = cwOrderPtr()) = 0;
-	virtual void			_OnOrderCanceled(cwOrderPtr pOrder) = 0;
-	virtual void			_OnRspOrderInsert(cwOrderPtr pOrder, cwRspInfoPtr pRspInfo) = 0;
-	virtual void			_OnRspOrderCancel(cwOrderPtr pOrder, cwRspInfoPtr pRspInfo) = 0;
+	virtual void			_PriceUpdate(cwMarketDataPtr& pPriceData) = 0;
+	virtual void			_OnRtnTrade(cwTradePtr& pTrade) = 0;
+	virtual void			_OnRtnOrder(cwOrderPtr& pOrder, cwOrderPtr& pOriginOrder) = 0;
+	virtual void			_OnOrderCanceled(cwOrderPtr& pOrder) = 0;
+	virtual void			_OnRspOrderInsert(cwOrderPtr& pOrder, cwRspInfoPtr& pRspInfo) = 0;
+	virtual void			_OnRspOrderCancel(cwOrderPtr& pOrder, cwRspInfoPtr& pRspInfo) = 0;
 	virtual void			_OnTimer(int iTimerId, const char * szMsg) = 0;
 protected:
 	///输出显示
@@ -225,10 +231,12 @@ protected:
 		cwOpenCloseMode openclosemode = cwOpenCloseMode::CloseTodayThenYd,
 		cwInsertOrderType insertordertype = cwInsertOrderType::cwInsertLimitOrder);
 
-	bool					_CancelOrder(cwOrderPtr pOrder);
+	bool					_CancelOrder(cwOrderPtr& pOrder);
 
-private:	
 	///系统自用接口信息，请勿操作
+protected:
+	bool									m_bSimulationFinished;
+private:
 	bool									m_bIsSimulation;
 
 	void *									m_pTradeSpi;
@@ -238,7 +246,9 @@ private:
 	cwMDAPIType								m_MdApiType;
 
 	cwProductTradeTime						m_ProductTradeTime;
+	#ifdef BasiStrategyLOG
 	cwStrategyLog							m_BasicStrategyLog;
+#endif
 	cwPandoraTrader::cwChinaTradingCalendar	m_TradingCalendar;
 
 	//Timer	key:TimerID, value:Elapse in ms
