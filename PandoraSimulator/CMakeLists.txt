@@ -3,6 +3,22 @@ cmake_minimum_required (VERSION 3.8)
 # set the project name
 project (PandoraSimulator)
 
+# 检测是否为 Ubuntu 系统
+execute_process(
+    COMMAND lsb_release -is
+    OUTPUT_VARIABLE LINUX_DISTRO
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+# 设置系统相关变量
+if(LINUX_DISTRO STREQUAL "Ubuntu")
+    set(IS_UBUNTU TRUE)
+    message(STATUS "Detected Ubuntu system")
+else()
+    set(IS_UBUNTU FALSE)
+    message(STATUS "Detected non-Ubuntu system: ${LINUX_DISTRO}")
+endif()
+
 # 检查c++编译器标志，设置c++11支持变量
 include(CheckCXXCompilerFlag)
 CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
@@ -34,12 +50,20 @@ include_directories ("../Interface/")
 
 if (CMAKE_BUILD_TYPE STREQUAL DEBUG)   
     add_definitions(-g -DDEBUG)
-	link_directories("${PROJECT_SOURCE_DIR}/../Interface/lib/Linux/Debug/")
-	link_directories("${PROJECT_SOURCE_DIR}/../bin/Debug/")
+    if(IS_UBUNTU)
+        link_directories("${PROJECT_SOURCE_DIR}/../Interface/lib/Ubuntu/Debug/")
+    else()
+        link_directories("${PROJECT_SOURCE_DIR}/../Interface/lib/Linux/Debug/")
+    endif()
+    link_directories("${PROJECT_SOURCE_DIR}/../bin/Debug/")
 elseif (CMAKE_BUILD_TYPE STREQUAL RELEASE)
-	add_definitions(-DNDEBUG -O3)
-	link_directories("${PROJECT_SOURCE_DIR}/../Interface/lib/Linux/Release/")
-	link_directories("${PROJECT_SOURCE_DIR}/../bin/Release/")
+    add_definitions(-DNDEBUG -O3)
+    if(IS_UBUNTU)
+        link_directories("${PROJECT_SOURCE_DIR}/../Interface/lib/Ubuntu/Release/")
+    else()
+        link_directories("${PROJECT_SOURCE_DIR}/../Interface/lib/Linux/Release/")
+    endif()
+    link_directories("${PROJECT_SOURCE_DIR}/../bin/Release/")
 endif()
 
 # 获取正在处理的CMakeLists.txt所在的文件夹下面的所有源文件，放到DIR_SRC变量里面
