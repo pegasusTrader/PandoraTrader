@@ -66,6 +66,21 @@ void cwEmptyStrategy::InitialStrategy(const char * pConfigFilePath)
 		std::size_t found = m_strConfigFileFullPath.find_last_of("/\\");
 		m_strConfigFileFullPath = m_strConfigFileFullPath.substr(0, found);
 		m_strConfigFileFullPath.append("\\EmptyStrategy.xml");
+#elif __APPLE__
+		char path[MAX_PATH];
+		memset(path, 0, sizeof(path));
+		uint32_t size = sizeof(path);
+		if (_NSGetExecutablePath(path, &size) == 0) {
+			strncpy(exeFullPath, path, MAX_PATH);
+		} else {
+			printf("***Error: Buffer too small; need size %u\n", size);
+			exit(-1);
+		}
+		m_strConfigFileFullPath = exeFullPath;
+		std::size_t found = m_strConfigFileFullPath.find_last_of("/\\");
+		m_strConfigFileFullPath = m_strConfigFileFullPath.substr(0, found);
+		m_strConfigFileFullPath.append("/EmptyStrategy.xml");
+
 #else
 		size_t cnt = readlink("/proc/self/exe", exeFullPath, MAX_PATH);
 		if (cnt < 0 || cnt >= MAX_PATH)

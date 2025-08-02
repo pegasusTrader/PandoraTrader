@@ -100,6 +100,16 @@ int main()
 	iLength = WideCharToMultiByte(CP_ACP, 0, TexeFullPath, -1, NULL, 0, NULL, NULL);
 	//½«tcharÖµ¸³¸ø_char    
 	WideCharToMultiByte(CP_ACP, 0, TexeFullPath, -1, exeFullPath, iLength, NULL, NULL);
+#elif __APPLE__
+	char path[MAX_PATH];
+	memset(path, 0, sizeof(path));
+	uint32_t size = sizeof(path);
+	if (_NSGetExecutablePath(path, &size) == 0) {
+		strncpy(exeFullPath, path, MAX_PATH);
+	} else {
+		printf("***Error: Buffer too small; need size %u\n", size);
+		exit(-1);
+	}
 #else
 	size_t cnt = readlink("/proc/self/exe", exeFullPath, MAX_PATH);
 	if (cnt < 0 || cnt >= MAX_PATH)
