@@ -1,0 +1,249 @@
+name: Build PandoraTrader
+
+on:
+  push:
+    branches: [main, ndev, develop]
+  pull_request:
+    branches: [main, ndev, develop]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            platform: ubuntu
+            arch: x86_64
+            build_type: Release
+          - os: ubuntu-latest
+            platform: ubuntu
+            arch: x86_64
+            build_type: Debug
+          - os: macos-latest
+            platform: macos
+            arch: arm64
+            build_type: Release
+            homebrew_prefix: /opt/homebrew
+          - os: macos-latest
+            platform: macos
+            arch: arm64
+            build_type: Debug
+            homebrew_prefix: /opt/homebrew
+      fail-fast: false # 继续其他构建即使某个失败
+
+    runs-on: ${{ matrix.os }}
+
+    env:
+      BUILD_TYPE: ${{ matrix.build_type }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install system dependencies (Ubuntu)
+        if: matrix.platform == 'ubuntu'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            cmake \
+            build-essential \
+            libomp-dev \
+            libssl-dev \
+            pkg-config \
+            lsb-release
+
+      - name: Install Homebrew and dependencies (macOS ARM64)
+        if: matrix.platform == 'macos'
+        run: |
+          echo "=== Installing ARM64 Homebrew (Apple Silicon native) ==="
+          # Install ARM64 Homebrew (native for Apple Silicon)
+          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || true
+
+          # Add ARM64 Homebrew to PATH
+          echo 'export PATH="/opt/homebrew/bin:$PATH"' >> ~/.zshrc
+          echo 'export PATH="/opt/homebrew/bin:$PATH"' >> ~/.bash_profile
+          source ~/.zshrc || true
+
+          # Install dependencies using ARM64 Homebrew
+          /opt/homebrew/bin/brew install cmake libomp
+
+      - name: Verify system information (Ubuntu)
+        if: matrix.platform == 'ubuntu'
+        run: |
+          echo "=== Build Configuration ==="
+          echo "Platform: ${{ matrix.platform }}"
+          echo "Build Type: ${{ matrix.build_type }}"
+          echo "=== System Information ==="
+          lsb_release -a
+          echo "=== Compiler Information ==="
+          gcc --version
+          g++ --version
+          echo "=== CMake Information ==="
+          cmake --version
+          echo "=== OpenMP Check ==="
+          ls -la /usr/include/omp.h || echo "omp.h not found in /usr/include"
+          ls -la /usr/lib/x86_64-linux-gnu/libgomp* || echo "libgomp not found"
+
+      - name: Verify system information (macOS ARM64)
+        if: matrix.platform == 'macos'
+        run: |
+          echo "=== Build Configuration ==="
+          echo "Platform: ${{ matrix.platform }}"
+          echo "Build Type: ${{ matrix.build_type }}"
+          echo "Architecture: ${{ matrix.arch }}"
+          echo "Homebrew Prefix: ${{ matrix.homebrew_prefix }}"
+          echo "=== System Information ==="
+          sw_vers
+          uname -a
+          echo "=== Architecture ==="
+          arch
+          echo "=== Compiler Information ==="
+          clang --version
+          clang++ --version
+          echo "=== CMake Information ==="
+          /opt/homebrew/bin/cmake --version || cmake --version
+          echo "=== Homebrew Information ==="
+          which brew
+          /opt/homebrew/bin/brew --version || echo "ARM64 brew not available"
+          echo "=== OpenMP Check ==="
+          ls -la /opt/homebrew/lib/ | grep omp || echo "OpenMP libraries not found in /opt/homebrew/lib"
+          ls -la /opt/homebrew/include/ | grep omp || echo "OpenMP headers not found in /opt/homebrew/include"
+
+      - name: Set environment variables (macOS)
+        if: matrix.platform == 'macos'
+        run: |
+          echo "HOMEBREW_PREFIX=${{ matrix.homebrew_prefix }}" >> $GITHUB_ENV
+          echo "CMAKE_PREFIX_PATH=${{ matrix.homebrew_prefix }}" >> $GITHUB_ENV
+          echo "LDFLAGS=-L${{ matrix.homebrew_prefix }}/lib" >> $GITHUB_ENV
+          echo "CPPFLAGS=-I${{ matrix.homebrew_prefix }}/include" >> $GITHUB_ENV
+          echo "PATH=${{ matrix.homebrew_prefix }}/bin:$PATH" >> $GITHUB_ENV
+
+      - name: Create build directory
+        run: mkdir build
+
+      - name: Configure CMake (Ubuntu)
+        if: matrix.platform == 'ubuntu'
+        working-directory: build
+        run: |
+          cmake .. \
+            -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
+            -DCMAKE_VERBOSE_MAKEFILE=ON
+
+      - name: Configure CMake (macOS ARM64)
+        if: matrix.platform == 'macos'
+        working-directory: build
+        run: |
+          echo "=== Configuring CMake for ARM64 (Apple Silicon) ==="
+          /opt/homebrew/bin/cmake .. \
+            -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
+            -DCMAKE_VERBOSE_MAKEFILE=ON \
+            -DCMAKE_PREFIX_PATH=/opt/homebrew \
+            -DCMAKE_OSX_ARCHITECTURES=arm64
+
+      - name: Build PandoraStrategy
+        working-directory: build
+        run: |
+          echo "=== Building PandoraStrategy library (${{ matrix.platform }}-${{ matrix.build_type }}-${{ matrix.arch }}) ==="
+          if [ "${{ matrix.platform }}" = "macos" ]; then
+            /opt/homebrew/bin/cmake --build . --target PandoraStrategy --config ${{ env.BUILD_TYPE }} -j$(sysctl -n hw.ncpu)
+          else
+            cmake --build . --target PandoraStrategy --config ${{ env.BUILD_TYPE }} -j$(nproc)
+          fi
+
+      - name: Verify PandoraStrategy library
+        run: |
+          if [ -f "bin/${{ env.BUILD_TYPE }}/libPandoraStrategy.a" ]; then
+            echo "✅ PandoraStrategy library built successfully (${{ matrix.platform }}-${{ matrix.build_type }}-${{ matrix.arch }})"
+            ls -la bin/${{ env.BUILD_TYPE }}/libPandoraStrategy.a
+            if [ "${{ matrix.platform }}" = "macos" ]; then
+              file bin/${{ env.BUILD_TYPE }}/libPandoraStrategy.a
+            fi
+          else
+            echo "❌ PandoraStrategy library not found"
+            exit 1
+          fi
+
+      - name: Build PandoraSimulator
+        working-directory: build
+        run: |
+          echo "=== Building PandoraSimulator (${{ matrix.platform }}-${{ matrix.build_type }}-${{ matrix.arch }}) ==="
+          if [ "${{ matrix.platform }}" = "macos" ]; then
+            /opt/homebrew/bin/cmake --build . --target PandoraSimulator --config ${{ env.BUILD_TYPE }} -j$(sysctl -n hw.ncpu)
+          else
+            cmake --build . --target PandoraSimulator --config ${{ env.BUILD_TYPE }} -j$(nproc)
+          fi
+
+      - name: Verify PandoraSimulator
+        run: |
+          if [ -f "bin/${{ env.BUILD_TYPE }}/PandoraSimulator" ]; then
+            echo "✅ PandoraSimulator built successfully (${{ matrix.platform }}-${{ matrix.build_type }}-${{ matrix.arch }})"
+            echo "File size: $(du -sh bin/${{ env.BUILD_TYPE }}/PandoraSimulator | cut -f1)"
+            if [ "${{ matrix.platform }}" = "macos" ]; then
+              echo "Architecture:"
+              file bin/${{ env.BUILD_TYPE }}/PandoraSimulator
+              echo "Dependencies:"
+              otool -L bin/${{ env.BUILD_TYPE }}/PandoraSimulator | head -10 || echo "Could not check dependencies"
+            else
+              echo "Dependencies:"
+              ldd bin/${{ env.BUILD_TYPE }}/PandoraSimulator | head -10 || echo "Could not check dependencies"
+            fi
+          else
+            echo "❌ PandoraSimulator not found"
+            exit 1
+          fi
+
+      - name: Build PandoraTrader
+        working-directory: build
+        run: |
+          echo "=== Building PandoraTrader (${{ matrix.platform }}-${{ matrix.build_type }}-${{ matrix.arch }}) ==="
+          if [ "${{ matrix.platform }}" = "macos" ]; then
+            /opt/homebrew/bin/cmake --build . --target PandoraTrader --config ${{ env.BUILD_TYPE }} -j$(sysctl -n hw.ncpu)
+          else
+            cmake --build . --target PandoraTrader --config ${{ env.BUILD_TYPE }} -j$(nproc)
+          fi
+
+      - name: Verify PandoraTrader
+        run: |
+          if [ -f "bin/${{ env.BUILD_TYPE }}/PandoraTrader" ]; then
+            echo "✅ PandoraTrader built successfully (${{ matrix.platform }}-${{ matrix.build_type }}-${{ matrix.arch }})"
+            echo "File size: $(du -sh bin/${{ env.BUILD_TYPE }}/PandoraTrader | cut -f1)"
+            if [ "${{ matrix.platform }}" = "macos" ]; then
+              echo "Architecture:"
+              file bin/${{ env.BUILD_TYPE }}/PandoraTrader
+              echo "Dependencies:"
+              otool -L bin/${{ env.BUILD_TYPE }}/PandoraTrader | head -10 || echo "Could not check dependencies"
+            else
+              echo "Dependencies:"
+              ldd bin/${{ env.BUILD_TYPE }}/PandoraTrader | head -10 || echo "Could not check dependencies"
+            fi
+          else
+            echo "❌ PandoraTrader not found"
+            exit 1
+          fi
+
+  build-summary:
+    needs: [build]
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Build Status Summary
+        run: |
+          echo "=== Build Matrix Summary ==="
+          echo "Build results:"
+          echo "  ${{ toJSON(needs.build.result) }}"
+
+          # Check if all builds succeeded
+          if [[ "${{ needs.build.result }}" == "success" ]]; then
+            echo "✅ All matrix builds completed successfully!"
+            echo "Built configurations (4 total):"
+            echo "  - Ubuntu x86_64 Release"
+            echo "  - Ubuntu x86_64 Debug"  
+            echo "  - macOS arm64 Release (Apple Silicon)"
+            echo "  - macOS arm64 Debug (Apple Silicon)"
+            exit 0
+          else
+            echo "❌ One or more matrix builds failed"
+            echo "Please check the individual job logs for details"
+            exit 1
+          fi
