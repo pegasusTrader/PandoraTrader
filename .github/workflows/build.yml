@@ -2,9 +2,9 @@ name: Build PandoraTrader
 
 on:
   push:
-    branches: [main, ndev, develop]
+    branches: [main, ndev, develop, develop_6_7_7]
   pull_request:
-    branches: [main, ndev, develop]
+    branches: [main, ndev, develop, develop_6_7_7]
 
 jobs:
   build:
