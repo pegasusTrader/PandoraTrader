@@ -15,6 +15,9 @@
 
 #include <deque>
 #include <memory>
+#include <string>
+#include <cstdint>
+#include <cmath>
 
 class cwNetValueEvaluation
 {

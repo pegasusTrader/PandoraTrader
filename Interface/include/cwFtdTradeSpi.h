@@ -38,6 +38,7 @@
 #else
 #define TARGET_OS_OSX 1
 // define something for OSX
+#include "CTPTradeApiMacOS/ThostFtdcTraderApi.h"
 #endif
 #elif __linux__ or _linux
 // linux
