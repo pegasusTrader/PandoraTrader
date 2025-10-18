@@ -27,14 +27,14 @@
   - 支持多种交易接口，如CTP，QDP，Femas等
 
  **易用**
-  - 跨平台支持Linux和Windows
+  - 跨平台支持 Windows, Linux 以及 MacOS
   - 友好策略接口，只需关注策略逻辑
   - 仓位挂单等信息本地维护，策略可同步获取，简化逻辑
   - 支持自动开平模式
-  - Tick级别回测
+  - Tick 级别回测
 
   **安全稳定**
-   - 2017年初稳定运行至今
+   - 2017 年初稳定运行至今
    - 内嵌风控，撤单次数和自成交不再成烦恼
 
    
@@ -46,9 +46,9 @@ PandoraTrader平台架构如下图所示，用户策略是程序的核心，各�
 
 用户策略（User Strategy)可以通过Pandora策略平台订阅行情，获取持仓，挂单，合约信息等；可以下单，撤单；策略平台会通过回调通知的方式，通知用户策略。
 
-Pandora策略平台，通过实盘交易接口 Trade API 和MarketData API的组件可以连接到期货公司的柜台，通过这两个组件，实现行情订阅，下单和撤单等操作。
+Pandora 策略平台，通过实盘交易接口 Trade API 和 MarketData API 的组件可以连接到期货公司的柜台，通过这两个组件，实现行情订阅，下单和撤单等操作。
 
-Pandora策略平台，通过回测交易接口，SimTrade API和SimMdAPI,可以连接到回测平台（PandoraSimulator）。
+Pandora 策略平台，通过回测交易接口，SimTrade API 和 SimMdAPI ,可以连接到回测平台（PandoraSimulator）。
 
                   模块连接示意图     
 
@@ -172,42 +172,42 @@ Pandora策略平台，通过回测交易接口，SimTrade API和SimMdAPI,可以�
 ### 快速入门：
 这是为了您能够快速使用该平台的介绍说明。
 
-如果您在Linux下使用，请您从develop分支上获取最新内容，
+如果您在 Linux 下使用，请您从 develop 分支上获取最新内容，
 使用CMAKE，G++来编译工程
 
         git clone -b develop_6_7_7 https://github.com/pegasusTrader/PandoraTrader.git    
 
 进入工程目录后：
 
-编译debug:
+编译 Debug:
 
         mkdir builddebug    
         cd builddebug    
         cmake -DCMAKE_BUILD_TYPE=DEBUG ..    
         make    
 
-编译Release:
+编译 Release:
 
         mkdir buildrelease     
         cd buildrelease    
         cmake -DCMAKE_BUILD_TYPE=RELEASE ..    
         make    
 
-如果您在Windows下使用，建议您用visual studio来做工程管理和编译，按配置好的工程快速开始Pandora量化之旅。
+如果您在 Windows 下使用，建议您用 `visual studio` 来做工程管理和编译，按配置好的工程快速开始 Pandora 量化之旅。
 
 1. 本平台要求 VS2015 及以上版本的 IDE，可通过以下链接进行下载并安装:
 
        https://visualstudio.microsoft.com/zh-hans/vs/
 
-2. 通过 PandoraTrader.sln 打开项目组，其中包含了交易平台 PandoraTrader， 策略库工程PandoraStrategy 和回测平台 PandoraSimulator，详细如目录结构所示。
+2. 通过 PandoraTrader.sln 打开项目组，其中包含了交易平台 PandoraTrader， 策略库工程 PandoraStrategy 和回测平台 PandoraSimulator，详细如目录结构所示。
 您可直接利用交易平台对策略进行实盘交易或者模拟环境交易，也可利用我们的回测平台进行测试。
 
 
-3. 交易平台中，PandoraTrader 工程中有PandoraDemoStrategyTrader.cpp 是 main 函数的入口，作为一个如何实例化该平台代码的 demo。  
+3. 交易平台中，PandoraTrader 工程中有 PandoraDemoStrategyTrader.cpp 是 main 函数的入口，作为一个如何实例化该平台代码的 demo。  
 该实例化过程可以作为通用代码，只要替换其中包含的策略，就可以编译出一个新的交易程序。  
-策略库工程PandoraStrateg中自带一个demo策略，即cwStrategyDemo，直接编译就可以获得一个自动交易策略，可以边运行边了解其中功能。  
-这个demo提供了如何通过cwBasicStrategy访问平台中维护的持仓信息，挂单信息，根据行情下单，以及进行报单撤单等操作。有这些基础操作知识后，您就可以组合搭建属于您自己的策略。  
-只需在PandoraStrateg工程中添加一个新的策略，以 cwBasicStrategy 为基类派生一个您的策略类，实现 PriceUpdate，OnRtnTrade，OnRtnOrder，OnOrderCanceled 这几个函数即可在相应的回调中做相应的处理。  
+策略库工程 PandoraStrateg 中自带一个 demo 策略，即 cwStrategyDemo ，直接编译就可以获得一个自动交易策略，可以边运行边了解其中功能。  
+这个 demo 提供了如何通过 cwBasicStrategy 访问平台中维护的持仓信息，挂单信息，根据行情下单，以及进行报单撤单等操作。有这些基础操作知识后，您就可以组合搭建属于您自己的策略。  
+只需在 PandoraStrateg 工程中添加一个新的策略，以 cwBasicStrategy 为基类派生一个您的策略类，实现 PriceUpdate，OnRtnTrade，OnRtnOrder，OnOrderCanceled 这几个函数即可在相应的回调中做相应的处理。  
 可以在回调函数中根据行情，持仓和挂单信息，进行报单，撤单等操作。如果有复杂耗时的数学计算，请起一个线程进行计算。秉持原则是让回调函数尽快返回处理后续的操作。  
 
        PriceUpdate：行情更新，当有最新行情更新时，该函数会被调用，可以在该函数内完成行情处理；
@@ -218,8 +218,8 @@ Pandora策略平台，通过回测交易接口，SimTrade API和SimMdAPI,可以�
         
        OnOrderCanceled：当撤单成功后随即进入该函数并作出反应。
    
-	完成策略开发后，记得将 PandoraDemoStrategyTrader 中的策略demo替换为您的新策略。
-	在开发新策略的时候，强烈建议新建一个策略类。因为平台维护升级，可能会为了丰富这个Demo策略内容进行更新修改，以免您获取最新更新时，遇到不必要的麻烦。
+	完成策略开发后，记得将 PandoraDemoStrategyTrader 中的策略 demo 替换为您的新策略。
+	在开发新策略的时候，强烈建议新建一个策略类。因为平台维护升级，可能会为了丰富这个 Demo 策略内容进行更新修改，以免您获取最新更新时，遇到不必要的麻烦。
 
 4. Interface 文件夹下提供一些工具，可以更方便进行开发，排查问题。例如：
 
@@ -227,9 +227,9 @@ Pandora策略平台，通过回测交易接口，SimTrade API和SimMdAPI,可以�
         
        cwBasicCout.h：输出类，可将所需变量输出显示，基础用法与printf类似。
 
-5. 利用Simnow模拟盘测试您的策略时，您需要对 PandoraTraderConfig.xml 进行以下配置：
+5. 利用 Simnow 模拟盘测试您的策略时，您需要对 PandoraTraderConfig.xml 进行以下配置：
        
-        将模拟盘交易的账号信息（后置、BrokerID、UserID及密码）填写至
+        将模拟盘交易的账号信息（后置、BrokerID、UserID 及密码）填写至
 	    <MarketDataServer Front="tcp://180.168.146.187:10110" BrokerID="9999" UserID="" PassWord=""/>		//行情配置信息
 	    和
 	    <TradeServer Front="tcp://180.168.146.187:10100" BrokerID="9999" UserID="" PassWord="" ProductInfo="Pandora" AppID="Pandora" AuthCode="Pandora"/>		//交易配置信息
@@ -239,15 +239,15 @@ Pandora策略平台，通过回测交易接口，SimTrade API和SimMdAPI,可以�
     若您暂不知晓该信息，可联系模拟盘平台客服获取。
     如果您要直接接入实盘交易，只要在配置文件中填入相应的实盘信息
 
-6. 利用回测平台测试您的策略时，您需要对PegasusSimulatorConfig.xml文件进行配置：
+6. 利用回测平台测试您的策略时，您需要对 PegasusSimulatorConfig.xml 文件进行配置：
 
 		type="2" 用于配置回测时历史数据源和形式， 0表示单个csv文件，1表示二进制（bin）文件，2表示csv 序列文件，3表示二进制（bin)序列文件
 
 		HisMarketDataIndex.xml：用于读取历史交易数据。将交易数据文件的全路径放置于<MDFile DateIndexId="201905160" FilePath="\\Mac\Home\Desktop\PandoraTrader-master\MarketData_20190529_084005.csv" />，DateIndexId为9位数字，最后一位0表示白盘，1则表示夜盘。如需同时回测多天数据，按照此格式在后面继续补充即可；
 		
 		PegasusSimulatorConfig.xml：将HisMarketDataIndex.xml和Instrument.xml的全路径填写至<SimulatorServer Front="F:\HisData\HisMarketDataIndex.xml" Interval="0" Instrument="F:\HisData\Instrument.xml"/>，并在<Instrument ID="j1909"/>中输入所需测试的期货名称。
-如果需要历史数据，可以用cwMarketDataReceiver或cwMarketDataBinaryReceiver提供的类，作为策略类编译一个行情存储程序。用计划任务的方式定时启动，来收取历史数据。
-cwMarketDataReceiver存下csv文件，cwMarketDataBinaryReceiver存下的是bin的二进制文件。
+如果需要历史数据，可以用 cwMarketDataReceiver 或 cwMarketDataBinaryReceiver 提供的类，作为策略类编译一个行情存储程序。用计划任务的方式定时启动，来收取历史数据。
+cwMarketDataReceiver 存下csv文件，cwMarketDataBinaryReceiver 存下的是 bin 的二进制文件。
 这两个策略要正确配置行情和交易配置信息，因为需要从交易柜台获取当前有交易合约，从而实现自动订阅合约。
 也可以自行编写行情存储程序来自动收行情，程序启动之后，从交易spi中获取合约信息，订阅行情，然后将行情存储下来。Simulator定义的行情csv文件列如下
 
@@ -261,17 +261,17 @@ cwMarketDataReceiver存下csv文件，cwMarketDataBinaryReceiver存下的是bin�
 可以是一个配对交易策略（Pairs Trading)；    
 甚至可以是一个做市商策略。    
 可以套利套保，可以做波段，甚至是高频做市商。
-可以做一个趋势策略，如示例DualTrust
+可以做一个趋势策略，如示例 DualTrust
 
 ### 核心开放计划
 核心库代码采用邀请授权机制开放，有C++开发功底的朋友，可以简要描述您自身情况以及参与项目意愿发送邮件到pandoratrader@163.com, 会尽快回复您的诉求。
 
 ### 致谢
 工程开放中使用了第三方库提供代码，降低相关功能开发难度，在此表示衷心的感谢。
-   - tinyxml2 --   https://github.com/pegasusTrader/tinyxml2
-forked form:  https://github.com/leethomason/tinyxml2
-   - ThreadPool -- https://github.com/pegasusTrader/ThreadPool
-forked form:  https://github.com/progschj/ThreadPool
+   - tinyxml2 --  [github.com/pegasusTrader/tinyxml2](https://github.com/pegasusTrader/tinyxml2)
+forked form:  [github.com/leethomason/tinyxml2](https://github.com/leethomason/tinyxml2)
+   - ThreadPool -- [github.com/pegasusTrader/ThreadPool](https://github.com/pegasusTrader/)
+forked form:  [github.com/pegasusTrader/tinyxml2](https://github.com/progschj/ThreadPool)
 
 感谢 @pseudocodes @snailbull 对项目的参与和贡献。
 

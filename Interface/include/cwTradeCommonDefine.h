@@ -51,6 +51,11 @@
 #else
 #define TARGET_OS_OSX 1
 // define something for OSX
+
+#include <mach-o/dyld.h>
+#include "unistd.h"
+#define cwSleep(milliseconds) usleep(milliseconds * 1000)
+
 #endif
 #elif __linux__ or _linux
 // linux
