@@ -236,6 +236,8 @@ protected:
 	///系统自用接口信息，请勿操作
 protected:
 	bool									m_bSimulationFinished;
+	cwProductTradeTime						m_ProductTradeTime;
+
 private:
 	bool									m_bIsSimulation;
 
@@ -245,7 +247,6 @@ private:
 	void *									m_pMdSpi;
 	cwMDAPIType								m_MdApiType;
 
-	cwProductTradeTime						m_ProductTradeTime;
 	#ifdef BasiStrategyLOG
 	cwStrategyLog							m_BasicStrategyLog;
 #endif

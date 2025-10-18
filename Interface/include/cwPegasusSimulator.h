@@ -150,6 +150,12 @@ private:
 		cwOrderPtr		pOrder;
 	};
 
+	struct cwSimMatchRunningParameter
+	{
+		cwInstrumentDataPtr		pInstrument;
+		cwMarketDataPtr			pLastMd;
+	};
+
 	cwProductTradeTime										m_ProductTradeTime;
 
 	std::deque<cwSimulationUserAction>						m_UndealOrderDeque;
@@ -186,6 +192,8 @@ private:
 	{
 		std::string		strDateTime;
 		double			dBalance;
+		int				iPosition;
+		double			dLastPrice;
 	};
 	bool													m_bSaveAccountResult;
 	int														m_iAccountResultInterval;

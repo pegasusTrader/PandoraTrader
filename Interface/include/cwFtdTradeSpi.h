@@ -20,7 +20,7 @@
 #include "cwBasicCout.h"
 
 #ifdef CWORDERSPEEDLIMIT
-#include "cwNIndicator.h"
+#include "cwRingDeque.h"
 #endif // CWORDERSPEEDLIMIT
 
 #ifdef _WIN64

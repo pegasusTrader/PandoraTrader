@@ -27,7 +27,7 @@ public:
 	//UpdateTime Format: hh:mm:ss 09:10:11
 	cwMarketTime(int StartTime = 6);
 	cwMarketTime(int hour, int minute, int second, int MilliSecond = 0, int StartTime = 6);
-	cwMarketTime(std::string updatetime, int MilliSecond = 0, int StartTime = 6);
+	cwMarketTime(const char* updatetime, int MilliSecond = 0, int StartTime = 6);
 	~cwMarketTime();
 
 	void		SetStartTime(int iStartTime = 6) 
@@ -39,7 +39,7 @@ public:
 	}
 
 	bool Reset(int hour, int minute, int second, int MilliSecond = 0);
-	bool Reset(std::string updatetime, int MilliSecond = 0);
+	bool Reset(const char* updatetime, int MilliSecond = 0);
 	bool Reset(int64_t iTotalMilliSecond);
 	
 	inline int64_t	GetTotalSecond() { return m_iTotalMilliSecond / 1000; }

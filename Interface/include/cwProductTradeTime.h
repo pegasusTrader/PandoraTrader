@@ -19,7 +19,7 @@
 //品种交易时间
 class cwProductTradeTime
 {
-	
+	friend class cwProductTradeTimeMgr;
 public:
 	cwProductTradeTime();
 	cwProductTradeTime(const char* filename);
@@ -61,7 +61,7 @@ public:
 	typedef std::shared_ptr<ProductTradeTime> TradeTimePtr;
 
 	//根据品种ID,和时间获取交易时段
-	bool GetTradeTimeSpace(std::string ProductId, std::string updatetime,
+	bool GetTradeTimeSpace(std::string ProductId, const char* updatetime,
 		cwTradeTimeSpace& iTradeIndex, int& iOpen, int& iClose);
 	bool GetTradeTimeSpace(std::string ProductId, uint32_t hour, uint32_t minute, uint32_t second,
 		cwTradeTimeSpace& iTradeIndex, int& iOpen, int& iClose);
@@ -72,7 +72,7 @@ public:
 
 	//获取到前一个交易时段的时间差
 	int	 GetPreTimeSpaceInterval(std::string ProductId, cwTradeTimeSpace iTradeIndex);
-	int	 GetTimeSpaceInterval(std::string productId, std::string starttime, std::string endTime);
+	int	 GetTimeSpaceInterval(std::string productId, const char* starttime, const char* endTime);
 
 	void InitialTradeTimeMap();
 	void InitialTradeTimeMapFromFile(const char* filename);

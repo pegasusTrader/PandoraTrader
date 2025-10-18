@@ -31,6 +31,7 @@
 #endif // CW_USING_TBB_LIB
 
 #ifdef USING_CW_MEMORY_POOL
+#include "cwShareObjPool.h"
 #endif
 
 //#define TIME_LICENCE_LIMIT
@@ -119,7 +120,7 @@ public:
 
 #ifdef CW_USING_TBB_LIB
 	spsc_queue<cwMarketDataPtr>						m_DepthMarketDataDeque;
-#else
+#else 
 	std::deque <cwMarketDataPtr>					m_DepthMarketDataDeque;
 #endif // CW_USING_TBB_LIB
 	cwMUTEX											m_MarketDataUpdateMutex;
@@ -127,6 +128,7 @@ public:
 	cwBasicStrategy*								m_pBasicStrategy;
 
 	cwMarketDataPtr									CreateMarketData();
+	void											CreateMarketData(cwMarketDataPtr& pMarketData);
 
 	cwMarketDataPtr									m_cwLastestMarketData;
 protected:
@@ -215,6 +217,7 @@ ORIGIN->MEMBER = 0;\
 #endif
 
 #ifdef USING_CW_MEMORY_POOL
+	cwShareObjPool<cwFtdcDepthMarketDataField>		m_MarketDataPool;
 #endif // USING_CW_MEMORY_POOL
 
 };
