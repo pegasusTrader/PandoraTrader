@@ -100,7 +100,7 @@ Pandora策略平台，通过回测交易接口，SimTrade API和SimMdAPI,可以�
 
 ### 分支说明
 - Master: 目前实盘程序交易的版本
-- develop_6_5_1: 新功能添加和测试的版本，会持续更新，可能部分功能处于开发中间状态。
+- develop_6_7_7: 新功能添加和测试的版本，会持续更新，可能部分功能处于开发中间状态。
 
 ### 目录结构:
 
@@ -121,9 +121,9 @@ Pandora策略平台，通过回测交易接口，SimTrade API和SimMdAPI,可以�
 		│  │
 		│  ├─include-------------------------------------------------平台公共头文件
 		│  │
-		│  ├─CTPTradeApi64-------------------------------------------X64 CTP API 6.5.1
+		│  ├─CTPTradeApi64-------------------------------------------X64 CTP API 6.7.7
 		│  │
-		│  └─CTPTradeApi32-------------------------------------------Win32 CTP API 6.5.1
+		│  └─CTPTradeApi32-------------------------------------------Win32 CTP API 6.7.7
 		│
 		├─PandoraTrade-----------------------------------------------实盘交易程序
 		│      ReadMe.txt
@@ -175,7 +175,7 @@ Pandora策略平台，通过回测交易接口，SimTrade API和SimMdAPI,可以�
 如果您在Linux下使用，请您从develop分支上获取最新内容，
 使用CMAKE，G++来编译工程
 
-        git clone -b develop_6_5_1 https://github.com/pegasusTrader/PandoraTrader.git    
+        git clone -b develop_6_7_7 https://github.com/pegasusTrader/PandoraTrader.git    
 
 进入工程目录后：
 
