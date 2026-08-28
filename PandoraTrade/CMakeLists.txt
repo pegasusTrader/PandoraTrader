@@ -221,10 +221,10 @@ TARGET_LINK_LIBRARIES(PandoraTrader pthread)
 
 # 根据系统类型链接不同的库
 if(IS_MACOS)
-    target_link_libraries(PandoraTrader libPandoraStrategy.a libcwPandoraDLL_MacOS_Universal.a libTinyXml_MacOS_Universal.a)
+    target_link_libraries(PandoraTrader PandoraStrategy libcwPandoraDLL_MacOS_Universal.a libTinyXml_MacOS_Universal.a)
 else()
     # Linux 系统库链接
-    target_link_libraries(PandoraTrader libPandoraStrategy.a libcwPandoraDLL_Linux.a libTinyXml_Linux.a)
+    target_link_libraries(PandoraTrader PandoraStrategy libcwPandoraDLL_Linux.a libTinyXml_Linux.a)
 endif()
 
 # 链接 CTP 库（macOS 和 Linux 都使用相同的目标名称）

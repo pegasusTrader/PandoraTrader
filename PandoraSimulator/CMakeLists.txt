@@ -172,10 +172,10 @@ add_executable(PandoraSimulator ${DIR_SRC})
 TARGET_LINK_LIBRARIES(PandoraSimulator pthread)
 
 if(APPLE)
-    target_link_libraries(PandoraSimulator libPandoraStrategy.a libcwPandoraDLL_MacOS_Universal.a libTinyXml_MacOS_Universal.a)
+    target_link_libraries(PandoraSimulator PandoraStrategy libcwPandoraDLL_MacOS_Universal.a libTinyXml_MacOS_Universal.a)
     target_link_libraries(PandoraSimulator ${OpenMP_omp_LIBRARY})
 else()
-    target_link_libraries(PandoraSimulator libPandoraStrategy.a libcwPandoraDLL_Linux.a libTinyXml_Linux.a)
+    target_link_libraries(PandoraSimulator PandoraStrategy libcwPandoraDLL_Linux.a libTinyXml_Linux.a)
 
     # Linux系统的OpenMP链接
     if(OpenMP_FOUND AND TARGET OpenMP::OpenMP_CXX)
